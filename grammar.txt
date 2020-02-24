@@ -1,0 +1,52 @@
+Documentation files are simple metafiles containing groups of files in a
+file-folder hierarchy. The structure for this is described as follows.
+
+-----
+
+Line 1 :: /^root\=([A-Z\s0-9]+)$/
+-> $1 := module title (dir name)
+*** this sets the root volume by name. conventionally, this is the module name
+for documentation and corresponds to a single metafile.
+
+Paragraphs are separated by two newlines (visually, a blank line in between).
+The first line may be one of several forms: directory, file declaration, or
+file definition.
+
+Paragraph :: /^(\/)([a-z0-9][a-z0-9_]*\/)?([a-z0-9_]{1,8})\.([a-z0-9_]{1,3})([$¶\/])$/
+	-> $1 := root, as defined on line 1
+	-> $2 := directory (optional), used to denote sections of a module (e.g.
+		for one function, constant, etc)
+	-> $3 := file name, for a section paragraph detailing a specific detail
+	-> $4 := file extension, denoting the file format. valid values include:
+		txt, csv, bin, asc
+	-> $5 := content type. $ denotes formatted output; / denotes a directory
+		(not a file); ¶ denotes unformatted output (i.e. plain text)
+
+txt file format (¶):
+Plain text, with no rich formatting. Always formatted as UTF-8 w/o BOM.
+
+csv file format (¶):
+Comma-separated values. First line denotes column names, all lines thereafter
+are fields. Same encoding as plain text. For maximum compatibility, cells do
+not allow commas at all, but this can be worked around using Greek commas (‚).
+
+bin file format ($):
+Just a simple list of bytes in hexadecimal, with optional spacing between
+bytes that is semantically insignificant. Remember that spaces between
+multiple bytes, e.g. “0AFC ED40”, do not imply a particular endianness.
+Encoding must be ASCII.
+
+asc file format ($):
+Like plain text, but with backslash-denoted escape sequences for denoting
+things which either do not print, or are not allowed literally by either ASCII
+or Unicode. Encoding must be ASCII.
+	-> \hXX :: encode an arbitrary octet in hexadecimal.
+	-> \0 :: encode a NUL byte (equiv. \h00).
+	-> \r :: carriage return
+	-> \n :: line feed
+	-> \t :: horizontal tabulation
+	-> \\ :: literal backslash
+	`-> \uXXXX :: encode a unicode codepoint.
+
+It is possible to transform simple metafiles to and from tarballs. They share
+a lot of functional overlap, differing mainly in their application domain.
