@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-## Copyright © 2020 ARQADIUM, LLC.
+## Copyright © 2020 Aquefir.
 ## Released under BSD-2-Clause.
 
 def validate(text):

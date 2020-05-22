@@ -1,15 +1,15 @@
 Slick Documentation
 
 Created by Alexander Nicholi
-Copyright © 2020 ARQADIUM LLC.
+Copyright © 2020 Aquefir.
 Released under BSD-2-Clause.
 
-§1. Summary
+1. Summary
 
 Slickdoc is a simple, human-parseable text file format for code documentation,
-tailored to ANSI C. It uses ASCII symbols and Compose key symbols in a
-context-free grammar that is parseable by both computers and human beings.
+tailored to ANSI C. It uses ASCII text in a context-free grammar that is
+parseable by both computers and human beings.
 
-grammar.txt describes the syntax for metafiles that group the documentation
+grammar.txt describes the syntax for files that group the documentation
 together for reading. schema.txt describes the file-folder structure of the
 documentation itself.
