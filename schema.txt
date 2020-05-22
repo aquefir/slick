@@ -1,0 +1,49 @@
+A navigable repository must have a predictable layout. This schema defines
+a final file-folder hierarchy for a complete generic ANSI C project, including
+all folders and data. It is for ANSI C systems what the Filesystem Hierarchy
+Standard is for Linux.
+
+-----
+
+1. THE HIERARCHY
+
+/Makefile :: the Makefile for building the project
+/.[A-Za-z0-9_\-]+ :: repository dotfiles; as these are hidden they are permitted for naming files not specified in this hierarchy
+/COPYING :: legal disclaimers or copyright notices
+/README :: Readme text file
+/CONTRIBUTING :: Contributor’s guide
+/COMPILING :: Compilation/build guide
+/INSTALL :: Installer’s guide
+/src/ :: project source files, and the associated private headers if present
+/include/ :: publicly exposed headers (public API)
+/doc/ :: project documentation
+/util/ :: helper scripts used in maintaining the project
+/util/opt/ :: extra helper scripts that are not strictly needed for building
+/data/ :: folder for non-code assets or data; useful for working w/o git-lfs
+/etc/ :: miscellaneous folder, the contents of which may be anything
+
+2. ADDENDA
+
+2.1. No files in the repository should be executable, except those residing in
+/util/.
+
+2.2. No files or folders are required to exist in the repository.
+
+2.3. Note that none of the text files mentioned have extensions.
+
+2.4. Source code may have a soft file-module correspondence. With this in
+mind, text files in /doc/ should correspond to a module name in /src/. These
+text files follow the grammar outlined in grammar.txt.
+
+3. EXPLANATIONS
+
+3.1. ‘COPYING’ was chosen as the file name as it is agnostic to the variance
+between British English and American English as to the spelling of
+‘licence’/‘license’.
+
+3.2. Makefile was chosen as the build method as it is the most minimally
+complex solution at hand for building ANSI C systems. With development and
+maintenance restricted to Unix-like operating systems and non-Unix platforms
+treated as target-only using cross-compilation, meta-build systems can be
+avoided entirely. Make itself is the most well-known, mature and accessible
+declarative build system available.
