@@ -1,0 +1,41 @@
+*****
+
+Aquefir Modular Programming Guide
+
+Copyright © 2020 Aquefir.
+
+*****
+
+1. CONSTITUTING A MODULE
+
+With ANSI C projects, a module can be constituted in a few ways:
+	1. a lone header file
+	2. a code file and a header of the same name
+	3. either of the first two with a second header for public-private
+	distinction
+The module may also be coupled with a corresponding documentation file. This
+is covered in sligramr.txt and fsschema.txt.
+
+2. THREE TYPES OF MODULES
+
+Every module comes in one, and only one, of three kinds: logic module, state
+module, or definition module.
+
+Logic modules can only declare and/or implement pure functions; they may not
+carry or modify any state whatsoever. This includes modifying state passed in
+through variable pointers. For any given shallow input, the output must be the
+same.
+
+State modules have the sole job of managing state. They offer facilities for
+managing program state, an arduous task that deserves special attention. They
+should not offer significant logic facilities for the data they manage.
+
+Definition modules contain neither state nor logic per se, but rather just
+enums, structs, typedefs and #defines used by the program. They are kept
+separate due to their brevity and difference from the other two kinds of
+modules.
+
+3. PRACTISING MODULAR
+
+It is good practise to put a comment at the top of each file, below the
+boilerplate, denoting what kind of module it is.
