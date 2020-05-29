@@ -1,49 +1,92 @@
+*****
+
+Aquefir ANSI C Project Schema
+
+Copyright © 2020 Alexander Nicholi.
+
+*****
+
+1. INTRODUCTION
+
 A navigable repository must have a predictable layout. This schema defines
 a final file-folder hierarchy for a complete generic ANSI C project, including
 all folders and data. It is for ANSI C systems what the Filesystem Hierarchy
 Standard is for Linux.
 
------
+2. FILE/FOLDER PATTERNS
 
-1. THE HIERARCHY
+Here enumerated is a list of regex literals for permissible file/folder names.
+They are written relative to the repository root, and forward slashes separate
+directories. Files ignored by Git are not considered here.
 
-/Makefile :: the Makefile for building the project
-/.[A-Za-z0-9_\-]+ :: repository dotfiles; as these are hidden they are permitted for naming files not specified in this hierarchy
-/COPYING :: legal disclaimers or copyright notices
-/README :: Readme text file
-/CONTRIBUTING :: Contributor’s guide
-/COMPILING :: Compilation/build guide
-/INSTALL :: Installer’s guide
-/src/ :: project source files, and the associated private headers if present
-/include/ :: publicly exposed headers (public API)
-/doc/ :: project documentation
-/util/ :: helper scripts used in maintaining the project
-/util/opt/ :: extra helper scripts that are not strictly needed for building
-/data/ :: folder for non-code assets or data; useful for working w/o git-lfs
-/etc/ :: miscellaneous folder, the contents of which may be anything
+/^Makefile$/
+	The project’s Makefile (used for building)
 
-2. ADDENDA
+/^COPYING$/
+	legal disclaimers and/or code licensing
 
-2.1. No files in the repository should be executable, except those residing in
-/util/.
+/^README$/
+	the README file!
 
-2.2. No files or folders are required to exist in the repository.
+/^CONTRIBUTING$/
+	Project contributor’s guide
 
-2.3. Note that none of the text files mentioned have extensions.
+/^COMPILING$/
+	Build guide for users
 
-2.4. Source code may have a soft file-module correspondence. With this in
-mind, text files in /doc/ should correspond to a module name in /src/. These
-text files follow the grammar outlined in grammar.txt.
+/^INSTALL$/
+	Installation guide for users
 
-3. EXPLANATIONS
+/^\.([A-Za-z0-9_\-\.]+\/?)+$/
+	Dotfiles (and folders) in the repository root
+Regex breakdown:
+	- dot only applies in repo root (not just any subfolder)
+	- upper & lower alphanumeric, plus underscore/dash/dot
+	- files and folders both
 
-3.1. ‘COPYING’ was chosen as the file name as it is agnostic to the variance
-between British English and American English as to the spelling of
-‘licence’/‘license’.
+/^src\/([a-z0-9]{1,8})(\/[a-z0-9]{1,8})*\.[ch]$/
+	Project sources, and private headers if distinguished from public ones
+Regex breakdown:
+	- subfolder and file names are limited to 8 characters for brevity
+	- names must be all lowercase, for consistency
+	- names cannot contain dashes or underscores, for consistency when slashes
+	are mutated into underscores with symbols
 
-3.2. Makefile was chosen as the build method as it is the most minimally
-complex solution at hand for building ANSI C systems. With development and
-maintenance restricted to Unix-like operating systems and non-Unix platforms
-treated as target-only using cross-compilation, meta-build systems can be
-avoided entirely. Make itself is the most well-known, mature and accessible
-declarative build system available.
+/^include\/([a-z0-9]{1,8})(\/[a-z0-9]{1,8})*\.h$/
+	Project API headers
+
+/^doc\/([a-z0-9]{1,8})(\/[a-z0-9]{1,8})*\.txt$/
+	Project documentation, with files corresponding to ones in src/
+
+/^util\/(?!(opt))/
+	Utility scripts for project maintenance
+
+/^util\/opt\//
+	“Extra” utility scripts that are useful to maintainers but are not hard
+	dependencies for maintenance
+
+/^data\//
+	Folder for non-code assets or data, useful for working without git-lfs
+
+/^etc\//
+	Miscellaneous folder, the contents of which may be anything
+
+3. ADDENDA
+
+There are several additional notes about the schema worth bearing in mind:
+	- No files in the repository should be executable, except those in util/
+	- None of the files are required to exist
+	- None of the text files in the repository root have extensions
+	- Source code can have a soft file-module correspondence. With this in
+	mind, text files in doc/ should correspond to a module name in src/. These
+	text files should follow the grammar outlined in grammar.txt
+	- ‘COPYING’ was chosen as the file name for licensing as it is agnostic to
+	the British English and American English spelling differences with
+	‘licence’/‘license’
+	- Make was chosen as the build method for several reasons:
+		a. it is not excessively complex
+		b. it is available and mature on Unix-like systems
+		c. it can target other systems with cross-compilation
+		d. it provides a highly scalable declarative recipe language
+	- If other build systems are needed, dotfiles and etc/ are at one’s
+	disposal
