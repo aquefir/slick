@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 ## Copyright © 2020 Aquefir.
 ## Released under BSD-2-Clause.
+#
+# This module validates files as ASCII compatible.
 
 def validate(text):
 	for b in text:
