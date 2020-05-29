@@ -2,7 +2,7 @@
 
 Aquefir ANSI C Project Schema
 
-Copyright © 2020 Alexander Nicholi.
+Copyright © 2020 Aquefir.
 
 *****
 
