@@ -44,7 +44,7 @@ Regex breakdown:
 	- upper & lower alphanumeric, plus underscore/dash/dot
 	- files and folders both
 
-/^src\/([a-z0-9]{1,8})(\/[a-z0-9]{1,8})*\.[ch]$/
+/^src\/([a-z0-9]{1,8}\/)*\/[a-z0-9]{1,8}\.[ch]$/
 	Project sources, and private headers if distinguished from public ones
 Regex breakdown:
 	- subfolder and file names are limited to 8 characters for brevity
@@ -52,10 +52,10 @@ Regex breakdown:
 	- names cannot contain dashes or underscores, for consistency when slashes
 	are mutated into underscores with symbols
 
-/^include\/([a-z0-9]{1,8})(\/[a-z0-9]{1,8})*\.h$/
+/^include\/([a-z0-9]{1,8}\/)*[a-z0-9]{1,8}\.h$/
 	Project API headers
 
-/^doc\/([a-z0-9]{1,8})(\/[a-z0-9]{1,8})*\.txt$/
+/^doc\/([a-z0-9]{1,8}\/)*[a-z0-9]{1,8}\.txt$/
 	Project documentation, with files corresponding to ones in src/
 
 /^util\/(?!(opt))/
