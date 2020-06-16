@@ -2,7 +2,7 @@
 
 Aquefir Modular Programming Guide
 
-Copyright Â© 2020 Aquefir.
+Copyright © 2020 Aquefir.
 
 *****
 
