@@ -25,3 +25,4 @@ doc/** linguist-vendored
 etc/** linguist-vendored
 data/** linguist-vendored
 util/** linguist-vendored
+src/** linguist-vendored
