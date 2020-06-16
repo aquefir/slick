@@ -5,48 +5,47 @@
 ##                       Released under BSD-2-Clause.                       ##
 ##############################################################################
 
-include base.mk
+include etc/base.mk
 
 PROJECT := library1
-EXEFILE :=
-SOFILE  :=
-AFILE   := 1
 
+# put a ‘1’ for the desired target types to compile
+SOFILE :=
+AFILE  := 1
+
+# space-separated path list for #includes
 # <system> includes
 INCLUDES := include
 # "local" includes
 INCLUDEL := src
 
-# libraries
+# space-separated library name list
 LIBS      :=
 LIBDIRS   :=
 
-# frameworks (macOS only)
+# frameworks (macOS target only)
 FWORKS :=
 
-# in-tree 3rd-party libraries
+# ‘3P’ are in-tree 3rd-party dependencies
+# 3PLIBDIR is the base directory
+# 3PLIBS is the folder names in the base directory for each library
 3PLIBDIR := 3rdparty
-3PLIBS :=
+3PLIBS   :=
 
 # sources
-CFILES    :=
-HFILES    :=
+CFILES   :=
+HFILES   :=
 CPPFILES :=
 HPPFILES :=
-OFILES   := $(CFILES:.c=.c.o) $(CPPFILES:.cpp=.cpp.o)
 
 # test suite sources
 TES_CFILES   :=
 TES_HFILES   :=
 TES_CPPFILES :=
 TES_HPPFILES :=
-TES_OFILES   := $(TES_CFILES:.c=.c.o) $(TES_CPPFILES:.cpp=.cpp.o)
 
-# address-sanitisation metadata
-GCNOFILES     := $(CFILES:.c=.c.gcno) $(CPPFILES:.cpp=.cpp.gcno)
-GCDAFILES     := $(CFILES:.c=.c.gcda) $(CPPFILES:.cpp=.cpp.gcda)
-TES_GCNOFILES := $(TES_CFILES:.c=.c.gcno) $(TES_CPPFILES:.cpp=.cpp.gcno)
-TES_GCDAFILES := $(TES_CFILES:.c=.c.gcda) $(TES_CPPFILES:.cpp=.cpp.gcda)
+# force C++ linker because of 3rd-party library
+CCLD := $(CXX)
 
 # this defines all our usual targets
-include targets.mk
+include etc/targets.mk

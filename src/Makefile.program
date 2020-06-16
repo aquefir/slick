@@ -5,7 +5,7 @@
 ##                       Released under BSD-2-Clause.                       ##
 ##############################################################################
 
-include base.mk
+include etc/base.mk
 
 # name of project. used in output binary naming
 PROJECT := program
@@ -21,45 +21,33 @@ INCLUDES :=
 # "local" includes
 INCLUDEL := src
 
-# space-separated library name list for linking
-# libraries
+# space-separated library name list
 LIBS      :=
 LIBDIRS   :=
 
-# ‘3P’ are 3rd-party dependencies
+# ‘3P’ are in-tree 3rd-party dependencies
 # 3PLIBDIR is the base directory
 # 3PLIBS is the folder names in the base directory for each library
 3PLIBDIR := 3rdparty
 3PLIBS   :=
 
-# frameworks (macOS only)
+# frameworks (macOS target only)
 FWORKS :=
 
+# sources
 CFILES    :=
 HFILES    :=
 CPPFILES  :=
 HPPFILES  :=
-OFILES    := $(CFILES:.c=.c.o) $(CPPFILES:.cpp=.cpp.o)
-# address-sanitisation metadata
-GCNOFILES := $(CFILES:.c=.c.gcno) $(CPPFILES:.cpp=.cpp.gcno)
-GCDAFILES := $(CFILES:.c=.c.gcda) $(CPPFILES:.cpp=.cpp.gcda)
 
-.PHONY: default
-
-default: debug
+# test suite sources
+TES_CFILES   :=
+TES_HFILES   :=
+TES_CPPFILES :=
+TES_HPPFILES :=
 
 # force C++ linker because of 3rd-party library
 CCLD := $(CXX)
 
 # this defines all our usual targets
-include targets.mk
-
-.PHONY: m-redeps-asan m-redeps
-
-m-redeps:
-	$(patsubst %,$(MAKE) -C $(3PLIBDIR)/%lib clean;,$(3PLIBS))
-	$(patsubst %,$(MAKE) -C $(3PLIBDIR)/%lib -j`nproc`;,$(3PLIBS))
-
-m-redeps-asan:
-	$(patsubst %,$(MAKE) -C $(3PLIBDIR)/%lib clean;,$(3PLIBS))
-	$(patsubst %,NO_TES=1 $(MAKE) -C $(3PLIBDIR)/%lib -j`nproc` asan;,$(3PLIBS))
+include etc/targets.mk

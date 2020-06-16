@@ -20,6 +20,10 @@ INCLUDES += $(patsubst %,$(3PLIBDIR)/%lib/include,$(3PLIBS))
 LIBDIRS  += $(patsubst %,$(3PLIBDIR)/%lib,$(3PLIBS))
 LIBS     += $(3PLIBS)
 
+# Define object files
+OFILES     := $(CFILES:.c=.c.o) $(CPPFILES:.cpp=.cpp.o)
+TES_OFILES := $(TES_CFILES:.c=.c.o) $(TES_CPPFILES:.cpp=.cpp.o)
+
 # Variable transformations for command invocation
 LIB := $(patsubst %,-L%,$(LIBDIRS)) $(patsubst %,-l%,$(LIBS))
 ifeq ($(CC),tcc)

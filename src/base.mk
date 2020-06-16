@@ -17,13 +17,21 @@ endif
 UNAME := $(shell uname -s)
 # User can specify TP=Win32 at the command line
 TP ?= $(UNAME)
-TC ?= llvm
 ifeq ($(strip $(UNAME)),Darwin)
+TC ?= llvm
 ifneq ($(strip $(TC)),llvm)
 ifneq ($(strip $(TC)),xcode)
 $(error Invalid toolchain specified. macOS supports either llvm or xcode)
 endif # $(TC) xcode
 endif # $(TC) llvm
+endif # $(UNAME)
+ifeq ($(strip $(UNAME)),Linux)
+TC ?= gnu
+ifneq ($(strip $(TC)),gnu)
+ifneq ($(strip $(TC)),llvm)
+$(error Invalid toolchain specified. Linux supports either llvm or gnu)
+endif # $(TC) llvm
+endif # $(TC) gnu
 endif # $(UNAME)
 
 ## Specify the default host variables
@@ -35,7 +43,11 @@ CC.DARWIN       := /usr/local/opt/llvm/bin/clang # brew LLVM
 else
 CC.DARWIN       := /usr/bin/clang # Xcode
 endif
+ifeq ($(strip $(TC)),gnu)
 CC.LINUX        := /usr/bin/gcc
+else
+CC.LINUX        := /usr/bin/clang
+endif
 CC.DARWIN.WIN32 := /usr/local/bin/i686-w64-mingw32-gcc
 CC.LINUX.WIN32  := /usr/bin/i686-w64-mingw32-gcc
 
@@ -44,7 +56,11 @@ CXX.DARWIN       := /usr/local/opt/llvm/bin/clang++ # brew LLVM
 else
 CXX.DARWIN       := /usr/bin/clang++ # Xcode
 endif
+ifeq ($(strip $(TC)),gnu)
 CXX.LINUX        := /usr/bin/g++
+else
+CXX.LINUX        := /usr/bin/clang++
+endif
 CXX.DARWIN.WIN32 := /usr/local/bin/i686-w64-mingw32-g++
 CXX.LINUX.WIN32  := /usr/bin/i686-w64-mingw32-g++
 
@@ -76,7 +92,6 @@ TC.WIN32  := mingw32
 
 SO.DARWIN := dylib
 SO.LINUX  := so
-SO.WIN32  := dll
 SO.WIN32  := dll
 
 CFLAGS.COMMON          := -O2 -pipe
