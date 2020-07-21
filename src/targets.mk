@@ -20,10 +20,6 @@ INCLUDES += $(patsubst %,$(3PLIBDIR)/%lib/include,$(3PLIBS))
 LIBDIRS  += $(patsubst %,$(3PLIBDIR)/%lib,$(3PLIBS))
 LIBS     += $(3PLIBS)
 
-# Define object files
-OFILES     := $(CFILES:.c=.c.o) $(CPPFILES:.cpp=.cpp.o)
-TES_OFILES := $(TES_CFILES:.c=.c.o) $(TES_CPPFILES:.cpp=.cpp.o)
-
 # Variable transformations for command invocation
 LIB := $(patsubst %,-L%,$(LIBDIRS)) $(patsubst %,-l%,$(LIBS))
 ifeq ($(CC),tcc)
@@ -86,7 +82,7 @@ ifneq ($(CC),tcc)
 release: CFLAGS += $(CFLAGS.GCOMMON) $(CFLAGS.GCOMMON.RELEASE)
 endif # tcc
 release: CXXFLAGS += $(CXXFLAGS.COMMON) $(CXXFLAGS.COMMON.RELEASE)
-release: REALSTRIP := $(STRIP) ;
+release: REALSTRIP := $(STRIP)
 release: $(TARGETS)
 
 ## Sanity check build
@@ -110,6 +106,7 @@ ifneq ($(CC),tcc)
 cov: CFLAGS += $(CFLAGS.GCOMMON) $(CFLAGS.GCOMMON.COV)
 endif # tcc
 cov: CXXFLAGS += $(CXXFLAGS.COMMON) $(CXXFLAGS.COMMON.COV)
+cov: LDFLAGS += $(LDFLAGS.COV)
 cov: REALSTRIP := ':' ; # : is a no-op
 ifeq ($(strip $(NO_TES)),)
 cov: DEFINE += -DTES_BUILD=1
@@ -128,6 +125,8 @@ ifneq ($(CC),tcc)
 asan: CFLAGS += $(CFLAGS.GCOMMON) $(CFLAGS.GCOMMON.ASAN)
 endif # tcc
 asan: CXXFLAGS += $(CXXFLAGS.COMMON) $(CXXFLAGS.COMMON.ASAN)
+asan: LDFLAGS += $(LDFLAGS.ASAN)
+
 asan: REALSTRIP := ':' ; # : is a no-op
 ifeq ($(strip $(NO_TES)),)
 asan: DEFINE += -DTES_BUILD=1
@@ -146,6 +145,7 @@ ifneq ($(CC),tcc)
 ubsan: CFLAGS += $(CFLAGS.GCOMMON) $(CFLAGS.GCOMMON.UBSAN)
 endif # tcc
 ubsan: CXXFLAGS += $(CXXFLAGS.COMMON) $(CXXFLAGS.COMMON.UBSAN)
+ubsan: LDFLAGS += $(LDFLAGS.UBSAN)
 ubsan: REALSTRIP := ':' ; # : is a no-op
 ifeq ($(strip $(NO_TES)),)
 ubsan: DEFINE += -DTES_BUILD=1
@@ -155,6 +155,7 @@ ubsan: DEFINE += -UTES_BUILD
 ubsan: $(TARGETS)
 endif # $(NO_TES)
 
+# Define object files
 OFILES     := $(CFILES:.c=.c.o) $(CPPFILES:.cpp=.cpp.o)
 TES_OFILES := $(TES_CFILES:.c=.c.o) $(TES_CPPFILES:.cpp=.cpp.o)
 

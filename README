@@ -7,8 +7,46 @@ Copyright © 2020 Aquefir.
 
 *****
 
-2. WHAT IS THIS?
+1. WHAT IS THIS?
 
-Slick is a collection of specifications for creating & maintaining ANSI C
-projects well. It also includes some utility scripts for testing the validity
-of files according to certain constraints.
+Slick is a collection of specifications and tools for creating & maintaining
+ANSI C projects well. It also includes some utility scripts for testing the
+validity of files according to certain constraints.
+
+It includes the Slick Makefiles for building projects, fsschema.txt for
+consistently organising repositories, sligramr.txt for writing documentation,
+modules.txt for modular C programming, and some useful convenience scripts in
+util/.
+
+2. SLICK MAKEFILES
+
+v1.0.0
+Released 20 July 2020
+
+The Slick Makefiles provide a robust foundation for writing a project’s
+Makefile. By placing base.mk and targets.mk in a repo’s etc/ subfolder,
+including base.mk at the top and targets.mk at the bottom of the Makefile,
+a project can be built for several platforms and in several configurations
+with a dead simple root level Makefile and a minimum of tuning for specific
+options.
+
+So far, support for Linux, macOS, 32- and 64-bit Windows, and the Game Boy
+Advance is present, and there are five (5) kinds of targets: debug, release,
+code coverage (cov), address sanitisation (asan), and undefined behaviour
+sanitisation (ubsan). Both Xcode and bona fide LLVM are supported for macOS,
+LLVM and GCC are supported for Linux, MinGW-W64 Linux- or macOS-hosted
+cross-compilers are supported for Windows, and devkitPro’s devkitARM GCC
+is supported for the GBA. Usage on any Unices should work fine, but active
+development and maintenance only happens for Linux and macOS. Windows is not
+supported as a development host.
+
+Example Makefile templates for both libraries and standalone programs are
+provided in the src/ folder. base.mk provides a large array of variables for
+writing Makefiles for any kind of project; the most important of these are
+documented inline in the file. base.mk also normalises common build
+environment variables like $CC, while still deferring to environment overrides
+when given. It also defines *FLAGS variables for the different targets and
+toolchains, and provides config.h synthetic variable #defines on the command
+line for detecting things like CPU features, endianness, and operating system
+specifics. It will provide a print-out of all these variables at startup as
+well, so that overrides can be made more easily.
