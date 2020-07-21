@@ -7,41 +7,50 @@ LICENCES = [
 ]
 
 from sys import stdin, stdout
-from os import getcwd, mkdir, path
+from os import getcwd, path
 from subprocess import call
 
-slickdir = path.join(path.realpath(__file__), '..')
-print(slickdir)
+def mkdir(p):
+	from os import mkdir as mkdir_
+	#from os import FileExistsError
+	try:
+		mkdir_(p)
+	except FileExistsError as e:
+		pass
+
+slickdir = path.join(path.dirname(path.realpath(__file__)), '..')
 
 def pause():
-	stdin.read(1)
-	stdout.write('\n')
+	input('\n')
 
 def yesno(msg):
 	resp = 0
-	firs = False
+	firs = True
 	while resp != 'y' and resp != 'n':
 		if not firs:
 			stdout.write('\nInvalid value \u2018' + resp + '\u2019\n')
 		stdout.write(msg + ' ')
-		resp = int(stdin.read(1))
-		firs = True
+		stdout.flush()
+		resp = stdin.read(1)
+		firs = False
 	stdout.write('\n')
 	return True if resp == 'y' else False
 
 def multich(msg, opt_ct):
 	num = 0
-	firs = False
+	firs = True
 	while num > opt_ct or num == 0:
 		if not firs:
-			stdout.write('\nInvalid value \u2018' + num + '\u2019\n')
+			stdout.write('\nInvalid value \u2018' + str(num) + '\u2019\n')
 		stdout.write(msg + ' ')
-		num = int(stdin.readline()[:-1])
-		firs = True
+		stdout.flush()
+		num = int(input())
+		firs = False
 	return num
 
 def prompt(msg):
 	stdout.write(msg + ' ')
+	stdout.flush()
 	return stdin.readline()
 
 def main(args):
@@ -56,7 +65,7 @@ def main(args):
 			gitinit = True
 	if yesno('Add a licence?'):
 		n = multich('Use BSD-2 (1) or MPL2 (2)?', 2)
-		lic = path.join('etc', 'COPYING.' + LICENCES[n])
+		lic = path.join('COPYING.' + LICENCES[n - 1])
 	stdout.write('Ready to commit. Press any key to continue. ')
 	pause()
 	stdout.write('\n')
