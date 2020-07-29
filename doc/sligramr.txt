@@ -2,57 +2,137 @@
 
 Aquefir Slick Documentation File Format
 
+Written by Alexander Nicholi.
 Copyright © 2020 Aquefir.
+Released under BSD-2-Clause.
 
 *****
 
 1. INTRODUCTION
 
-This is an ASCII-friendly grammar for drafting and collating file-folder
-hierarchies in a single text file. This is helpful for enhancing reading and
-navigability without introducing fragile and intensive ‘compilation steps’ for
-a project’s documentation. The extension for these files should be ‘.sli’.
+This is an ASCII-compatible grammar for drafting and collating file-folder
+hierarchies in a single text file. The idea is simple: give structure to code
+documentation using a written pseudo-filesystem while retaining editability
+in text editors. Intelligent editors can take advantage of this structure to
+match documentation to the corresponding source, displaying it easily. The
+extension for these files is ‘.sli’.
 
-2. RECORDS AND FORMATTING
+2. THE FILE FORMAT
 
-Documentation files usually correspond to modules in the project sources or
-API headers. fsschema.txt offers one method of achieving this context, but in
-any case it is outside the scope of this grammar.
+Actual SLI files are arbitrary, and have no direct correspondence with any
+particular construct in the source code or the project repository.
+slick:doc/ffschema.txt provides a protocol for placing SLI files inside the
+doc/ subfolder of a repository.
 
-Similar to tarballs, SLI docs consist of a series of records. Here they are
-separated by a blank line (‘\n\n’). Records begin with a declaration line and
-have their contents indented once with hard tabs. There is a regex pattern
-specifying the declaration line, with groupings for its different parts:
+Similar to tarballs, SLI docs consist of a series of records. Each line that
+does not begin with a hard tab (‘\t’) denotes the head of a record. Hard tabs
+prefix every line that contiguously forms a record’s contents. Customarily,
+a single tab is used for this, but the number of tabs does not matter. A
+record ends at the beginning of another record or at the EOF. The format of
+the record head is simply a relative pathname separated with forward slashes
+(‘/’). A good convention is to start record paths with the project name.
 
-/^([A-Za-z0-9_\-\.]+\/)*([A-Za-z0-9_\-\.]+)([\$#\/])$/
-	$1 := directory parts (may be multiple); used to section a module
-	$2 := file part, for paragraphing a specific detail
-	$3 := content type; $ denotes formatted text, / denotes a folder, and
-		# denotes ‘plain’ text
+For maximum compatibility with computers and human fingers, SLI files are
+restricted to be ASCII only. Files should end with a single newline, per Unix
+custom. Additionally, hard tab characters and newlines are insignificant to
+the composed output; both are are part of the grammar, and newlines may be
+inserted wherever necessary to display well on older terminals. However,
+through an exhaustive list of escape sequences in Appendix A, full output of
+Unicode in composition is supported.
 
-Both formatted text and unformatted (i.e. plain) text are always kept in
-UTF-8 without BOM.
+3. FILE TYPES AND EXPRESSIONS
 
-3. FORMATTED FILES
+File extensions are used to denote the ‘kind’ of expression being documented
+in a given file. These are the supported kinds of expressions:
 
-.csv - comma-separated values
-	The first line labels the columns, and every line thereafter forms a row.
-	For compatibility reasons there are no escaping mechanisms, so literal
-	commas are not allowed, however this can be worked around using Greek
-	commas (‚).
+.enum - enumeration
+.struct - struct body
+.class - class body
+.sub - subroutine, function, or method
+.var - variable or member
+.const - constant (static or preprocessor)
 
-.bin - binary file
-	A list of hexadecimal bytes, meant to be stored on-disk as-is. Newlines,
-	whitespace and casing are insignificant. Bear in mind that this disregards
-	endianness (ergo, “0AFC ED40” is “0A FC ED 40”, not LE “FC 0A 40 ED”).
+For complex expressions that often include nontrivial children, such as
+classes, their contents can be placed in a subfolder of the same basename as
+the .class file sans the extension. So, foo.class’s members would be
+foo/bar.sub and foo/baz.var, for example. For the special constructor and
+destructor methods in classes, use foo/@.sub and foo/~@.sub, respectively.
+Getter methods are enclosed in angle brackets (e.g. foo/<myvar>.sub), while
+setter methods are enclosed the same but inverted (foo/>myvar<.sub). Operator
+overloads use the operator’s syntax literal as the name (e.g., foo/[].sub, or
+foo/<<.sub).
 
-.asc - ASCII-friendly escaped text
-	Identical to unformatted ‘plain’ text, except backslash (\) is significant.
-	The following escape sequences are supported:
-		\\ - literal backslash
-		\0 - NUL byte (equiv. \h00)
-		\h?? - a single octet in hexadecimal
-		\r - carriage return
-		\n - line feed
-		\t - horizontal tabulation
-		\u???? - a single Unicode codepoint
+4. TAGGING FILES
+
+Often it is informative to list attributes or properties of a function,
+subroutine or other expression to inform the user. For example, a function
+may be marked as pure, or marked to say it does not return. It could also be
+documented that it does not throw. To tag a file, simply list the tags at the
+beginning of the file with each tag in square brackets. These are the known
+tags:
+
+[pure] - a pure function. does not modify any state.
+[nothrow] - will NOT throw exceptions, even from deep within its call graph.
+[noreturn] - does not return control flow at all.
+[noalloc] - does not allocate or free any memory from the heap.
+[new] - allocates memory specifically in service of the caller.
+[threadsafe] - safe for use with multithreading. [pure] implies this.
+[packed] - only for .struct and .class. members are tightly byte-packed.
+[zerofill] - only for .struct. zerofilling members for init is well-behaved.
+[preproc] - only for .sub and .const. expression is resolved by $(CPP).
+
+5. FILE ATTRIBUTES
+
+It is a common need to document a function’s parameters and return values, a
+variable’s valid values, or some combination thereof. Attributes are written
+as their own records with a special form; the file path remains the same, and
+a colon is appended to separate the path from the attribute portion, similar
+to the notation for file offsets or source code line numbers.
+
+5.1. RETURN VALUE
+
+Used with: .sub
+Denoted by the pound sign (‘#’), e.g. “foo/bar.sub:#”.
+
+5.2. PARAMETER
+
+Used with: .sub
+Denoted like shell arguments or regex groups, using a dollar sign and a number
+in decimal (‘$’). $0 is used to represent member variables in class instances
+and is unused outside such context, so all parameters begin with $1. Example:
+“foo/bar.sub:$2”
+
+5.3. VALID USAGE
+
+Used with: .sub, .var, .const, parameters
+Denoted by a single asterisk (‘*’), following any other attributes if present,
+e.g. “foo/bar.sub:*” or “foo/bla.sub:$1*” These records list out the
+constraints for a piece of data or code to be considered “valid”; for data,
+this entails specific restrictions on permitted values, shallow and deep,
+while for code this entails constraints beyond which the subroutine may
+exhibit undefined behaviour. This can include things like “such pointer must
+not be NULL” and “must point to a valid X object allocated with xyzallocator
+function”. RFC 2119 is useful for specifying normative terminology to these
+ends.
+
+6. APPENDIX
+
+A. ESCAPE SEQUENCES
+
+\\ - literal backslash
+\h?? - a single byte in hexadecimal
+\0 - NUL byte (shorthand for \h00)
+\r - carriage return
+\n - line feed
+\t - horizontal tabulation
+\u???? - a single Unicode codepoint, within the Basic Multilingual Plane
+\U???????? - a single Unicode codepoint from any plane
+
+7. REFERENCES & ADDITIONAL READING
+
+Nicholi, Alexander. Slick doc/fsschema.txt.
+	<https://github.com/aquefir/slick>
+
+Network Working Group. RFC 2119. Key words for use in RFCs to Indicate
+Requirement Levels.
+	<https://tools.ietf.org/html/rfc2119>
