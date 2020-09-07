@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 ## This Makefile provides multi-platform build normalisation for the C and C++
 ## compilation toolchains. It is included at the top of the main Makefile.
+## Read <https://aquefir.co/slick/makefiles> for details.
+## This file: version 1.0.0
 
 # Check Make version (we need at least GNU Make 3.82). Fortunately,
 # ‘undefine’ directive has been introduced exactly in GNU Make 3.82.
@@ -205,8 +207,7 @@ CFLAGS.GCOMMON.COV     := -O1 -g3 -fprofile-arcs -ftest-coverage
 else ifeq ($(strip $(TC)),xcode)
 CFLAGS.GCOMMON.COV     := -O1 -g3 -fprofile-arcs -ftest-coverage
 else
-CFLAGS.GCOMMON.COV     := -O1 -g3 -fprofile-instr-generate \
-	-fcoverage-mapping
+CFLAGS.GCOMMON.COV     := -O1 -g3 -fprofile-arcs -ftest-coverage
 endif
 CFLAGS.GCOMMON.ASAN    := -O1 -g3 -fsanitize=address -fno-omit-frame-pointer
 CFLAGS.GCOMMON.UBSAN   := -O1 -g3 -fsanitize=undefined \
@@ -234,8 +235,7 @@ CXXFLAGS.COMMON.COV     := -O1 -g3 -fprofile-arcs -ftest-coverage
 else ifeq ($(strip $(TC)),xcode)
 CXXFLAGS.COMMON.COV     := -O1 -g3 -fprofile-arcs -ftest-coverage
 else
-CXXFLAGS.COMMON.COV     := -O1 -g3 -fprofile-instr-generate \
-	-fcoverage-mapping
+CXXFLAGS.COMMON.COV     := -O1 -g3 -fprofile-arcs -ftest-coverage
 endif
 CXXFLAGS.COMMON.ASAN    := -O1 -g3 -fsanitize=address -fno-omit-frame-pointer
 CXXFLAGS.COMMON.UBSAN   := -O1 -g3 -fsanitize=undefined \
@@ -256,7 +256,7 @@ LDFLAGS.COV += -fprofile-arcs -ftest-coverage
 else ifeq ($(strip $(TC)),xcode)
 LDFLAGS.COV += -fprofile-arcs -ftest-coverage
 else
-LDFLAGS.COV += -fprofile-instr-generate -fcoverage-mapping
+LDFLAGS.COV += -fprofile-arcs -ftest-coverage
 endif
 
 # Initialise $(TROOT)

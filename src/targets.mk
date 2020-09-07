@@ -9,11 +9,8 @@
 ## the main Makefile.
 ## This works with both C and C++ code, and is continuously tested on macOS
 ## Mojave and Arch Linux.
-## this file expects the following variables to be defined:
-## CFILES, CPPFILES, HFILES, HPPFILES, SFILES, CFLAGS, CXXFLAGS, LDFLAGS, CC,
-## CXX, AR, FMT, INCLUDES, INCLUDEL, DEFINES, UNDEFINES, LIBDIRS, LIBS,
-## FWORKS, PROJECT, EXEFILE, AFILE, SOFILE, 3PLIBS, 3PLIBDIR, SO, EXE, UNAME,
-## TP, TC,  TES_CFILES, TES_CPPFILES, TES_HFILES, TES_HPPFILES
+## Read <https://aquefir.co/slick/makefiles> for details.
+## This file: version 1.0.0
 
 # Incorporate 3rdparty dependencies
 INCLUDES += $(patsubst %,$(3PLIBDIR)/%lib/include,$(3PLIBS))
@@ -220,6 +217,7 @@ DSYMS := $(patsubst %,%.dSYM,$(TARGETS)) $(patsubst %,%.dSYM,$(TESTARGETS))
 
 clean:
 	$(RM) $(TARGETS)
+	$(RM) lib$(PROJECT).dll
 	$(RM) $(TESTARGETS)
 	$(RM) -r $(DSYMS)
 	$(RM) $(OFILES)
