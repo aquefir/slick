@@ -1,17 +1,13 @@
-##############################################################################
-##                                 Library1                                 ##
-##                                                                          ##
-##                        Copyright © 20XX Acme Inc.                        ##
-##                       Released under BSD-2-Clause.                       ##
-##############################################################################
+@BOILERPLATE@
 
 include $(AQ)/lib/slick/base.mk
 
-PROJECT := library1
+PROJECT := @TITLE@
 
 # put a ‘1’ for the desired target types to compile
-SOFILE :=
-AFILE  := 1
+EXEFILE :=
+SOFILE  := 1
+AFILE   := 1
 
 # space-separated path list for #includes
 # <system> includes
@@ -20,8 +16,8 @@ INCLUDES := include
 INCLUDEL := src
 
 # space-separated library name list
-LIBS      :=
-LIBDIRS   :=
+LIBS    :=
+LIBDIRS :=
 
 # frameworks (macOS target only)
 FWORKS :=
