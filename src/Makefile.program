@@ -5,7 +5,7 @@
 ##                       Released under BSD-2-Clause.                       ##
 ##############################################################################
 
-include etc/base.mk
+include $(AQ)/lib/slick/base.mk
 
 # name of project. used in output binary naming
 PROJECT := program
@@ -50,4 +50,4 @@ TES_HPPFILES :=
 CCLD := $(CXX)
 
 # this defines all our usual targets
-include etc/targets.mk
+include $(AQ)/lib/slick/targets.mk
