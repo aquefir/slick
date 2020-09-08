@@ -28,9 +28,76 @@ LICENCES = [
 	'MPL2'
 ]
 
+LICENCE_NAMES = [
+	'GNU Affero GPLv3',
+	'Apache 2.0',
+	'BSD-0-Clause',
+	'BSD-1-Clause',
+	'BSD-2-Clause',
+	'BSD-3-Clause',
+	'BSD-4-Clause',
+	'Old BSD License',
+	'Creative Commons BY 3.0',
+	'Creative Commons BY 4.0',
+	'Creative Commons BY-NC 3.0',
+	'Creative Commons BY-NC 4.0',
+	'Creative Commons BY-NC-ND 3.0',
+	'Creative Commons BY-NC-ND 4.0',
+	'Creative Commons BY-NC-SA 3.0',
+	'Creative Commons BY-NC-SA 4.0',
+	'Creative Commons BY-ND 3.0',
+	'Creative Commons BY-ND 4.0',
+	'Creative Commons BY-SA 3.0',
+	'Creative Commons BY-SA 4.0',
+	'GNU Free Documentation License.',
+	'GNU General Public License v2',
+	'GNU Lesser GPL v2.1',
+	'Mozilla Public License 2.0'
+]
+
 from sys import stdin, stdout
 from os import getcwd, path
 from subprocess import call
+
+def mkbplate(title, copy_years, org, licnum, sh):
+	lhs = ' *'
+	rhs = '*'
+	if sh:
+		lhs = '##'
+		rhs = '##'
+	ret = ''
+	if sh:
+		ret += ('#' * 78) + '\n'
+	else:
+		ret += '/' + ('*' * 76) + '\\\n'
+	title_len = len(title)
+	if title_len % 2:
+		title += '\u2122'
+		title_len += 1
+	spaces = ' ' * ((74 - title_len) // 2)
+	ret += lhs + spaces + title + spaces + rhs + '\n'
+	ret += lhs + (' ' * 74) + rhs + '\n'
+	copy = 'Copyright © ' + copy_years + ' ' + org
+	if len(copy_years) % 2:
+		copy += '.'
+	spaces = ' ' * ((74 - len(copy)) // 2)
+	ret += lhs + spaces + copy + spaces + rhs + '\n'
+	lic = 'Released under ' + LICENCE_NAMES[licnum - 1]
+	if len(lic) % 2:
+		lic += '.'
+	spaces = ' ' * ((74 - len(lic)) // 2)
+	ret += lhs + spaces + lic + spaces + rhs + '\n'
+	if sh:
+		ret += '#' * 78
+	else:
+		ret += '\\' + ('*' * 76) + '/'
+	return ret
+
+def printbplate(title, copy_years, org, licnum):
+	return 'This file contains the project’s copypastable boilerplate comment headers.\n\nBoilerplate for C-like languages:\n\n' + \
+		mkbplate(title, copy_years, org, licnum, False) + \
+		'\n\nHash-based boilerplate (Python, POSIX shell, Makefile):\n\n' + \
+		mkbplate(title, copy_years, org, licnum, True) + '\n'
 
 def strlicq(lics):
 	ret = 'Choose a licence:\n'
@@ -87,24 +154,40 @@ def prompt(msg):
 
 def main(args):
 	# get information from user
+	title = prompt('What is the name of the project?')[:-1]
+	org = prompt('Who is the author or organisation?')[:-1]
 	n = multich('Is this for a library (1) or program (2)?', 2)
 	makefile = 'Makefile.library' if n == 1 else 'Makefile.program'
 	gitinit = False
-	lic = None
+	licnum = None
 	cwd = getcwd()
 	if not path.exists(path.join(cwd, '.git')):
 		if yesno('Initialise a git repository?'):
 			gitinit = True
 	if yesno('Add a licence?'):
-		n = multich(strlicq(LICENCES), len(LICENCES))
-		lic = path.join('COPYING.' + LICENCES[n - 1])
+		licnum = multich(strlicq(LICENCES), len(LICENCES))
+		lic = path.join('COPYING.' + LICENCES[licnum - 1])
 	stdout.write('Ready to commit. Press any key to continue. ')
 	pause()
 	stdout.write('\n')
 	from shutil import copyfile
 	copyfile(path.join(slickdir, 'src', makefile), path.join(cwd, 'Makefile'))
+	f = open(path.join(cwd, 'Makefile'), 'r')
+	tmp = f.read()
+	f.close()
+	tmp = tmp.replace('@BOILERPLATE@',
+		mkbplate(title, str(2020), org, licnum, True))
+	tmp = tmp.replace('@TITLE@', title)
+	print('=====')
+	print(tmp)
+	print('=====')
+	f = open(path.join(cwd, 'Makefile'), 'w')
+	f.write(tmp)
+	f.flush()
+	f.close()
 	if lic:
-		copyfile(path.join(slickdir, 'src', lic), path.join(cwd, 'COPYING'))
+		copyfile(path.join(slickdir, 'src', 'COPYING.' + LICENCES[licnum - 1]),
+		path.join(cwd, 'COPYING'))
 	copyfile(path.join(slickdir, 'src', 'gitattributes'),
 		path.join(cwd, '.gitattributes'))
 	copyfile(path.join(slickdir, 'src', 'gitignore'),
@@ -115,6 +198,10 @@ def main(args):
 	mkdir(path.join(cwd, 'util'))
 	mkdir(path.join(cwd, 'src'))
 	mkdir(path.join(cwd, 'include'))
+	f = open(path.join(cwd, 'etc', 'BOILERPLATE'), 'w')
+	f.write(printbplate(title, str(2020), org, licnum))
+	f.flush()
+	f.close()
 	if gitinit:
 		call(['git', 'init'])
 	print('All done. Exiting...')
