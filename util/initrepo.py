@@ -2,13 +2,45 @@
 # -*- coding: utf-8 -*-
 
 LICENCES = [
+	'AGPL',
+	'Apache2',
+	'BSD-0C',
+	'BSD-1C',
 	'BSD-2C',
+	'BSD-3C',
+	'BSD-4C',
+	'BSD-OG',
+	'CC-BY-30',
+	'CC-BY-40',
+	'CC-BY-NC-30',
+	'CC-BY-NC-40',
+	'CC-BY-NC-ND-30',
+	'CC-BY-NC-ND-40',
+	'CC-BY-NC-SA-30',
+	'CC-BY-NC-SA-40',
+	'CC-BY-ND-30',
+	'CC-BY-ND-40',
+	'CC-BY-SA-30',
+	'CC-BY-SA-40',
+	'FDL',
+	'GPL2',
+	'LGPL21',
 	'MPL2'
 ]
 
 from sys import stdin, stdout
 from os import getcwd, path
 from subprocess import call
+
+def strlicq(lics):
+	ret = 'Choose a licence:\n'
+	i = 0
+	lics_len = len(lics)
+	while i < lics_len:
+		ret += str(i + 1) if i < 9 else ' ' + str(i + 1)
+		ret += '. ' + lics[i] + '\n'
+		i += 1
+	return ret
 
 def mkdir(p):
 	from os import mkdir as mkdir_
@@ -64,7 +96,7 @@ def main(args):
 		if yesno('Initialise a git repository?'):
 			gitinit = True
 	if yesno('Add a licence?'):
-		n = multich('Use BSD-2 (1) or MPL2 (2)?', 2)
+		n = multich(strlicq(LICENCES), len(LICENCES))
 		lic = path.join('COPYING.' + LICENCES[n - 1])
 	stdout.write('Ready to commit. Press any key to continue. ')
 	pause()
@@ -72,10 +104,10 @@ def main(args):
 	from shutil import copyfile
 	copyfile(path.join(slickdir, 'src', makefile), path.join(cwd, 'Makefile'))
 	if lic:
-		copyfile(path.join(slickdir, 'etc', lic), path.join(cwd, 'COPYING'))
-	copyfile(path.join(slickdir, 'etc', 'gitattributes'),
+		copyfile(path.join(slickdir, 'src', lic), path.join(cwd, 'COPYING'))
+	copyfile(path.join(slickdir, 'src', 'gitattributes'),
 		path.join(cwd, '.gitattributes'))
-	copyfile(path.join(slickdir, 'etc', 'gitignore'),
+	copyfile(path.join(slickdir, 'src', 'gitignore'),
 		path.join(cwd, '.gitignore'))
 	mkdir(path.join(cwd, 'doc'))
 	mkdir(path.join(cwd, 'etc'))
@@ -83,10 +115,6 @@ def main(args):
 	mkdir(path.join(cwd, 'util'))
 	mkdir(path.join(cwd, 'src'))
 	mkdir(path.join(cwd, 'include'))
-	copyfile(path.join(slickdir, 'src', 'base.mk'),
-		path.join(cwd, 'etc', 'base.mk'))
-	copyfile(path.join(slickdir, 'src', 'targets.mk'),
-		path.join(cwd, 'etc', 'targets.mk'))
 	if gitinit:
 		call(['git', 'init'])
 	print('All done. Exiting...')
