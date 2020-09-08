@@ -1,2 +1,2 @@
 export AQ='/opt/aq'
-export PATH="${AQ}/tools/bin:${PATH}"
+export PATH="${AQ}/bin:${PATH}"
