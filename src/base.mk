@@ -2,7 +2,7 @@
 ## This Makefile provides multi-platform build normalisation for the C and C++
 ## compilation toolchains. It is included at the top of the main Makefile.
 ## Read <https://aquefir.co/slick/makefiles> for details.
-## This file: version 1.0.0
+## This file: version 1.0.2
 
 # Check Make version (we need at least GNU Make 3.82). Fortunately,
 # ‘undefine’ directive has been introduced exactly in GNU Make 3.82.

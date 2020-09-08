@@ -10,7 +10,7 @@
 ## This works with both C and C++ code, and is continuously tested on macOS
 ## Mojave and Arch Linux.
 ## Read <https://aquefir.co/slick/makefiles> for details.
-## This file: version 1.0.0
+## This file: version 1.0.2
 
 # Incorporate 3rdparty dependencies
 INCLUDES += $(patsubst %,$(3PLIBDIR)/%lib/include,$(3PLIBS))
