@@ -397,6 +397,7 @@ STRIP := $(STRIP.CUSTOM)
 endif # $(origin STRIP)
 
 FIX := gbafix
+FIXFLAGS := -p -t'POKEMON RUBY' -cCXVE -m01 -r10
 
 # Deterministic build flags, for both clang and GCC
 SOURCE_DATE_EPOCH := 0
