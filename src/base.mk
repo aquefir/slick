@@ -416,21 +416,29 @@ endif
 
 DEFINES += $(patsubst %,CFG_%,$(CDEFS))
 
+ifndef QUIET
 $(info SYSTEM COMPILATION DEFAULTS PRINTOUT)
 $(info =====================================)
 $(info       Host machine := $(UNAME))
 $(info     Target machine := $(TP))
 $(info   Toolchain in use := $(TC))
+ifneq ($(strip $(TP)),GBA)
 $(info    Shlib extension := $(SO))
+endif
 $(info      Autoformatter := $(FMT))
+$(info          Assembler := $(AS))
 $(info         C compiler := $(CC))
 $(info       C++ compiler := $(CXX))
 $(info   Library archiver := $(AR))
+$(info      Object copier := $(OCPY))
 $(info    Symbol stripper := $(STRIP))
+$(info    Assembler flags := $(ASFLAGS))
 $(info   C compiler flags := $(CFLAGS))
 $(info C++ compiler flags := $(CXXFLAGS))
 $(info       Linker flags := $(LDFLAGS))
+$(info        Definitions := $(DEFINES))
 $(info )
+endif
 
 export UNAME
 export TP
