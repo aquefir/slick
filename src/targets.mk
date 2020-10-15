@@ -12,6 +12,21 @@
 ## Read <https://aquefir.co/slick/makefiles> for details.
 ## This file: version 1.0.2
 
+## DEPRECATION: <https://github.com/aquefir/slick/issues/7>
+ifdef HFILES
+$(warning HFILES is deprecated. Please use PUBHFILES and PRVHFILES instead)
+endif
+ifdef HPPFILES
+$(warning HPPFILES is deprecated. Please use PUBHFILES and PRVHFILES instead)
+endif
+
+ifdef TES_HFILES
+$(warning TES_HFILES is deprecated. Please use PUBHFILES and PRVHFILES instead)
+endif
+ifdef TES_HPPFILES
+$(warning TES_HPPFILES is deprecated. Please use PUBHFILES and PRVHFILES instead)
+endif
+
 # Incorporate 3rdparty dependencies
 INCLUDES += $(patsubst %,$(3PLIBDIR)/%lib/include,$(3PLIBS))
 LIBDIRS  += $(patsubst %,$(3PLIBDIR)/%lib,$(3PLIBS))
@@ -29,6 +44,9 @@ DEFINE    := $(patsubst %,-D%,$(DEFINES)) $(patsubst %,-U%,$(UNDEFINES))
 FWORK     := $(patsubst %,-framework %,$(FWORKS))
 ASINCLUDE := $(patsubst %,-I %,$(INCLUDES)) $(patsubst %,-I %,$(INCLUDEL))
 ASDEFINE  := $(patsubst %,--defsym %=1,$(DEFINES))
+
+# For make install
+PREFIX := /usr/local
 
 # Populated below
 TARGETS :=
@@ -196,18 +214,24 @@ TES_OFILES := $(TES_CFILES:.c=.c.o) $(TES_CPPFILES:.cpp=.cpp.o)
 
 # Static library builds
 $(ATARGET): $(OFILES)
+ifneq ($(strip $(OFILES)),)
 	$(REALSTRIP) -s $^
 	$(AR) $(ARFLAGS) $@ $^
+endif
 
 # Shared library builds
 $(SOTARGET): $(OFILES)
+ifneq ($(strip $(OFILES)),)
 	$(CCLD) $(LDFLAGS) -shared -o $@ $^ $(LIB)
 	$(REALSTRIP) -s $@
+endif
 
 # Executable builds
 $(EXETARGET): $(OFILES)
+ifneq ($(strip $(OFILES)),)
 	$(CCLD) $(LDFLAGS) -o $@ $^ $(LIB)
 	$(REALSTRIP) -s $@
+endif
 
 $(GBATARGET): $(EXETARGET)
 	$(OCPY) -O binary $< $@
@@ -228,10 +252,18 @@ clean:
 	$(RM) $(TES_CFILES:.c=.c.gcda) $(TES_CPPFILES:.cpp=.cpp.gcda)
 
 ifeq ($(strip $(NO_TES)),)
-format: $(TES_CFILES) $(TES_HFILES) $(TES_CPPFILES) $(TES_HPPFILES)
+format: $(TES_CFILES) $(TES_CPPFILES) $(TES_HFILES) $(TES_HPPFILES) \
+	$(TES_PUBHFILES) $(TES_PRVHFILES)
 endif
-format: $(CFILES) $(HFILES) $(CPPFILES) $(HPPFILES)
+format: $(CFILES) $(CPPFILES) $(HFILES) $(HPPFILES) $(PUBHFILES) $(PRVHFILES)
 	for _file in $^; do \
 		$(FMT) -i -style=file $$_file ; \
 	done
 	unset _file
+
+install: $(TARGETS)
+	-[ -n "$(EXEFILE)" ] && install -Dm755 $(EXETARGET) $(PREFIX)/bin/$(EXETARGET)
+	-[ -n "$(SOFILE)" ] && install -Dm755 $(SOTARGET) $(PREFIX)/lib/$(SOTARGET)
+	-[ -n "$(AFILE)" ] && install -Dm644 $(ATARGET) $(PREFIX)/lib/$(ATARGET)
+	for _f in $(PUBHFILES); do \
+	cp -rp --parents $$_f $(PREFIX)/; done
