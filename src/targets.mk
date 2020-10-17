@@ -262,8 +262,8 @@ format: $(CFILES) $(CPPFILES) $(HFILES) $(HPPFILES) $(PUBHFILES) $(PRVHFILES)
 	unset _file
 
 install: $(TARGETS)
-	-[ -n "$(EXEFILE)" ] && install -Dm755 $(EXETARGET) $(PREFIX)/bin/$(EXETARGET)
-	-[ -n "$(SOFILE)" ] && install -Dm755 $(SOTARGET) $(PREFIX)/lib/$(SOTARGET)
-	-[ -n "$(AFILE)" ] && install -Dm644 $(ATARGET) $(PREFIX)/lib/$(ATARGET)
+	-[ -n "$(EXEFILE)" ] && $(INSTALL) -Dm755 $(EXETARGET) $(PREFIX)/bin/$(EXETARGET)
+	-[ -n "$(SOFILE)" ] && $(INSTALL) -Dm755 $(SOTARGET) $(PREFIX)/lib/$(SOTARGET)
+	-[ -n "$(AFILE)" ] && $(INSTALL) -Dm644 $(ATARGET) $(PREFIX)/lib/$(ATARGET)
 	for _f in $(PUBHFILES); do \
-	cp -rp --parents $$_f $(PREFIX)/; done
+	$(CP) -rp --parents $$_f $(PREFIX)/; done

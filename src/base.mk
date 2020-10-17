@@ -399,6 +399,16 @@ endif # $(origin STRIP)
 FIX := gbafix
 FIXFLAGS := -p -t'POKEMON RUBY' -cCXVE -m01 -r10
 
+ifeq ($(strip $(UNAME)),Darwin)
+INSTALL := ginstall
+ECHO    := gecho
+CP      := gcp
+else
+INSTALL := install
+ECHO    := /bin/echo # for Debian, avoid builtin
+CP      := cp
+endif
+
 # Deterministic build flags, for both clang and GCC
 SOURCE_DATE_EPOCH := 0
 ZERO_AR_DATE := 1
@@ -443,6 +453,10 @@ endif
 export UNAME
 export TP
 export TC
+
+export INSTALL
+export ECHO
+export CP
 
 export SO
 export EXE
