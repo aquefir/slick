@@ -1,4 +1,28 @@
 makefiles/UNAME.var
-	Variable for denoting the host platform. This is defined by base.mk.
+	Denotes the host platform. This is defined by base.mk.
 makefiles/UNAME.var:*
 	Valid values include: Darwin, Linux, Win32, Win64, GBA.
+makefiles/TP.var
+	Denotes the target platform. This is defined by base.mk.
+makefiles/TP.var:*
+	Valid values are the same as those for makefiles/UNAME.var.
+makefiles/TC.var
+	Denotes the toolchain in use. This is defined by base.mk.
+makefiles/TC.var:*
+	Valid values include: gnu, mingw32, dkarm, llvm, xcode. llvm and xcode
+	are LLVM-based toolchains while the others are GNU-based toolchains.
+	On ELF-based targets, all toolchains support overriding $CC with
+	"tcc", the Tiny C Compiler.
+makefiles/TROOT.var
+	Denotes the target sysroot. Relevant when cross-compiling. $TROOT/lib
+	is automatically added to $LIBDIRS and $TROOT/include is automatically
+	added to $INCLUDES when necessary.\n
+	Defaults:\n
+	\tLinux -> Linux : /usr\n
+	\tLinux -> GBA : /usr/agb-armv4t-eabi\n
+	\tLinux -> Win32 : /usr/i686-w64-mingw32\n
+	\tLinux -> Win64 : /usr/x86_64-w64-mingw32\n
+	\tDarwin -> Darwin : /usr/local\n
+	\tDarwin -> GBA : /usr/local/agb-armv4t-eabi\n
+	\tDarwin -> Win32 : /usr/local/i686-w64-mingw32\n
+	\tDarwin -> Win64 : /usr/local/x86_64-w64-mingw32
