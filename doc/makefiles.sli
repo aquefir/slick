@@ -1,0 +1,4 @@
+makefiles/UNAME.var
+	Variable for denoting the host platform. This is defined by base.mk.
+makefiles/UNAME.var:*
+	Valid values include: Darwin, Linux, Win32, Win64, GBA.
