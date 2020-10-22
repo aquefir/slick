@@ -200,14 +200,14 @@ SO.GBA    := nosharedlibsforgba # deliberate. check urself
 CFLAGS.COMMON          := -pipe
 CFLAGS.GCOMMON         := -fPIC -ansi -Wpedantic -x c -frandom-seed=69420
 CFLAGS.GCOMMON.DEBUG   := -O0 -g3 -Wall -Wpedantic
-CFLAGS.GCOMMON.RELEASE := -O2 -w
+CFLAGS.GCOMMON.RELEASE := -O3 -w
 CFLAGS.GCOMMON.CHECK   := -Wextra -Werror -Wno-unused-variable
 ifeq ($(strip $(TC)),llvm)
-CFLAGS.GCOMMON.COV     := -O1 -g3 -fprofile-arcs -ftest-coverage
+CFLAGS.GCOMMON.COV     := -O0 -g3 -fprofile-arcs -ftest-coverage
 else ifeq ($(strip $(TC)),xcode)
-CFLAGS.GCOMMON.COV     := -O1 -g3 -fprofile-arcs -ftest-coverage
+CFLAGS.GCOMMON.COV     := -O0 -g3 -fprofile-arcs -ftest-coverage
 else
-CFLAGS.GCOMMON.COV     := -O1 -g3 -fprofile-arcs -ftest-coverage
+CFLAGS.GCOMMON.COV     := -O0 -g3 -fprofile-arcs -ftest-coverage
 endif
 CFLAGS.GCOMMON.ASAN    := -O1 -g3 -fsanitize=address -fno-omit-frame-pointer
 CFLAGS.GCOMMON.UBSAN   := -O1 -g3 -fsanitize=undefined \
@@ -228,14 +228,14 @@ ASFLAGS.GBA    := -march=armv4t -mcpu=arm7tdmi -mthumb-interwork -EL
 
 CXXFLAGS.COMMON := -pipe -fPIC -std=c++11 -x c++ -frandom-seed=69420
 CXXFLAGS.COMMON.DEBUG   := -O0 -g3 -Wall -Wpedantic
-CXXFLAGS.COMMON.RELEASE := -O2 -w
+CXXFLAGS.COMMON.RELEASE := -O3 -w
 CXXFLAGS.COMMON.CHECK   := -Wextra -Werror -Wno-unused-variable
 ifeq ($(strip $(TC)),llvm)
-CXXFLAGS.COMMON.COV     := -O1 -g3 -fprofile-arcs -ftest-coverage
+CXXFLAGS.COMMON.COV     := -O0 -g3 -fprofile-arcs -ftest-coverage
 else ifeq ($(strip $(TC)),xcode)
-CXXFLAGS.COMMON.COV     := -O1 -g3 -fprofile-arcs -ftest-coverage
+CXXFLAGS.COMMON.COV     := -O0 -g3 -fprofile-arcs -ftest-coverage
 else
-CXXFLAGS.COMMON.COV     := -O1 -g3 -fprofile-arcs -ftest-coverage
+CXXFLAGS.COMMON.COV     := -O0 -g3 -fprofile-arcs -ftest-coverage
 endif
 CXXFLAGS.COMMON.ASAN    := -O1 -g3 -fsanitize=address -fno-omit-frame-pointer
 CXXFLAGS.COMMON.UBSAN   := -O1 -g3 -fsanitize=undefined \
@@ -263,7 +263,7 @@ endif
 TROOT.DARWIN.WIN32 := /usr/local/i686-w64-mingw32
 TROOT.DARWIN.WIN64 := /usr/local/x86_64-w64-mingw32
 TROOT.DARWIN.GBA   := /opt/devkitpro/devkitARM
-TROOT.DARWIN       := /usr
+TROOT.DARWIN       := /usr/local
 TROOT.LINUX.WIN32  := /usr/i686-w64-mingw32
 TROOT.LINUX.WIN64  := /usr/x86_64-w64-mingw32
 TROOT.LINUX.GBA    := /opt/devkitpro/devkitARM
