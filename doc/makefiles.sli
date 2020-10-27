@@ -26,3 +26,5 @@ makefiles/TROOT.var
 	\tDarwin -> GBA : /usr/local/agb-armv4t-eabi\n
 	\tDarwin -> Win32 : /usr/local/i686-w64-mingw32\n
 	\tDarwin -> Win64 : /usr/local/x86_64-w64-mingw32
+makefiles/TROOT.var:*
+	The string must resolve to a valid path to a directory.

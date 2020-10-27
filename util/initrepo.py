@@ -104,7 +104,7 @@ def strlicq(lics):
 	i = 0
 	lics_len = len(lics)
 	while i < lics_len:
-		ret += str(i + 1) if i < 9 else ' ' + str(i + 1)
+		ret += str(i + 1) if i >= 9 else ' ' + str(i + 1)
 		ret += '. ' + lics[i] + '\n'
 		i += 1
 	return ret
