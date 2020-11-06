@@ -2,6 +2,7 @@
 
 include $(AQ)/lib/slick/base.mk
 
+# name of project. used in output binary naming
 PROJECT := @TITLE@
 
 # put a ‘1’ for the desired target types to compile
@@ -19,14 +20,14 @@ INCLUDEL := src
 LIBS    :=
 LIBDIRS :=
 
-# frameworks (macOS target only)
-FWORKS :=
-
 # ‘3P’ are in-tree 3rd-party dependencies
 # 3PLIBDIR is the base directory
 # 3PLIBS is the folder names in the base directory for each library
 3PLIBDIR := 3rdparty
 3PLIBS   :=
+
+# frameworks (macOS target only)
+FWORKS :=
 
 # sources
 CFILES    :=
