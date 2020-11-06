@@ -96,6 +96,10 @@ _File = @$(ECHO) -e " $(_File.$(1))\033[0m \033[1m$(2)\033[0m ..."
 3PINCLUDES := $(patsubst %,$(3PLIBDIR)/%lib/include,$(3PLIBS))
 3PLIBDIRS  := $(patsubst %,$(3PLIBDIR)/%lib,$(3PLIBS))
 
+# Sysroot defaults
+INCLUDES += $(TROOT)/include
+LIBDIRS  += $(TROOT)/lib
+
 # Variable transformations for command invocation
 LIB := $(patsubst %,-L%,$(LIBDIRS)) $(patsubst %,-l%,$(LIBS)) \
 	$(patsubst %,-L%,$(3PLIBDIRS)) $(patsubst %,-l%,$(3PLIBS))
@@ -152,14 +156,16 @@ ifeq ($(strip $(AFILE)),1)
 TARGETS += $(ATARGET)
 endif
 
-OFILES := $(CFILES:.c=.c.o) $(CPPFILES:.cpp=.cpp.o)
-TES_OFILES := $(TES_CFILES:.c=.c.o) $(TES_CPPFILES:.cpp=.cpp.o)
+OFILES := $(SFILES:.s=.s.o) $(CFILES:.c=.c.o) $(CPPFILES:.cpp=.cpp.o) \
+	$(PALFILES:.jasc=.jasc.o)
+TES_OFILES := $(TES_SFILES:.s=.s.o) $(TES_CFILES:.c=.c.o) \
+	$(TES_CPPFILES:.cpp=.cpp.o) $(TES_PALFILES:.jasc=.jasc.o)
 
 # Add in target-specific sources
 OFILES += $(SFILES.$(tsuf):.c=.c.o) $(CFILES.$(tsuf):.c=.c.o) \
-	$(CPPFILES.$(tsuf):.c=.c.o)
+	$(CPPFILES.$(tsuf):.c=.c.o) $(PALFILES.$(tsuf):.jasc=.jasc.o)
 TES_OFILES += $(TES_SFILES.$(tsuf):.c=.c.o) $(TES_CFILES.$(tsuf):.c=.c.o) \
-	$(TES_CPPFILES.$(tsuf):.c=.c.o)
+	$(TES_CPPFILES.$(tsuf):.c=.c.o) $(TES_PALFILES.$(tsuf):.jasc=.jasc.o)
 
 # Use ?= so that this can be overridden. This is useful when some projects in
 # a solution need $(CXX) linkage when the main project lacks any $(CPPFILES)
@@ -305,6 +311,10 @@ endif # $(NO_TES)
 	$(call _File,S,$@)
 	@$(AS) -o $@ $(ASFLAGS) $(ASDEFINE) $(ASINCLUDE) $<
 
+%.jasc.o: %.jasc
+	$(call _File,GFX,$@)
+	@$(JASC2GBA) $< | $(BIN2ASM) - $@
+
 %.tes.cpp.o: %.tes.cpp
 	$(call _File,CXX,$@)
 	@$(CXX) -c -o $@ $(CXXFLAGS) $(INCLUDE) $<
@@ -374,7 +384,7 @@ clean:
 	@$(RM) $(DLLTARGET)
 	@$(RM) $(TESTARGETS)
 	@$(RM) -r $(DSYMS)
-	@$(RM) $(SFILES:.c=.c.o) $(CFILES:.c=.c.o) $(CPPFILES:.cpp=.cpp.o)
+	@$(RM) $(SFILES:.s=.s.o) $(CFILES:.c=.c.o) $(CPPFILES:.cpp=.cpp.o)
 	@$(RM) $(CFILES:.c=.c.gcno) $(CPPFILES:.cpp=.cpp.gcno)
 	@$(RM) $(CFILES:.c=.c.gcda) $(CPPFILES:.cpp=.cpp.gcda)
 	@$(RM) $(SFILES.LINUX:.s=.s.o)
@@ -402,7 +412,8 @@ clean:
 	@$(RM) $(CPPFILES.GBA:.s=.s.o)
 	@$(RM) $(CFILES.GBA:.c=.c.gcno) $(CPPFILES.GBA:.cpp=.cpp.gcno)
 	@$(RM) $(CFILES.GBA:.c=.c.gcda) $(CPPFILES.GBA:.cpp=.cpp.gcda)
-	@$(RM) $(SFILES:.c=.c.gcno) $(CFILES:.c=.c.gcno) $(CPPFILES:.cpp=.cpp.gcno)
+	@$(RM) $(TES_SFILES:.s=.s.o) $(TES_CFILES:.c=.c.o) \
+		$(TES_CPPFILES:.cpp=.cpp.o)
 	@$(RM) $(TES_CFILES:.c=.c.gcno) $(TES_CPPFILES:.cpp=.cpp.gcno)
 	@$(RM) $(TES_CFILES:.c=.c.gcda) $(TES_CPPFILES:.cpp=.cpp.gcda)
 	@$(RM) $(TES_SFILES.LINUX:.s=.s.o)

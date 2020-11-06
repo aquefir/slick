@@ -164,8 +164,10 @@ ECHO.DARWIN := /usr/local/bin/gecho
 CP.LINUX  := /usr/bin/cp
 CP.DARWIN := /usr/local/bin/gcp
 
-FIX := gbafix
-FMT := clang-format
+BIN2ASM  := bin2asm
+JASC2GBA := jasc2gba
+FIX      := gbafix
+FMT      := clang-format
 
 ##
 ## File suffixes
