@@ -398,7 +398,6 @@ $(ATARGET): $(OFILES)
 ifneq ($(strip $(OFILES)),)
 	$(call _File,AR,$@)
 	$(call _File,STRIP,$@)
-	@$(REALSTRIP) -s $^
 	@$(AR) $(ARFLAGS) $@ $^
 	$(call TPRINTOUT,ASFLAGS,CFLAGS,CXXFLAGS,LDFLAGS,DEFINES,UNDEFINES)
 endif
