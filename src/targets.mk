@@ -112,11 +112,13 @@ else
 INCLUDE := $(patsubst %,-isystem %,$(INCLUDES)) \
 	$(patsubst %,-iquote %,$(INCLUDEL)) $(patsubst %,-isystem %,$(3PINCLUDES))
 endif
-DEFINE    := $(patsubst %,-D%,$(DEFINES)) $(patsubst %,-U%,$(UNDEFINES))
+DEFINE    := $(patsubst %,-D%,$(DEFINES)) $(patsubst %,-U%,$(UNDEFINES)) \
+	$(patsubst %,-DCFG_%,$(CDEFS))
 FWORK     := $(patsubst %,-framework %,$(FWORKS))
 ASINCLUDE := $(patsubst %,-I %,$(INCLUDES)) $(patsubst %,-I %,$(INCLUDEL)) \
 	$(patsubst %,-I %,$(3PINCLUDES))
-ASDEFINE  := $(patsubst %,--defsym %=1,$(DEFINES))
+ASDEFINE  := $(patsubst %,--defsym %=1,$(DEFINES)) \
+	$(patsubst %,--defsym CFG_%=1,$(CDEFS))
 
 # For make install
 PREFIX ?= /usr/local
@@ -379,11 +381,11 @@ endif # $(NO_TES)
 
 %.tes.cpp.o: %.tes.cpp
 	$(call _File,CXX,$@)
-	@$(CXX) -c -o $@ $(CXXFLAGS) $(INCLUDE) $<
+	@$(CXX) -c -o $@ $(CXXFLAGS) $(DEFINE) $(INCLUDE) $<
 
 %.tes.c.o: %.tes.c
 	$(call _File,C,$@)
-	@$(CC) -c -o $@ $(CFLAGS) $(INCLUDE) $<
+	@$(CC) -c -o $@ $(CFLAGS) $(DEFINE) $(INCLUDE) $<
 
 %.cpp.tes: %.tes.cpp.o
 	$(call _File,LD,$@)
