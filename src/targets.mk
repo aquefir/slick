@@ -87,6 +87,7 @@ _File.PCM   := ---> \033[35mAssembling
 _File.IMG   := ---> \033[33mTransmogrifying
 
 _File = @$(ECHO) -e " $(_File.$(1))\033[0m \033[1m$(2)\033[0m ..."
+_FileNoAt = $(ECHO) -e " $(_File.$(1))\033[0m \033[1m$(2)\033[0m ..."
 
 ##
 ## Additional variables
@@ -156,16 +157,77 @@ ifeq ($(strip $(AFILE)),1)
 TARGETS += $(ATARGET)
 endif
 
-OFILES := $(SFILES:.s=.s.o) $(CFILES:.c=.c.o) $(CPPFILES:.cpp=.cpp.o) \
+# Define the ofiles
+OFILES := \
+	$(SFILES:.s=.s.o) \
+	$(CFILES:.c=.c.o) \
+	$(CPPFILES:.cpp=.cpp.o) \
 	$(PALFILES:.jasc=.jasc.o)
-TES_OFILES := $(TES_SFILES:.s=.s.o) $(TES_CFILES:.c=.c.o) \
-	$(TES_CPPFILES:.cpp=.cpp.o) $(TES_PALFILES:.jasc=.jasc.o)
+TES_OFILES := \
+	$(TES_SFILES:.s=.s.o) \
+	$(TES_CFILES:.c=.c.o) \
+	$(TES_CPPFILES:.cpp=.cpp.o) \
+	$(TES_PALFILES:.jasc=.jasc.o)
+
+# Again for specific target platforms
+OFILES.LINUX := \
+	$(SFILES.LINUX:.s=.s.o) \
+	$(CFILES.LINUX:.c=.c.o) \
+	$(CPPFILES.LINUX:.cpp=.cpp.o) \
+	$(PALFILES.LINUX:.jasc=.jasc.o)
+TES_OFILES.LINUX := \
+	$(TES_SFILES.LINUX:.s=.s.o) \
+	$(TES_CFILES.LINUX:.c=.c.o) \
+	$(TES_CPPFILES.LINUX:.cpp=.cpp.o) \
+	$(TES_PALFILES.LINUX:.jasc=.jasc.o)
+
+OFILES.DARWIN := \
+	$(SFILES.DARWIN:.s=.s.o) \
+	$(CFILES.DARWIN:.c=.c.o) \
+	$(CPPFILES.DARWIN:.cpp=.cpp.o) \
+	$(PALFILES.DARWIN:.jasc=.jasc.o)
+TES_OFILES.DARWIN := \
+	$(TES_SFILES.DARWIN:.s=.s.o) \
+	$(TES_CFILES.DARWIN:.c=.c.o) \
+	$(TES_CPPFILES.DARWIN:.cpp=.cpp.o) \
+	$(TES_PALFILES.DARWIN:.jasc=.jasc.o)
+
+OFILES.WIN32 := \
+	$(SFILES.WIN32:.s=.s.o) \
+	$(CFILES.WIN32:.c=.c.o) \
+	$(CPPFILES.WIN32:.cpp=.cpp.o) \
+	$(PALFILES.WIN32:.jasc=.jasc.o)
+TES_OFILES.WIN32 := \
+	$(TES_SFILES.WIN32:.s=.s.o) \
+	$(TES_CFILES.WIN32:.c=.c.o) \
+	$(TES_CPPFILES.WIN32:.cpp=.cpp.o) \
+	$(TES_PALFILES.WIN32:.jasc=.jasc.o)
+
+OFILES.WIN64 := \
+	$(SFILES.WIN64:.s=.s.o) \
+	$(CFILES.WIN64:.c=.c.o) \
+	$(CPPFILES.WIN64:.cpp=.cpp.o) \
+	$(PALFILES.WIN64:.jasc=.jasc.o)
+TES_OFILES.WIN64 := \
+	$(TES_SFILES.WIN64:.s=.s.o) \
+	$(TES_CFILES.WIN64:.c=.c.o) \
+	$(TES_CPPFILES.WIN64:.cpp=.cpp.o) \
+	$(TES_PALFILES.WIN64:.jasc=.jasc.o)
+
+OFILES.GBA := \
+	$(SFILES.GBA:.s=.s.o) \
+	$(CFILES.GBA:.c=.c.o) \
+	$(CPPFILES.GBA:.cpp=.cpp.o) \
+	$(PALFILES.GBA:.jasc=.jasc.o)
+TES_OFILES.GBA := \
+	$(TES_SFILES.GBA:.s=.s.o) \
+	$(TES_CFILES.GBA:.c=.c.o) \
+	$(TES_CPPFILES.GBA:.cpp=.cpp.o) \
+	$(TES_PALFILES.GBA:.jasc=.jasc.o)
 
 # Add in target-specific sources
-OFILES += $(SFILES.$(tsuf):.s=.s.o) $(CFILES.$(tsuf):.c=.c.o) \
-	$(CPPFILES.$(tsuf):.cpp=.cpp.o) $(PALFILES.$(tsuf):.jasc=.jasc.o)
-TES_OFILES += $(TES_SFILES.$(tsuf):.s=.s.o) $(TES_CFILES.$(tsuf):.c=.c.o) \
-	$(TES_CPPFILES.$(tsuf):.cpp=.cpp.o) $(TES_PALFILES.$(tsuf):.jasc=.jasc.o)
+OFILES += $(OFILES.$(tsuf))
+TES_OFILES += $(TES_OFILES.$(tsuf))
 
 # Use ?= so that this can be overridden. This is useful when some projects in
 # a solution need $(CXX) linkage when the main project lacks any $(CPPFILES)
@@ -387,72 +449,62 @@ clean:
 	@$(RM) $(SFILES:.s=.s.o) $(CFILES:.c=.c.o) $(CPPFILES:.cpp=.cpp.o)
 	@$(RM) $(CFILES:.c=.c.gcno) $(CPPFILES:.cpp=.cpp.gcno)
 	@$(RM) $(CFILES:.c=.c.gcda) $(CPPFILES:.cpp=.cpp.gcda)
-	@$(RM) $(SFILES.LINUX:.s=.s.o)
-	@$(RM) $(CFILES.LINUX:.c=.c.o)
-	@$(RM) $(CPPFILES.LINUX:.cpp=.cpp.o)
+	@$(RM) $(OFILES.LINUX)
 	@$(RM) $(CFILES.LINUX:.c=.c.gcno) $(CPPFILES.LINUX:.cpp=.cpp.gcno)
 	@$(RM) $(CFILES.LINUX:.c=.c.gcda) $(CPPFILES.LINUX:.cpp=.cpp.gcda)
-	@$(RM) $(SFILES.DARWIN:.s=.s.o)
-	@$(RM) $(CFILES.DARWIN:.c=.c.o)
-	@$(RM) $(CPPFILES.DARWIN:.cpp=.cpp.o)
+	@$(RM) $(OFILES.DARWIN)
 	@$(RM) $(CFILES.DARWIN:.c=.c.gcno) $(CPPFILES.DARWIN:.cpp=.cpp.gcno)
 	@$(RM) $(CFILES.DARWIN:.c=.c.gcda) $(CPPFILES.DARWIN:.cpp=.cpp.gcda)
-	@$(RM) $(SFILES.WIN32:.s=.s.o)
-	@$(RM) $(CFILES.WIN32:.c=.c.o)
-	@$(RM) $(CPPFILES.WIN32:.cpp=.cpp.o)
+	@$(RM) $(OFILES.WIN32)
 	@$(RM) $(CFILES.WIN32:.c=.c.gcno) $(CPPFILES.WIN32:.cpp=.cpp.gcno)
 	@$(RM) $(CFILES.WIN32:.c=.c.gcda) $(CPPFILES.WIN32:.cpp=.cpp.gcda)
-	@$(RM) $(SFILES.WIN64:.s=.s.o)
-	@$(RM) $(CFILES.WIN64:.c=.c.o)
-	@$(RM) $(CPPFILES.WIN64:.cpp=.cpp.o)
+	@$(RM) $(OFILES.WIN64)
 	@$(RM) $(CFILES.WIN64:.c=.c.gcno) $(CPPFILES.WIN64:.cpp=.cpp.gcno)
 	@$(RM) $(CFILES.WIN64:.c=.c.gcda) $(CPPFILES.WIN64:.cpp=.cpp.gcda)
-	@$(RM) $(SFILES.GBA:.s=.s.o)
-	@$(RM) $(CFILES.GBA:.c=.c.o)
-	@$(RM) $(CPPFILES.GBA:.cpp=.cpp.o)
+	@$(RM) $(OFILES.GBA)
 	@$(RM) $(CFILES.GBA:.c=.c.gcno) $(CPPFILES.GBA:.cpp=.cpp.gcno)
 	@$(RM) $(CFILES.GBA:.c=.c.gcda) $(CPPFILES.GBA:.cpp=.cpp.gcda)
 	@$(RM) $(TES_SFILES:.s=.s.o) $(TES_CFILES:.c=.c.o) \
 		$(TES_CPPFILES:.cpp=.cpp.o)
 	@$(RM) $(TES_CFILES:.c=.c.gcno) $(TES_CPPFILES:.cpp=.cpp.gcno)
 	@$(RM) $(TES_CFILES:.c=.c.gcda) $(TES_CPPFILES:.cpp=.cpp.gcda)
-	@$(RM) $(TES_SFILES.LINUX:.s=.s.o)
-	@$(RM) $(TES_CFILES.LINUX:.c=.c.o)
-	@$(RM) $(TES_CPPFILES.LINUX:.cpp=.cpp.o)
+	@$(RM) $(TES_OFILES.LINUX)
 	@$(RM) $(TES_CFILES.LINUX:.c=.c.gcno) $(TES_CPPFILES.LINUX:.cpp=.cpp.gcno)
 	@$(RM) $(TES_CFILES.LINUX:.c=.c.gcda) $(TES_CPPFILES.LINUX:.cpp=.cpp.gcda)
-	@$(RM) $(TES_SFILES.DARWIN:.s=.s.o)
-	@$(RM) $(TES_CFILES.DARWIN:.c=.c.o)
-	@$(RM) $(TES_CPPFILES.DARWIN:.cpp=.cpp.o)
+	@$(RM) $(TES_OFILES.DARWIN)
 	@$(RM) $(TES_CFILES.DARWIN:.c=.c.gcno) $(TES_CPPFILES.DARWIN:.cpp=.cpp.gcno)
 	@$(RM) $(TES_CFILES.DARWIN:.c=.c.gcda) $(TES_CPPFILES.DARWIN:.cpp=.cpp.gcda)
-	@$(RM) $(TES_SFILES.WIN32:.s=.s.o)
-	@$(RM) $(TES_CFILES.WIN32:.c=.c.o)
-	@$(RM) $(TES_CPPFILES.WIN32:.cpp=.cpp.o)
+	@$(RM) $(TES_OFILES.WIN32)
 	@$(RM) $(TES_CFILES.WIN32:.c=.c.gcno) $(TES_CPPFILES.WIN32:.cpp=.cpp.gcno)
 	@$(RM) $(TES_CFILES.WIN32:.c=.c.gcda) $(TES_CPPFILES.WIN32:.cpp=.cpp.gcda)
-	@$(RM) $(TES_SFILES.WIN64:.s=.s.o)
-	@$(RM) $(TES_CFILES.WIN64:.c=.c.o)
-	@$(RM) $(TES_CPPFILES.WIN64:.cpp=.cpp.o)
+	@$(RM) $(TES_OFILES.WIN64)
 	@$(RM) $(TES_CFILES.WIN64:.c=.c.gcno) $(TES_CPPFILES.WIN64:.cpp=.cpp.gcno)
 	@$(RM) $(TES_CFILES.WIN64:.c=.c.gcda) $(TES_CPPFILES.WIN64:.cpp=.cpp.gcda)
-	@$(RM) $(TES_SFILES.GBA:.s=.s.o)
-	@$(RM) $(TES_CFILES.GBA:.c=.c.o)
-	@$(RM) $(TES_CPPFILES.GBA:.cpp=.cpp.o)
+	@$(RM) $(TES_OFILES.GBA)
 	@$(RM) $(TES_CFILES.GBA:.c=.c.gcno) $(TES_CPPFILES.GBA:.cpp=.cpp.gcno)
 	@$(RM) $(TES_CFILES.GBA:.c=.c.gcda) $(TES_CPPFILES.GBA:.cpp=.cpp.gcda)
 
 # run the auto-formatter
 ifeq ($(strip $(NO_TES)),)
 format: $(TES_CFILES) $(TES_CPPFILES) $(TES_HFILES) $(TES_HPPFILES) \
-	$(TES_PUBHFILES) $(TES_PRVHFILES)
+$(TES_PUBHFILES) $(TES_PRVHFILES) \
+$(TES_CFILES.LINUX) $(TES_CPPFILES.LINUX) \
+$(TES_CFILES.DARWIN) $(TES_CPPFILES.DARWIN) \
+$(TES_CFILES.WIN32) $(TES_CPPFILES.WIN32) \
+$(TES_CFILES.WIN64) $(TES_CPPFILES.WIN64) \
+$(TES_CFILES.GBA) $(TES_CPPFILES.GBA)
 endif
-format: $(CFILES) $(CPPFILES) $(HFILES) $(HPPFILES) $(PUBHFILES) $(PRVHFILES)
-	for _file in $^; do \
-		$(call _File,FMT,$$_file) \
+format: $(CFILES) $(CPPFILES) $(HFILES) $(HPPFILES) $(PUBHFILES) \
+$(PRVHFILES) $(CFILES.LINUX) $(CPPFILES.LINUX) \
+$(CFILES.DARWIN) $(CPPFILES.DARWIN) \
+$(CFILES.WIN32) $(CPPFILES.WIN32) \
+$(CFILES.WIN64) $(CPPFILES.WIN64) \
+$(CFILES.GBA) $(CPPFILES.GBA)
+	@for _file in $^; do \
+		$(call _FileNoAt,FMT,$$_file) ; \
 		$(FMT) -i -style=file $$_file ; \
 	done
-	unset _file
+	@unset _file
 
 # install the software into the system
 install: $(TARGETS)
