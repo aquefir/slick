@@ -397,7 +397,6 @@ endif # $(NO_TES)
 $(ATARGET): $(OFILES)
 ifneq ($(strip $(OFILES)),)
 	$(call _File,AR,$@)
-	$(call _File,STRIP,$@)
 	@$(AR) $(ARFLAGS) $@ $^
 	$(call TPRINTOUT,ASFLAGS,CFLAGS,CXXFLAGS,LDFLAGS,DEFINES,UNDEFINES)
 endif
