@@ -166,6 +166,7 @@ CP.DARWIN := /usr/local/bin/gcp
 
 BIN2ASM  := bin2asm
 JASC2GBA := jasc2gba
+EGMAN    := mangledeggs
 FIX      := gbafix
 FMT      := clang-format
 

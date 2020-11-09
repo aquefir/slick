@@ -377,7 +377,9 @@ endif # $(NO_TES)
 
 %.jasc.o: %.jasc
 	$(call _File,GFX,$@)
-	@$(JASC2GBA) $< | $(BIN2ASM) - $@
+	@$(JASC2GBA) $< | \
+		$(BIN2ASM) -s `$(EGMAN) -i $(patsubst data/%,%,$<)` - | \
+		$(AS) -o $@ $(ASFLAGS) -
 
 %.tes.cpp.o: %.tes.cpp
 	$(call _File,CXX,$@)
