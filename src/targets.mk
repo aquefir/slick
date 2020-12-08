@@ -133,7 +133,8 @@ TARGETS :=
 ifeq ($(strip $(TP)),GBA)
 TESTARGETS :=
 else
-TESTARGETS := $(TES_CFILES:.tes.c=.c.tes) $(TES_CPPFILES:.tes.cpp=.cpp.tes)
+TESTARGETS := $(TES_SFILES:.tes.s=.s.tes) \
+	$(TES_CFILES:.tes.c=.c.tes) $(TES_CPPFILES:.tes.cpp=.cpp.tes)
 endif
 
 # specify all target filenames
