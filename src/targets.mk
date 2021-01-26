@@ -255,7 +255,7 @@ endif
 debug: DEFINE += -UNDEBUG
 debug: UNDEFINES += NDEBUG
 # TODO: check for TCC by command output instead of name
-ifeq ($(notdir $(strip $(CC.CUSTOM))),tcc)
+ifneq ($(notdir $(strip $(CC.CUSTOM))),tcc)
 # tcc cannot take these additional options
 debug: CFLAGS += $(CFLAGS.GCOMMON.DEBUG)
 endif # tcc
@@ -272,7 +272,7 @@ release: DEFINE += -DNDEBUG=1
 release: ASDEFINE += --defsym NDEBUG=1
 release: DEFINES += NDEBUG
 # TODO: check for TCC by command output instead of name
-ifeq ($(notdir $(strip $(CC.CUSTOM))),tcc)
+ifneq ($(notdir $(strip $(CC.CUSTOM))),tcc)
 # tcc cannot take these additional options
 release: CFLAGS += $(CFLAGS.GCOMMON.RELEASE)
 endif # tcc
@@ -287,7 +287,7 @@ release: $(TARGETS)
 check: DEFINE += -UNDEBUG
 check: UNDEFINES += NDEBUG
 # TODO: check for TCC by command output instead of name
-ifeq ($(notdir $(strip $(CC.CUSTOM))),tcc)
+ifneq ($(notdir $(strip $(CC.CUSTOM))),tcc)
 # tcc cannot take these additional options
 check: CFLAGS += $(CFLAGS.GCOMMON.CHECK)
 endif # tcc
@@ -306,12 +306,13 @@ cov: ASDEFINE += --defsym _CODECOV=1 --defsym TES_BUILD=1
 cov: DEFINES += _CODECOV=1 TES_BUILD=1
 cov: UNDEFINES += NDEBUG
 # TODO: check for TCC by command output instead of name
-ifeq ($(notdir $(strip $(CC.CUSTOM))),tcc)
+ifneq ($(notdir $(strip $(CC.CUSTOM))),tcc)
 # tcc cannot take these additional options
 cov: CFLAGS += $(CFLAGS.GCOMMON.COV)
 endif # tcc
 cov: CXXFLAGS += $(CXXFLAGS.COMMON.COV)
 cov: LDFLAGS += $(LDFLAGS.COV)
+cov: LIB += -ltes
 # nop out strip when not used, $(REALSTRIP) is called unconditionally
 cov: REALSTRIP := ':' ; # : is a no-op
 cov: $(TESTARGETS)
@@ -327,12 +328,13 @@ asan: ASDEFINE += --defsym _ASAN=1 --defsym TES_BUILD=1
 asan: DEFINES += _ASAN=1 TES_BUILD=1
 asan: UNDEFINES += NDEBUG
 # TODO: check for TCC by command output instead of name
-ifeq ($(notdir $(strip $(CC.CUSTOM))),tcc)
+ifneq ($(notdir $(strip $(CC.CUSTOM))),tcc)
 # tcc cannot take these additional options
 asan: CFLAGS += $(CFLAGS.GCOMMON.ASAN)
 endif # tcc
 asan: CXXFLAGS += $(CXXFLAGS.COMMON.ASAN)
 asan: LDFLAGS += $(LDFLAGS.ASAN)
+asan: LIB += -ltes
 # nop out strip when not used, $(REALSTRIP) is called unconditionally
 asan: REALSTRIP := ':' ; # : is a no-op
 asan: $(TESTARGETS)
@@ -348,12 +350,13 @@ ubsan: ASDEFINE += --defsym _ASAN=1 --defsym TES_BUILD=1
 ubsan: DEFINES += _ASAN=1 TES_BUILD=1
 ubsan: UNDEFINES += NDEBUG
 # TODO: check for TCC by command output instead of name
-ifeq ($(notdir $(strip $(CC.CUSTOM))),tcc)
+ifneq ($(notdir $(strip $(CC.CUSTOM))),tcc)
 # tcc cannot take these additional options
 ubsan: CFLAGS += $(CFLAGS.GCOMMON.ASAN)
 endif # tcc
 ubsan: CXXFLAGS += $(CXXFLAGS.COMMON.ASAN)
 ubsan: LDFLAGS += $(LDFLAGS.ASAN)
+ubsan: LIB += -ltes
 # nop out strip when not used, $(REALSTRIP) is called unconditionally
 ubsan: REALSTRIP := ':' ; # : is a no-op
 ubsan: $(TESTARGETS)
@@ -390,11 +393,11 @@ endif # $(NO_TES)
 	$(call _File,C,$@)
 	@$(CC) -c -o $@ $(CFLAGS) $(DEFINE) $(INCLUDE) $<
 
-%.cpp.tes: %.tes.cpp.o
+%.cpp.tes: %.tes.cpp.o $(ATARGET)
 	$(call _File,LD,$@)
 	@$(CCLD) $(LDFLAGS) -o $@ $^ $(LIB)
 
-%.c.tes: %.tes.c.o
+%.c.tes: %.tes.c.o $(ATARGET)
 	$(call _File,LD,$@)
 	@$(CCLD) $(LDFLAGS) -o $@ $^ $(LIB)
 
