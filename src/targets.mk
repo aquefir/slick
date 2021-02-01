@@ -177,7 +177,7 @@ else ifeq ($(origin ASFLAGS),command line)
 else ifeq ($(strip $(ASFLAGS)),)
 # nop
 else
-# environment [override], file, command line, override, automatic
+# environment [override], file, override, automatic
 # not empty
 .L_ASFLAGS := $(ASFLAGS)
 endif
@@ -191,7 +191,7 @@ else ifeq ($(origin CFLAGS),command line)
 else ifeq ($(strip $(CFLAGS)),)
 # nop
 else
-# environment [override], file, command line, override, automatic
+# environment [override], file, override, automatic
 # not empty
 .L_CFLAGS := $(CFLAGS)
 endif
@@ -205,7 +205,7 @@ else ifeq ($(origin CXXFLAGS),command line)
 else ifeq ($(strip $(CXXFLAGS)),)
 # nop
 else
-# environment [override], file, command line, override, automatic
+# environment [override], file, override, automatic
 # not empty
 .L_CXXFLAGS := $(CXXFLAGS)
 endif
@@ -219,7 +219,7 @@ else ifeq ($(origin ARFLAGS),command line)
 else ifeq ($(strip $(ARFLAGS)),)
 # nop
 else
-# environment [override], file, command line, override, automatic
+# environment [override], file, override, automatic
 # not empty
 .L_ARFLAGS := $(ARFLAGS)
 endif
@@ -233,7 +233,7 @@ else ifeq ($(origin LDFLAGS),command line)
 else ifeq ($(strip $(LDFLAGS)),)
 # nop
 else
-# environment [override], file, command line, override, automatic
+# environment [override], file, override, automatic
 # not empty
 .L_LDFLAGS := $(LDFLAGS)
 endif
@@ -241,12 +241,34 @@ endif
 endif
 
 # Finally, set the variables.
-override ASFLAGS  := $(.L_ASFLAGS)
-override CFLAGS   := $(.L_CFLAGS)
-override CXXFLAGS := $(.L_CXXFLAGS)
-override ARFLAGS  := $(.L_ARFLAGS)
-override LDFLAGS  := $(.L_LDFLAGS)
-override SYNDEFS  := $(.L_SYNDEFS)
+ASFLAGS  := $(.L_ASFLAGS)
+CFLAGS   := $(.L_CFLAGS)
+CXXFLAGS := $(.L_CXXFLAGS)
+ARFLAGS  := $(.L_ARFLAGS)
+LDFLAGS  := $(.L_LDFLAGS)
+SYNDEFS  := $(.L_SYNDEFS)
+
+## Set the LD program.
+
+ifeq ($(origin LD),undefined)
+.O_LD := DEFAULT
+else ifeq ($(origin LD),default)
+.O_LD := DEFAULT
+else
+# environment [override], file, override, automatic
+.O_LD := CUSTOM
+endif
+
+# Set the target and file dependent values of the new variable.
+ifeq ($(strip $(CPPFILES))$(strip $(CPPFILES.$(TP))),)
+LD.O_DEFAULT := $(CC)
+else
+LD.O_DEFAULT := $(CXX)
+endif
+LD.O_CUSTOM := $(LD)
+
+# Finally, set the variable.
+override LD := $(LD.O_$(.O_LD))
 
 ## Finalise flags and quasi-flags into their invocation-ready form.
 
@@ -282,3 +304,436 @@ endif
 .K_ASDEFINE := \
 	$(patsubst %,--defsym %=1,$(DEFINES)) \
 	$(patsubst %,--defsym CFG_%=1,$(SYNDEFS))
+
+## Name the targets.
+
+# Normalise the desired targets first.
+
+.L_EXEFILE := 0
+ifeq ($(origin EXEFILE),undefined)
+# nop
+else ifeq ($(origin EXEFILE),default)
+# nop
+else ifeq ($(origin EXEFILE),command line)
+# nop
+else ifeq ($(strip $(EXEFILE)),)
+# nop
+else
+# environment [override], file, override, automatic
+# not empty
+.L_EXEFILE := 1
+endif
+
+.L_SOFILE := 0
+ifeq ($(origin SOFILE),undefined)
+# nop
+else ifeq ($(origin SOFILE),default)
+# nop
+else ifeq ($(origin SOFILE),command line)
+# nop
+else ifeq ($(strip $(SOFILE)),)
+# nop
+else
+# environment [override], file, override, automatic
+# not empty
+.L_SOFILE := 1
+endif
+
+.L_AFILE := 0
+ifeq ($(origin AFILE),undefined)
+# nop
+else ifeq ($(origin AFILE),default)
+# nop
+else ifeq ($(origin AFILE),command line)
+# nop
+else ifeq ($(strip $(AFILE)),)
+# nop
+else
+# environment [override], file, override, automatic
+# not empty
+.L_AFILE := 1
+endif
+
+# Populated below.
+.L_TARGETS :=
+
+# specify all target filenames
+.L_GBATARGET  := $(PROJECT).gba
+.L_EXETARGET  := $(PROJECT)$(EXE)
+.L_SOTARGET   := lib$(PROJECT)$(SO)
+.L_ATARGET    := lib$(PROJECT).a
+
+ifeq ($(TP),GBA)
+ifeq ($(.L_EXEFILE),1)
+.L_TARGETS += $(.L_GBATARGET)
+endif
+ifeq ($(.L_AFILE),1)
+.L_TARGETS += $(.L_ATARGET)
+endif
+else ifeq ($(TP),IBMPC)
+ifeq ($(.L_EXEFILE),1)
+.L_TARGETS += $(.L_EXETARGET)
+endif
+ifeq ($(.L_AFILE),1)
+.L_TARGETS += $(.L_ATARGET)
+endif
+else ifeq ($(TP),APE)
+ifeq ($(.L_EXEFILE),1)
+.L_TARGETS += $(.L_EXETARGET)
+endif
+ifeq ($(.L_AFILE),1)
+.L_TARGETS += $(.L_ATARGET)
+endif
+else
+# Platforms with shared library support
+ifeq ($(.L_EXEFILE),1)
+.L_TARGETS += $(.L_EXETARGET)
+endif
+ifeq ($(.L_SOFILE),1)
+.L_TARGETS += $(.L_SOTARGET)
+endif
+ifeq ($(.L_AFILE),1)
+.L_TARGETS += $(.L_ATARGET)
+endif
+endif
+
+# always used by make clean
+.L_ALLTARGETS := \
+	lib$(PROJECT)$(SO.LINUX) \
+	lib$(PROJECT)$(SO.DARWIN) \
+	lib$(PROJECT)$(SO.WIN32) \
+	lib$(PROJECT).a \
+	$(PROJECT).gba \
+	$(PROJECT)$(EXE.LINUX) \
+	$(PROJECT)$(EXE.WIN32) \
+	$(PROJECT)$(EXE.GBA) \
+	$(PROJECT)$(EXE.IBMPC)
+
+## Define the OFILES.
+
+.L_OFILES.COMMON := \
+	$(SFILES:.s=.s.o) \
+	$(CFILES:.c=.c.o) \
+	$(CPPFILES:.cpp=.cpp.o)
+
+.L_OFILES.LINUX := \
+	$(SFILES.:.s=.s.o) \
+	$(CFILES.:.c=.c.o) \
+	$(CPPFILES.:.cpp=.cpp.o)
+
+.L_OFILES.DARWIN := \
+	$(SFILES.DARWIN:.s=.s.o) \
+	$(CFILES.DARWIN:.c=.c.o) \
+	$(CPPFILES.DARWIN:.cpp=.cpp.o)
+
+.L_OFILES.WIN32 := \
+	$(SFILES.WIN32:.s=.s.o) \
+	$(CFILES.WIN32:.c=.c.o) \
+	$(CPPFILES.WIN32:.cpp=.cpp.o)
+
+.L_OFILES.WIN64 := \
+	$(SFILES.WIN64:.s=.s.o) \
+	$(CFILES.WIN64:.c=.c.o) \
+	$(CPPFILES.WIN64:.cpp=.cpp.o)
+
+.L_OFILES.GBA := \
+	$(SFILES.GBA:.s=.s.o) \
+	$(CFILES.GBA:.c=.c.o) \
+	$(CPPFILES.GBA:.cpp=.cpp.o)
+
+.L_OFILES.IBMPC := \
+	$(SFILES.IBMPC:.s=.s.o) \
+	$(CFILES.IBMPC:.c=.c.o) \
+	$(CPPFILES.IBMPC:.cpp=.cpp.o)
+
+.L_OFILES.APE := \
+	$(SFILES.APE:.s=.s.o) \
+	$(CFILES.APE:.c=.c.o) \
+	$(CPPFILES.APE:.cpp=.cpp.o)
+
+.L_OFILES := $(.L_OFILES.COMMON) $(.L_OFILES.$(TP))
+
+## Define the GCNOFILES and GCDAFILES.
+
+.L_GCNOFILES.COMMON := \
+	$(CFILES:.c=.c.gcno) \
+	$(CPPFILES:.cpp=.cpp.gcno)
+
+.L_GCNOFILES.LINUX := \
+	$(CFILES.:.c=.c.gcno) \
+	$(CPPFILES.:.cpp=.cpp.gcno)
+
+.L_GCNOFILES.DARWIN := \
+	$(CFILES.DARWIN:.c=.c.gcno) \
+	$(CPPFILES.DARWIN:.cpp=.cpp.gcno)
+
+.L_GCNOFILES.WIN32 := \
+	$(CFILES.WIN32:.c=.c.gcno) \
+	$(CPPFILES.WIN32:.cpp=.cpp.gcno)
+
+.L_GCNOFILES.WIN64 := \
+	$(CFILES.WIN64:.c=.c.gcno) \
+	$(CPPFILES.WIN64:.cpp=.cpp.gcno)
+
+.L_GCNOFILES.GBA := \
+	$(CFILES.GBA:.c=.c.gcno) \
+	$(CPPFILES.GBA:.cpp=.cpp.gcno)
+
+.L_GCNOFILES.IBMPC := \
+	$(CFILES.IBMPC:.c=.c.gcno) \
+	$(CPPFILES.IBMPC:.cpp=.cpp.gcno)
+
+.L_GCNOFILES.APE := \
+	$(CFILES.APE:.c=.c.gcno) \
+	$(CPPFILES.APE:.cpp=.cpp.gcno)
+
+.L_GCDAFILES.COMMON := \
+	$(CFILES:.c=.c.gcda) \
+	$(CPPFILES:.cpp=.cpp.gcda)
+
+.L_GCDAFILES.LINUX := \
+	$(CFILES.:.c=.c.gcda) \
+	$(CPPFILES.:.cpp=.cpp.gcda)
+
+.L_GCDAFILES.DARWIN := \
+	$(CFILES.DARWIN:.c=.c.gcda) \
+	$(CPPFILES.DARWIN:.cpp=.cpp.gcda)
+
+.L_GCDAFILES.WIN32 := \
+	$(CFILES.WIN32:.c=.c.gcda) \
+	$(CPPFILES.WIN32:.cpp=.cpp.gcda)
+
+.L_GCDAFILES.WIN64 := \
+	$(CFILES.WIN64:.c=.c.gcda) \
+	$(CPPFILES.WIN64:.cpp=.cpp.gcda)
+
+.L_GCDAFILES.GBA := \
+	$(CFILES.GBA:.c=.c.gcda) \
+	$(CPPFILES.GBA:.cpp=.cpp.gcda)
+
+.L_GCDAFILES.IBMPC := \
+	$(CFILES.IBMPC:.c=.c.gcda) \
+	$(CPPFILES.IBMPC:.cpp=.cpp.gcda)
+
+.L_GCDAFILES.APE := \
+	$(CFILES.APE:.c=.c.gcda) \
+	$(CPPFILES.APE:.cpp=.cpp.gcda)
+
+## Define the target recipes.
+
+.PHONY: debug release check cov asan ubsan format clean
+
+## Debug build
+## useful for: normal testing, valgrind, LLDB
+##
+# ensure NDEBUG is undefined
+debug: .L_DEFINE += -UNDEBUG
+debug: UNDEFINES += NDEBUG
+debug: ASFLAGS += $(ASFLAGS.DEBUG.ALL.$(TC)) $(ASFLAGS.DEBUG.$(TP).$(TC))
+debug: CFLAGS += $(CFLAGS.DEBUG.ALL.$(TC)) $(CFLAGS.DEBUG.$(TP).$(TC))
+debug: CXXFLAGS += $(CXXFLAGS.DEBUG.ALL.$(TC)) $(CXXFLAGS.DEBUG.$(TP).$(TC))
+debug: LDFLAGS += $(LDFLAGS.DEBUG.ALL.$(TC)) $(LDFLAGS.DEBUG.$(TP).$(TC))
+# nop out strip when not used, as $(REALSTRIP) is called unconditionally
+debug: REALSTRIP := ':' ; # : is a no-op
+debug: $(TARGETS)
+
+## Release build
+## useful for: deployment
+##
+# ensure NDEBUG is defined
+release: .L_DEFINE += -DNDEBUG=1
+release: .L_ASDEFINE += --defsym NDEBUG=1
+release: DEFINES += NDEBUG
+release: ASFLAGS += $(ASFLAGS.RELEASE.ALL.$(TC)) \
+	$(ASFLAGS.RELEASE.$(TP).$(TC))
+release: CFLAGS += $(CFLAGS.RELEASE.ALL.$(TC)) \
+	$(CFLAGS.RELEASE.$(TP).$(TC))
+release: CXXFLAGS += $(CXXFLAGS.RELEASE.ALL.$(TC)) \
+	$(CXXFLAGS.RELEASE.$(TP).$(TC))
+release: LDFLAGS += $(LDFLAGS.RELEASE.ALL.$(TC)) \
+	$(LDFLAGS.RELEASE.$(TP).$(TC))
+release: REALSTRIP := $(STRIP)
+release: $(TARGETS)
+
+## Sanity check build
+## useful for: pre-tool bug squashing
+##
+# ensure NDEBUG is undefined
+check: .L_DEFINE += -UNDEBUG
+check: UNDEFINES += NDEBUG
+check: ASFLAGS += $(ASFLAGS.CHECK.ALL.$(TC)) $(ASFLAGS.CHECK.$(TP).$(TC))
+check: CFLAGS += $(CFLAGS.CHECK.ALL.$(TC)) $(CFLAGS.CHECK.$(TP).$(TC))
+check: CXXFLAGS += $(CXXFLAGS.CHECK.ALL.$(TC)) $(CXXFLAGS.CHECK.$(TP).$(TC))
+check: LDFLAGS += $(LDFLAGS.CHECK.ALL.$(TC)) $(LDFLAGS.CHECK.$(TP).$(TC))
+# nop out strip when not used, as $(REALSTRIP) is called unconditionally
+check: REALSTRIP := ':' ; # : is a no-op
+check: $(TARGETS)
+
+## Code coverage build
+## useful for: checking coverage of test suite
+##
+# ensure NDEBUG is undefined, add a #define for code coverage & TES
+cov: .L_DEFINE += -UNDEBUG -D_CODECOV=1
+cov: .L_ASDEFINE += --defsym _CODECOV=1
+cov: DEFINES += _CODECOV=1
+cov: UNDEFINES += NDEBUG
+cov: ASFLAGS += $(ASFLAGS.COV.ALL.$(TC)) $(ASFLAGS.COV.$(TP).$(TC))
+cov: CFLAGS += $(CFLAGS.COV.ALL.$(TC)) $(CFLAGS.COV.$(TP).$(TC))
+cov: CXXFLAGS += $(CXXFLAGS.COV.ALL.$(TC)) $(CXXFLAGS.COV.$(TP).$(TC))
+cov: LDFLAGS += $(LDFLAGS.COV.ALL.$(TC)) $(LDFLAGS.COV.$(TP).$(TC))
+# nop out strip when not used, as $(REALSTRIP) is called unconditionally
+cov: REALSTRIP := ':' ; # : is a no-op
+cov: $(EXETARGET)
+
+## Address sanitised build
+## useful for: squashing memory issues
+##
+# ensure NDEBUG is undefined, add a #define for address sanitisation & TES
+asan: .L_DEFINE += -UNDEBUG -D_ASAN=1
+asan: .L_ASDEFINE += --defsym _ASAN=1
+asan: DEFINES += _ASAN=1
+asan: UNDEFINES += NDEBUG
+asan: ASFLAGS += $(ASFLAGS.ASAN.ALL.$(TC)) $(ASFLAGS.ASAN.$(TP).$(TC))
+asan: CFLAGS += $(CFLAGS.ASAN.ALL.$(TC)) $(CFLAGS.ASAN.$(TP).$(TC))
+asan: CXXFLAGS += $(CXXFLAGS.ASAN.ALL.$(TC)) $(CXXFLAGS.ASAN.$(TP).$(TC))
+asan: LDFLAGS += $(LDFLAGS.ASAN.ALL.$(TC)) $(LDFLAGS.ASAN.$(TP).$(TC))
+# nop out strip when not used, as $(REALSTRIP) is called unconditionally
+asan: REALSTRIP := ':' ; # : is a no-op
+asan: $(EXETARGET)
+
+## Undefined Behaviour sanitised build
+## useful for: squashing UB :-)
+##
+# ensure NDEBUG is undefined, add a #define for UB sanitisation & TES
+ubsan: .L_DEFINE += -UNDEBUG -D_UBSAN=1
+ubsan: .L_ASDEFINE += --defsym _UBSAN=1
+ubsan: DEFINES += _UBSAN=1
+ubsan: UNDEFINES += NDEBUG
+ubsan: ASFLAGS += $(ASFLAGS.UBSAN.ALL.$(TC)) $(ASFLAGS.UBSAN.$(TP).$(TC))
+ubsan: CFLAGS += $(CFLAGS.UBSAN.ALL.$(TC)) $(CFLAGS.UBSAN.$(TP).$(TC))
+ubsan: CXXFLAGS += $(CXXFLAGS.UBSAN.ALL.$(TC)) $(CXXFLAGS.UBSAN.$(TP).$(TC))
+ubsan: LDFLAGS += $(LDFLAGS.UBSAN.ALL.$(TC)) $(LDFLAGS.UBSAN.$(TP).$(TC))
+# nop out strip when not used, as $(REALSTRIP) is called unconditionally
+ubsan: REALSTRIP := ':' ; # : is a no-op
+ubsan: $(EXETARGET)
+
+## Define recipes.
+
+# Ofile recipes.
+
+%.cst.o: %.cst
+	$(call .L_File,CST,$@)
+	@$(CST) -c -o $@ $(CSTFLAGS) $(.K_DEFINE) $(.K_INCLUDE) $<
+
+%.cpp.o: %.cpp
+	$(call .L_File,CXX,$@)
+	@$(CXX) -c -o $@ $(CXXFLAGS) $(.K_DEFINE) $(.K_INCLUDE) $<
+
+%.c.o: %.c
+	$(call .L_File,C,$@)
+	@$(CC) -c -o $@ $(CFLAGS) $(.K_DEFINE) $(.K_INCLUDE) $<
+
+%.s.o: %.s
+	$(call .L_File,S,$@)
+	@$(AS) -o $@ $(ASFLAGS) $(.K_ASDEFINE) $(.K_ASINCLUDE) $<
+
+# Static library recipe.
+
+$(ATARGET): $(.L_OFILES)
+ifneq ($(strip $(.L_OFILES)),)
+	$(call _File,AR,$@)
+	@$(AR) $(ARFLAGS) $@ $^
+	$(call TPRINTOUT,ASFLAGS,CFLAGS,CXXFLAGS,LDFLAGS,DEFINES,UNDEFINES)
+endif
+
+# Shared library recipe.
+
+$(SOTARGET): $(.L_OFILES)
+ifneq ($(strip $(.L_OFILES)),)
+	$(call _File,LD,$@)
+	@$(LD) $(LDFLAGS) -shared -o $@ $^ $(LIB)
+	$(call _File,STRIP,$@)
+	@$(REALSTRIP) -s $@
+	$(call TPRINTOUT,ASFLAGS,CFLAGS,CXXFLAGS,LDFLAGS,DEFINES,UNDEFINES)
+endif
+
+# Executable recipe.
+
+$(EXETARGET): $(.L_OFILES)
+ifneq ($(strip $(.L_OFILES)),)
+	$(call _File,LD,$@)
+	@$(LD) $(LDFLAGS) -o $@ $^ $(LIB)
+	$(call _File,STRIP,$@)
+	@$(REALSTRIP) -s $@
+	$(call TPRINTOUT,ASFLAGS,CFLAGS,CXXFLAGS,LDFLAGS,DEFINES,UNDEFINES)
+endif
+
+# GBA ROM recipe.
+
+$(GBATARGET): $(EXETARGET)
+ifeq ($(strip $(TP)),GBA)
+	$(call _File,OCPY,$@)
+	@$(OCPY) -O binary $< $@
+	$(call _File,FIX,$@)
+	@$(FIX) $@ $(FIXFLAGS) 1>/dev/null
+endif
+
+## Additional .PHONY targets.
+
+# Clean the repository.
+
+clean:
+	@$(ECHO) -e " -> \033[37mCleaning\033[0m the repository..."
+	@$(RM) $(.L_ALLTARGETS)
+	@$(RM) $(.L_OFILES.COMMON)
+	@$(RM) $(.L_OFILES.LINUX)
+	@$(RM) $(.L_OFILES.DARWIN)
+	@$(RM) $(.L_OFILES.WIN32)
+	@$(RM) $(.L_OFILES.WIN64)
+	@$(RM) $(.L_OFILES.GBA)
+	@$(RM) $(.L_OFILES.IBMPC)
+	@$(RM) $(.L_OFILES.APE)
+	@$(RM) $(.L_GCNOFILES.COMMON)
+	@$(RM) $(.L_GCNOFILES.LINUX)
+	@$(RM) $(.L_GCNOFILES.DARWIN)
+	@$(RM) $(.L_GCNOFILES.WIN32)
+	@$(RM) $(.L_GCNOFILES.WIN64)
+	@$(RM) $(.L_GCNOFILES.GBA)
+	@$(RM) $(.L_GCNOFILES.IBMPC)
+	@$(RM) $(.L_GCNOFILES.APE)
+	@$(RM) $(.L_GCDAFILES.COMMON)
+	@$(RM) $(.L_GCDAFILES.LINUX)
+	@$(RM) $(.L_GCDAFILES.DARWIN)
+	@$(RM) $(.L_GCDAFILES.WIN32)
+	@$(RM) $(.L_GCDAFILES.WIN64)
+	@$(RM) $(.L_GCDAFILES.GBA)
+	@$(RM) $(.L_GCDAFILES.IBMPC)
+	@$(RM) $(.L_GCDAFILES.APE)
+
+# Auto-format the sources.
+
+format: $(CFILES) $(CPPFILES) $(HFILES) $(HPPFILES) $(PUBHFILES) \
+$(PRVHFILES) $(CFILES.LINUX) $(CPPFILES.LINUX) \
+$(CFILES.DARWIN) $(CPPFILES.DARWIN) \
+$(CFILES.WIN32) $(CPPFILES.WIN32) \
+$(CFILES.WIN64) $(CPPFILES.WIN64) \
+$(CFILES.GBA) $(CPPFILES.GBA) \
+$(CFILES.IBMPC) $(CPPFILES.IBMPC) \
+$(CFILES.APE) $(CPPFILES.APE)
+	@for _file in $^; do \
+		$(call _FileNoAt,FMT,$$_file) ; \
+		$(FMT) -i -style=file $$_file ; \
+	done
+	@unset _file
+
+# Install the software into the system.
+
+install: $(TARGETS)
+	-[ -n "$(EXEFILE)" ] && $(INSTALL) -Dm755 $(EXETARGET) $(PREFIX)/bin/$(EXETARGET)
+	-[ -n "$(SOFILE)" ] && $(INSTALL) -Dm755 $(SOTARGET) $(PREFIX)/lib/$(SOTARGET)
+	-[ -n "$(AFILE)" ] && $(INSTALL) -Dm644 $(ATARGET) $(PREFIX)/lib/$(ATARGET)
+	for _file in $(PUBHFILES); do \
+	$(CP) -rp --parents $$_file $(PREFIX)/; done
+	unset _file
+
+# EOF
