@@ -9,9 +9,12 @@
 *.gcno
 *.gcda
 *.a
-*.so
+*.lib
+*.so*
 *.dylib
 *.exe
+*.com
+*.out
 *.dll
 *.gba
 *.agb
