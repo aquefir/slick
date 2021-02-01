@@ -13,6 +13,62 @@ The build system does not work properly with GNU Make $(MAKE_VERSION). \
 Please use GNU Make 3.82 or later)
 endif
 
+## Slick environment variables.
+# Here, base.mk normalises their values, so they are always defined to either
+# 0 or 1 depending on if the user set them.
+
+# SLICK_PRINT : If set, targets.mk will print out all of the variables as set
+# during build.
+
+# Inspect the origin of the new variable.
+# If it is undefined or set by default, say so. Otherwise it was customised.
+# The “.O_” prefix denotes “origin” and is to prevent naming collisions.
+ifeq ($(origin SLICK_PRINT),undefined)
+.O_SLICK_PRINT := DEFAULT
+else ifeq ($(origin SLICK_PRINT),default)
+.O_SLICK_PRINT := DEFAULT
+else
+# environment [override], file, command line, override, automatic
+.O_SLICK_PRINT := CUSTOM
+endif # $(origin SLICK_PRINT)
+
+# Set the origin-dependent values of the new variable.
+SLICK_PRINT.O_DEFAULT := 0
+SLICK_PRINT.O_CUSTOM := 1
+
+# Notify the user that SLICK_NOPRINT is deprecated and ineffectual.
+
+ifdef SLICK_NOPRINT
+$(warning SLICK_NOPRINT is deprecated. Please use SLICK_PRINT to see the \
+build settings printout. This option has no effect.)
+endif
+
+# Finally, set the variable.
+override SLICK_PRINT := $(SLICK_PRINT.O_$(.O_SLICK_PRINT))
+
+# SLICK_OVERRIDE : If set, targets.mk will take user-set *FLAGS variables as
+# the entirety of the flags, instead of appending them to the default *FLAGS,
+# the default behaviour.
+
+# Inspect the origin of the new variable.
+# If it is undefined or set by default, say so. Otherwise it was customised.
+# The “.O_” prefix denotes “origin” and is to prevent naming collisions.
+ifeq ($(origin SLICK_OVERRIDE),undefined)
+.O_SLICK_OVERRIDE := DEFAULT
+else ifeq ($(origin SLICK_OVERRIDE),default)
+.O_SLICK_OVERRIDE := DEFAULT
+else
+# environment [override], file, command line, override, automatic
+.O_SLICK_OVERRIDE := CUSTOM
+endif # $(origin SLICK_OVERRIDE)
+
+# Set the origin-dependent values of the new variable.
+SLICK_OVERRIDE.O_DEFAULT := 0
+SLICK_OVERRIDE.O_CUSTOM := 1
+
+# Finally, set the variable.
+override SLICK_OVERRIDE := $(SLICK_OVERRIDE.O_$(.O_SLICK_OVERRIDE))
+
 ## Host platform.
 
 # The “.K_” prefix denotes “[k]onstant” and is to prevent naming collisions.
@@ -366,16 +422,32 @@ ARFLAGS.COMMON := -rcs
 
 LDFLAGS.COMMON.LINUX.GNU    := -fPIE
 LDFLAGS.COMMON.LINUX.LLVM   := -fPIE
-LDFLAGS.COMMON.LINUX.XCODE  := -fPIE
 LDFLAGS.COMMON.DARWIN.GNU   := -fPIE
 LDFLAGS.COMMON.DARWIN.LLVM  := -fPIE
 LDFLAGS.COMMON.DARWIN.XCODE := -fPIE
 LDFLAGS.COMMON.WIN32.GNU    := -fPIE
-LDFLAGS.COMMON.WIN32.LLVM   := -fPIE
-LDFLAGS.COMMON.WIN32.XCODE  := -fPIE
 LDFLAGS.COMMON.WIN64.GNU    := -fPIE
-LDFLAGS.COMMON.WIN64.LLVM   := -fPIE
-LDFLAGS.COMMON.WIN64.XCODE  := -fPIE
+LDFLAGS.COMMON.GBA.GNU      :=
+LDFLAGS.COMMON.IBMPC.GNU    :=
+LDFLAGS.COMMON.APE.GNU      :=
+
+# Synthetic definitions.
+# Form: SYNDEFS.<TARGET>
+# <TARGET> is one of $TP or $TARGET
+
+SYNDEFS.DARWIN := DARWIN AMD64 LILENDIAN WORDSZ_64 HAVE_I32 HAVE_I64 HAVE_FP \
+	FP_HARD FP_SOFT LONGSZ_64
+SYNDEFS.LINUX  := LINUX AMD64 LILENDIAN WORDSZ_64 HAVE_I32 HAVE_I64 HAVE_FP \
+	FP_HARD FP_SOFT LONGSZ_64
+SYNDEFS.WIN32  := WINDOWS IA32 LILENDIAN WORDSZ_32 HAVE_I32 HAVE_I64 HAVE_FP \
+	FP_HARD FP_SOFT LONGSZ_32 WIN32
+SYNDEFS.WIN64  := WINDOWS IA32 LILENDIAN WORDSZ_64 HAVE_I32 HAVE_I64 HAVE_FP \
+	FP_HARD FP_SOFT LONGSZ_32 WIN64
+SYNDEFS.GBA    := GBA ARMV4T LILENDIAN WORDSZ_32 HAVE_I32 HAVE_FP FP_SOFT \
+	LONGSZ_32
+SYNDEFS.IBMPC  := IBMPC I86 LILENDIAN WORDSZ_16
+SYNDEFS.APE    := APE AMD64 LILENDIAN WORDSZ_64 HAVE_I32 HAVE_I64 HAVE_FP \
+	FP_HARD FP_SOFT LONGSZ_64
 
 # Assembler.
 
@@ -586,3 +658,72 @@ LINT.O_CUSTOM := $(LINT)
 
 # Finally, set the variable.
 override LINT := $(LINT.O_$(.O_LINT))
+
+# Install command.
+
+# Inspect the origin of the new variable.
+# If it is undefined or set by default, say so. Otherwise it was customised.
+# The “.O_” prefix denotes “origin” and is to prevent naming collisions.
+ifeq ($(origin INSTALL),undefined)
+.O_INSTALL := DEFAULT
+else ifeq ($(origin INSTALL),default)
+.O_INSTALL := DEFAULT
+else
+# environment [override], file, command line, override, automatic
+.O_INSTALL := CUSTOM
+endif # $(origin INSTALL)
+
+# Set the origin-dependent values of the new variable.
+INSTALL.O_DEFAULT := $(INSTALL.$(.K_UNAME))
+INSTALL.O_CUSTOM := $(INSTALL)
+
+# Finally, set the variable.
+override INSTALL := $(INSTALL.O_$(.O_INSTALL))
+
+# Echo command.
+
+# Inspect the origin of the new variable.
+# If it is undefined or set by default, say so. Otherwise it was customised.
+# The “.O_” prefix denotes “origin” and is to prevent naming collisions.
+ifeq ($(origin ECHO),undefined)
+.O_ECHO := DEFAULT
+else ifeq ($(origin ECHO),default)
+.O_ECHO := DEFAULT
+else
+# environment [override], file, command line, override, automatic
+.O_ECHO := CUSTOM
+endif # $(origin ECHO)
+
+# Set the origin-dependent values of the new variable.
+ECHO.O_DEFAULT := $(ECHO.$(.K_UNAME))
+ECHO.O_CUSTOM := $(ECHO)
+
+# Finally, set the variable.
+override ECHO := $(ECHO.O_$(.O_ECHO))
+
+# Copy command (‘cp’).
+
+# Inspect the origin of the new variable.
+# If it is undefined or set by default, say so. Otherwise it was customised.
+# The “.O_” prefix denotes “origin” and is to prevent naming collisions.
+ifeq ($(origin CP),undefined)
+.O_CP := DEFAULT
+else ifeq ($(origin CP),default)
+.O_CP := DEFAULT
+else
+# environment [override], file, command line, override, automatic
+.O_CP := CUSTOM
+endif # $(origin CP)
+
+# Set the origin-dependent values of the new variable.
+CP.O_DEFAULT := $(CP.$(.K_UNAME))
+CP.O_CUSTOM := $(CP)
+
+# Finally, set the variable.
+override CP := $(CP.O_$(.O_CP))
+
+# Make builds deterministic when using LLVM or GNU C/C++ compilers.
+# These are the environment variables necessary; see CFLAGS and CXXFLAGS for
+# the command-line options that deterministic builds depend on.
+override SOURCE_DATE_EPOCH := 0
+override ZERO_AR_DATE      := 1
