@@ -311,12 +311,12 @@ EXE.APE    := .com
 # Form: ASFLAGS.<TARGET>.<TP>
 # Only GNU toolchain is supported. Darwin cannot be targeted.
 
-ASFLAGS.COMMON.LINUX := -march=x86_64
+ASFLAGS.COMMON.LINUX := -march=x86-64
 ASFLAGS.COMMON.WIN32 := -march=i386
-ASFLAGS.COMMON.WIN64 := -march=x86_64
+ASFLAGS.COMMON.WIN64 := -march=x86-64
 ASFLAGS.COMMON.GBA   := -march=armv4t -mcpu=arm7tdmi -mthumb-interwork -EL
 ASFLAGS.COMMON.IBMPC := -march=i386
-ASFLAGS.COMMON.APE   := -march=x86_64
+ASFLAGS.COMMON.APE   := -march=x86-64
 
 # C compiler flags.
 # Form: CFLAGS.<TARGET>.<TP>.<TC>
@@ -327,17 +327,17 @@ CFLAGS.COMMON.ALL.GNU      := -pipe -Wpedantic -x c -frandom-seed=69420
 CFLAGS.COMMON.ALL.LLVM     := -pipe -Wpedantic -x c -frandom-seed=69420
 CFLAGS.COMMON.ALL.XCODE    := -pipe -Wpedantic -x c -frandom-seed=69420
 CFLAGS.COMMON.ALL.TCC      := -Wpedantic
-CFLAGS.COMMON.LINUX.GNU    := -march=x86_64 -mtune=skylake -fPIC
-CFLAGS.COMMON.LINUX.LLVM   := -march=x86_64 -mtune=skylake -fPIC
+CFLAGS.COMMON.LINUX.GNU    := -march=x86-64 -mtune=skylake -fPIC
+CFLAGS.COMMON.LINUX.LLVM   := -march=x86-64 -mtune=skylake -fPIC
 CFLAGS.COMMON.DARWIN.GNU   := -march=ivybridge -mtune=skylake -fPIC
 CFLAGS.COMMON.DARWIN.LLVM  := -march=ivybridge -mtune=skylake -fPIC
 CFLAGS.COMMON.DARWIN.XCODE := -march=ivybridge -mtune=skylake -fPIC
 CFLAGS.COMMON.WIN32.GNU    := -march=i386 -mtune=skylake -fPIC
-CFLAGS.COMMON.WIN64.GNU    := -march=x86_64 -mtune=skylake -fPIC
+CFLAGS.COMMON.WIN64.GNU    := -march=x86-64 -mtune=skylake -fPIC
 CFLAGS.COMMON.GBA.GNU      := -march=armv4t -mcpu=arm7tdmi \
 	-mthumb-interwork -Wno-builtin-declaration-mismatch
-CFLAGS.COMMON.IBMPC.GNU    := -march=x86_64 -mtune=skylake
-CFLAGS.COMMON.APE.GNU      := -march=x86_64 -mtune=skylake
+CFLAGS.COMMON.IBMPC.GNU    := -march=x86-64 -mtune=skylake
+CFLAGS.COMMON.APE.GNU      := -march=x86-64 -mtune=skylake
 
 CFLAGS.DEBUG.ALL.GNU   := -O0 -g3 -Wall
 CFLAGS.DEBUG.ALL.LLVM  := -O0 -g3 -Wall
@@ -372,17 +372,17 @@ CFLAGS.UBSAN.ALL.XCODE := -O1 -g3 -fsanitize=undefined -fno-omit-frame-pointer
 CXXFLAGS.COMMON.ALL.GNU      := -pipe -Wpedantic -x c++ -frandom-seed=69420
 CXXFLAGS.COMMON.ALL.LLVM     := -pipe -Wpedantic -x c++ -frandom-seed=69420
 CXXFLAGS.COMMON.ALL.XCODE    := -pipe -Wpedantic -x c++ -frandom-seed=69420
-CXXFLAGS.COMMON.LINUX.GNU    := -march=x86_64 -mtune=skylake -fPIC
-CXXFLAGS.COMMON.LINUX.LLVM   := -march=x86_64 -mtune=skylake -fPIC
+CXXFLAGS.COMMON.LINUX.GNU    := -march=x86-64 -mtune=skylake -fPIC
+CXXFLAGS.COMMON.LINUX.LLVM   := -march=x86-64 -mtune=skylake -fPIC
 CXXFLAGS.COMMON.DARWIN.GNU   := -march=ivybridge -mtune=skylake -fPIC
 CXXFLAGS.COMMON.DARWIN.LLVM  := -march=ivybridge -mtune=skylake -fPIC
 CXXFLAGS.COMMON.DARWIN.XCODE := -march=ivybridge -mtune=skylake -fPIC
 CXXFLAGS.COMMON.WIN32.GNU    := -march=i386 -mtune=skylake -fPIC
-CXXFLAGS.COMMON.WIN64.GNU    := -march=x86_64 -mtune=skylake -fPIC
+CXXFLAGS.COMMON.WIN64.GNU    := -march=x86-64 -mtune=skylake -fPIC
 CXXFLAGS.COMMON.GBA.GNU      := -march=armv4t -mcpu=arm7tdmi \
 	-mthumb-interwork -Wno-builtin-declaration-mismatch
-CXXFLAGS.COMMON.IBMPC.GNU    := -march=x86_64 -mtune=skylake
-CXXFLAGS.COMMON.APE.GNU      := -march=x86_64 -mtune=skylake
+CXXFLAGS.COMMON.IBMPC.GNU    := -march=x86-64 -mtune=skylake
+CXXFLAGS.COMMON.APE.GNU      := -march=x86-64 -mtune=skylake
 
 CXXFLAGS.DEBUG.ALL.GNU   := -O0 -g3 -Wall
 CXXFLAGS.DEBUG.ALL.LLVM  := -O0 -g3 -Wall
