@@ -68,7 +68,7 @@ else
 	$(call .L_Item,$(20),Undefines) \
 	$(call .L_Item,$(21),Synthetics)
 endif
-.L_TPRINTOUT = $(call .L_PRINTOUT,.K_UNAME,TP,TC,TROOT,EXE,SO,FMT,AS,CC,CXX,
+.L_TPRINTOUT = $(call .L_PRINTOUT,.K_UNAME,TP,TC,TROOT,EXE,SO,FMT,AS,CC,CXX,\
 	AR,OCPY,STRIP,$(1),$(2),$(3),ARFLAGS,$(4),$(5),$(6),SYNDEFS)
 
 .L_File.C     := ---> \033[34mCompiling
@@ -535,7 +535,7 @@ debug: CXXFLAGS += $(CXXFLAGS.DEBUG.ALL.$(TC)) $(CXXFLAGS.DEBUG.$(TP).$(TC))
 debug: LDFLAGS += $(LDFLAGS.DEBUG.ALL.$(TC)) $(LDFLAGS.DEBUG.$(TP).$(TC))
 # nop out strip when not used, as $(REALSTRIP) is called unconditionally
 debug: REALSTRIP := ':' ; # : is a no-op
-debug: $(TARGETS)
+debug: $(.L_TARGETS)
 
 ## Release build
 ## useful for: deployment
@@ -553,7 +553,7 @@ release: CXXFLAGS += $(CXXFLAGS.RELEASE.ALL.$(TC)) \
 release: LDFLAGS += $(LDFLAGS.RELEASE.ALL.$(TC)) \
 	$(LDFLAGS.RELEASE.$(TP).$(TC))
 release: REALSTRIP := $(STRIP)
-release: $(TARGETS)
+release: $(.L_TARGETS)
 
 ## Sanity check build
 ## useful for: pre-tool bug squashing
@@ -567,7 +567,7 @@ check: CXXFLAGS += $(CXXFLAGS.CHECK.ALL.$(TC)) $(CXXFLAGS.CHECK.$(TP).$(TC))
 check: LDFLAGS += $(LDFLAGS.CHECK.ALL.$(TC)) $(LDFLAGS.CHECK.$(TP).$(TC))
 # nop out strip when not used, as $(REALSTRIP) is called unconditionally
 check: REALSTRIP := ':' ; # : is a no-op
-check: $(TARGETS)
+check: $(.L_TARGETS)
 
 ## Code coverage build
 ## useful for: checking coverage of test suite
@@ -583,7 +583,7 @@ cov: CXXFLAGS += $(CXXFLAGS.COV.ALL.$(TC)) $(CXXFLAGS.COV.$(TP).$(TC))
 cov: LDFLAGS += $(LDFLAGS.COV.ALL.$(TC)) $(LDFLAGS.COV.$(TP).$(TC))
 # nop out strip when not used, as $(REALSTRIP) is called unconditionally
 cov: REALSTRIP := ':' ; # : is a no-op
-cov: $(EXETARGET)
+cov: $(.L_EXETARGET)
 
 ## Address sanitised build
 ## useful for: squashing memory issues
@@ -599,7 +599,7 @@ asan: CXXFLAGS += $(CXXFLAGS.ASAN.ALL.$(TC)) $(CXXFLAGS.ASAN.$(TP).$(TC))
 asan: LDFLAGS += $(LDFLAGS.ASAN.ALL.$(TC)) $(LDFLAGS.ASAN.$(TP).$(TC))
 # nop out strip when not used, as $(REALSTRIP) is called unconditionally
 asan: REALSTRIP := ':' ; # : is a no-op
-asan: $(EXETARGET)
+asan: $(.L_EXETARGET)
 
 ## Undefined Behaviour sanitised build
 ## useful for: squashing UB :-)
@@ -615,7 +615,7 @@ ubsan: CXXFLAGS += $(CXXFLAGS.UBSAN.ALL.$(TC)) $(CXXFLAGS.UBSAN.$(TP).$(TC))
 ubsan: LDFLAGS += $(LDFLAGS.UBSAN.ALL.$(TC)) $(LDFLAGS.UBSAN.$(TP).$(TC))
 # nop out strip when not used, as $(REALSTRIP) is called unconditionally
 ubsan: REALSTRIP := ':' ; # : is a no-op
-ubsan: $(EXETARGET)
+ubsan: $(.L_EXETARGET)
 
 ## Define recipes.
 
@@ -639,7 +639,7 @@ ubsan: $(EXETARGET)
 
 # Static library recipe.
 
-$(ATARGET): $(.L_OFILES)
+$(.L_ATARGET): $(.L_OFILES)
 ifneq ($(strip $(.L_OFILES)),)
 	$(call _File,AR,$@)
 	@$(AR) $(ARFLAGS) $@ $^
@@ -648,7 +648,7 @@ endif
 
 # Shared library recipe.
 
-$(SOTARGET): $(.L_OFILES)
+$(.L_SOTARGET): $(.L_OFILES)
 ifneq ($(strip $(.L_OFILES)),)
 	$(call _File,LD,$@)
 	@$(LD) $(LDFLAGS) -shared -o $@ $^ $(LIB)
@@ -659,7 +659,7 @@ endif
 
 # Executable recipe.
 
-$(EXETARGET): $(.L_OFILES)
+$(.L_EXETARGET): $(.L_OFILES)
 ifneq ($(strip $(.L_OFILES)),)
 	$(call _File,LD,$@)
 	@$(LD) $(LDFLAGS) -o $@ $^ $(LIB)
