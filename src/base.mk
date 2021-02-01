@@ -16,6 +16,7 @@ endif
 ## Host platform.
 
 # The “.K_” prefix denotes “[k]onstant” and is to prevent naming collisions.
+# Capitalise the result text for use in variable interpolation later.
 .K_UNAME := $(shell uname -s | tr 'a-z' 'A-Z')
 
 ## Target platform.
@@ -56,10 +57,11 @@ endif # $(origin TC)
 # Set the host/target dependent values of the new variable.
 TC.DARWIN := LLVM
 TC.LINUX  := GNU
-TC.WIN32  := MINGW32
-TC.WIN64  := MINGW32
-TC.GBA    := DKARM
-TC.IBMPC  := DJGPP
+TC.WIN32  := GNU
+TC.WIN64  := GNU
+TC.GBA    := GNU
+TC.IBMPC  := GNU
+TC.APE    := GNU
 
 # Set the origin-dependent values of the new variable.
 TC.O_DEFAULT := $(TC.$(TP))
@@ -88,11 +90,13 @@ TROOT.DARWIN.WIN32  := /usr/local/i686-w64-mingw32
 TROOT.DARWIN.WIN64  := /usr/local/x86_64-w64-mingw32
 TROOT.DARWIN.GBA    := /usr/local/armv4t-agb-eabi
 TROOT.DARWIN.IBMPC  := /usr/local/i586-pc-msdosdjgpp
+TROOT.DARWIN.APE    := /usr/local/x86_64-pc-ape
 TROOT.LINUX.LINUX   := /usr
 TROOT.LINUX.WIN32   := /usr/i686-w64-mingw32
 TROOT.LINUX.WIN64   := /usr/x86_64-w64-mingw32
 TROOT.LINUX.GBA     := /usr/armv4t-agb-eabi
 TROOT.LINUX.IBMPC   := /usr/i586-pc-msdosdjgpp
+TROOT.LINUX.APE     := /usr/x86_64-pc-ape
 
 # Set the origin-dependent values of the new variable.
 TROOT.O_DEFAULT := $(TROOT.$(.K_UNAME).$(TP))
@@ -112,42 +116,70 @@ AR.DARWIN.DARWIN.LLVM    := /usr/local/opt/llvm/bin/llvm-ar
 OCPY.DARWIN.DARWIN.LLVM  := /usr/local/opt/llvm/bin/llvm-objcopy
 STRIP.DARWIN.DARWIN.LLVM := /usr/local/opt/llvm/bin/llvm-strip
 
+# Native, GNU
+AS.DARWIN.DARWIN.GNU    := /usr/local/opt/binutils/bin/as
+CC.DARWIN.DARWIN.GNU    := /usr/local/bin/gcc-9 # brew GCC
+CXX.DARWIN.DARWIN.GNU   := /usr/local/bin/g++-9
+AR.DARWIN.DARWIN.GNU    := /usr/local/opt/binutils/bin/ar
+OCPY.DARWIN.DARWIN.GNU  := /usr/local/opt/binutils/bin/objcopy
+STRIP.DARWIN.DARWIN.GNU := /usr/local/opt/binutils/bin/strip
+
 # Native, Xcode
-AS.DARWIN.DARWIN.XCODE    := /usr/bin/as      # Xcode
+#AS.DARWIN.DARWIN.XCODE   := There is no assembler in Xcode
 CC.DARWIN.DARWIN.XCODE    := /usr/bin/clang
 CXX.DARWIN.DARWIN.XCODE   := /usr/bin/clang++
 AR.DARWIN.DARWIN.XCODE    := /usr/bin/ar
-OCPY.DARWIN.DARWIN.XCODE  := /usr/bin/objcopy
+#OCPY.DARWIN.DARWIN.XCODE := There is no objcopy in Xcode
 STRIP.DARWIN.DARWIN.XCODE := /usr/bin/strip
 
 # 32-bit Windows
-AS.DARWIN.WIN32.MINGW32    := /usr/local/bin/i686-w64-mingw32-as
-CC.DARWIN.WIN32.MINGW32    := /usr/local/bin/i686-w64-mingw32-gcc
-CXX.DARWIN.WIN32.MINGW32   := /usr/local/bin/i686-w64-mingw32-g++
-AR.DARWIN.WIN32.MINGW32    := /usr/local/bin/i686-w64-mingw32-ar
-OCPY.DARWIN.WIN32.MINGW32  := /usr/local/bin/i686-w64-mingw32-objcopy
-STRIP.DARWIN.WIN32.MINGW32 := /usr/local/bin/i686-w64-mingw32-strip
+AS.DARWIN.WIN32.GNU    := /usr/local/bin/i686-w64-mingw32-as
+CC.DARWIN.WIN32.GNU    := /usr/local/bin/i686-w64-mingw32-gcc
+CXX.DARWIN.WIN32.GNU   := /usr/local/bin/i686-w64-mingw32-g++
+AR.DARWIN.WIN32.GNU    := /usr/local/bin/i686-w64-mingw32-ar
+OCPY.DARWIN.WIN32.GNU  := /usr/local/bin/i686-w64-mingw32-objcopy
+STRIP.DARWIN.WIN32.GNU := /usr/local/bin/i686-w64-mingw32-strip
 
 # 64-bit Windows
-AS.DARWIN.WIN64.MINGW32    := /usr/local/bin/x86_64-w64-mingw32-as
-CC.DARWIN.WIN64.MINGW32    := /usr/local/bin/x86_64-w64-mingw32-gcc
-CXX.DARWIN.WIN64.MINGW32   := /usr/local/bin/x86_64-w64-mingw32-g++
-AR.DARWIN.WIN64.MINGW32    := /usr/local/bin/x86_64-w64-mingw32-ar
-OCPY.DARWIN.WIN64.MINGW32  := /usr/local/bin/x86_64-w64-mingw32-objcopy
-STRIP.DARWIN.WIN64.MINGW32 := /usr/local/bin/x86_64-w64-mingw32-strip
+AS.DARWIN.WIN64.GNU    := /usr/local/bin/x86_64-w64-mingw32-as
+CC.DARWIN.WIN64.GNU    := /usr/local/bin/x86_64-w64-mingw32-gcc
+CXX.DARWIN.WIN64.GNU   := /usr/local/bin/x86_64-w64-mingw32-g++
+AR.DARWIN.WIN64.GNU    := /usr/local/bin/x86_64-w64-mingw32-ar
+OCPY.DARWIN.WIN64.GNU  := /usr/local/bin/x86_64-w64-mingw32-objcopy
+STRIP.DARWIN.WIN64.GNU := /usr/local/bin/x86_64-w64-mingw32-strip
 
 # Game Boy Advance
-AS.DARWIN.GBA.DKARM    := /opt/devkitpro/devkitARM/bin/arm-none-eabi-as
-CC.DARWIN.GBA.DKARM    := /opt/devkitpro/devkitARM/bin/arm-none-eabi-gcc
-CXX.DARWIN.GBA.DKARM   := /opt/devkitpro/devkitARM/bin/arm-none-eabi-g++
-AR.DARWIN.GBA.DKARM    := /opt/devkitpro/devkitARM/bin/arm-none-eabi-ar
-OCPY.DARWIN.GBA.DKARM  := /opt/devkitpro/devkitARM/bin/arm-none-eabi-objcopy
-STRIP.DARWIN.GBA.DKARM := /opt/devkitpro/devkitARM/bin/arm-none-eabi-strip
+AS.DARWIN.GBA.GNU    := /opt/devkitpro/devkitARM/bin/arm-none-eabi-as
+CC.DARWIN.GBA.GNU    := /opt/devkitpro/devkitARM/bin/arm-none-eabi-gcc
+CXX.DARWIN.GBA.GNU   := /opt/devkitpro/devkitARM/bin/arm-none-eabi-g++
+AR.DARWIN.GBA.GNU    := /opt/devkitpro/devkitARM/bin/arm-none-eabi-ar
+OCPY.DARWIN.GBA.GNU  := /opt/devkitpro/devkitARM/bin/arm-none-eabi-objcopy
+STRIP.DARWIN.GBA.GNU := /opt/devkitpro/devkitARM/bin/arm-none-eabi-strip
+
+# MS-DOS with DJGPP
+AS.DARWIN.IBMPC.GNU    := /usr/local/bin/i586-pc-msdosdjgpp-as
+CC.DARWIN.IBMPC.GNU    := /usr/local/bin/gcc-9 # brew GCC
+CXX.DARWIN.IBMPC.GNU   := /usr/local/bin/g++-9
+AR.DARWIN.IBMPC.GNU    := /usr/local/bin/i586-pc-msdosdjgpp-ar
+OCPY.DARWIN.IBMPC.GNU  := /usr/local/bin/i586-pc-msdosdjgpp-objcopy
+STRIP.DARWIN.IBMPC.GNU := /usr/local/bin/i586-pc-msdosdjgpp-strip
+
+# Actually Portable Executables
+AS.DARWIN.APE.GNU    := /usr/local/opt/binutils/bin/as # brew binutils
+CC.DARWIN.APE.GNU    := /usr/local/bin/gcc-9 # brew GCC
+CXX.DARWIN.APE.GNU   := /usr/local/bin/g++-9
+AR.DARWIN.APE.GNU    := /usr/local/opt/binutils/bin/ar
+OCPY.DARWIN.APE.GNU  := /usr/local/opt/binutils/bin/objcopy
+STRIP.DARWIN.APE.GNU := /usr/local/opt/binutils/bin/strip
 
 # Dev tools
-INSTALL.DARWIN := /usr/local/bin/ginstall
-ECHO.DARWIN := /usr/local/bin/gecho
-CP.DARWIN := /usr/local/bin/gcp
+PL.DARWIN      := /usr/local/bin/perl # brew perl
+PY.DARWIN      := /usr/local/bin/python3
+FMT.DARWIN     := /usr/local/bin/clang-format
+LINT.DARWIN    := /usr/local/bin/cppcheck
+INSTALL.DARWIN := /usr/local/bin/ginstall # GNU coreutils
+ECHO.DARWIN    := /usr/local/bin/gecho
+CP.DARWIN      := /usr/local/bin/gcp
 
 # Linux host
 
@@ -163,30 +195,394 @@ CXX.LINUX.LINUX.LLVM := /usr/bin/clang++
 AR.LINUX.LINUX.LLVM  := /usr/bin/ar
 
 # 32-bit Windows
-AS.LINUX.WIN32.MINGW32    := /usr/bin/i686-w64-mingw32-as
-CC.LINUX.WIN32.MINGW32    := /usr/bin/i686-w64-mingw32-gcc
-CXX.LINUX.WIN32.MINGW32   := /usr/bin/i686-w64-mingw32-g++
-AR.LINUX.WIN32.MINGW32    := /usr/bin/i686-w64-mingw32-ar
-OCPY.LINUX.WIN32.MINGW32  := /usr/bin/i686-w64-mingw32-objcopy
-STRIP.LINUX.WIN32.MINGW32 := /usr/bin/i686-w64-mingw32-strip
+AS.LINUX.WIN32.GNU    := /usr/bin/i686-w64-mingw32-as
+CC.LINUX.WIN32.GNU    := /usr/bin/i686-w64-mingw32-gcc
+CXX.LINUX.WIN32.GNU   := /usr/bin/i686-w64-mingw32-g++
+AR.LINUX.WIN32.GNU    := /usr/bin/i686-w64-mingw32-ar
+OCPY.LINUX.WIN32.GNU  := /usr/bin/i686-w64-mingw32-objcopy
+STRIP.LINUX.WIN32.GNU := /usr/bin/i686-w64-mingw32-strip
 
 # 64-bit Windows
-AS.LINUX.WIN64.MINGW32    := /usr/bin/x86_64-w64-mingw32-as
-CC.LINUX.WIN64.MINGW32    := /usr/bin/x86_64-w64-mingw32-gcc
-CXX.LINUX.WIN64.MINGW32   := /usr/bin/x86_64-w64-mingw32-g++
-AR.LINUX.WIN64.MINGW32    := /usr/bin/x86_64-w64-mingw32-ar
-OCPY.LINUX.WIN64.MINGW32  := /usr/bin/x86_64-w64-mingw32-objcopy
-STRIP.LINUX.WIN64.MINGW32 := /usr/bin/x86_64-w64-mingw32-strip
+AS.LINUX.WIN64.GNU    := /usr/bin/x86_64-w64-mingw32-as
+CC.LINUX.WIN64.GNU    := /usr/bin/x86_64-w64-mingw32-gcc
+CXX.LINUX.WIN64.GNU   := /usr/bin/x86_64-w64-mingw32-g++
+AR.LINUX.WIN64.GNU    := /usr/bin/x86_64-w64-mingw32-ar
+OCPY.LINUX.WIN64.GNU  := /usr/bin/x86_64-w64-mingw32-objcopy
+STRIP.LINUX.WIN64.GNU := /usr/bin/x86_64-w64-mingw32-strip
 
 # Game Boy Advance
-AS.DARWIN.GBA.DKARM    := /opt/devkitpro/devkitARM/bin/arm-none-eabi-as
-CC.DARWIN.GBA.DKARM    := /opt/devkitpro/devkitARM/bin/arm-none-eabi-gcc
-CXX.DARWIN.GBA.DKARM   := /opt/devkitpro/devkitARM/bin/arm-none-eabi-g++
-AR.DARWIN.GBA.DKARM    := /opt/devkitpro/devkitARM/bin/arm-none-eabi-ar
-OCPY.DARWIN.GBA.DKARM  := /opt/devkitpro/devkitARM/bin/arm-none-eabi-objcopy
-STRIP.DARWIN.GBA.DKARM := /opt/devkitpro/devkitARM/bin/arm-none-eabi-strip
+AS.DARWIN.GBA.GNU    := /opt/devkitpro/devkitARM/bin/arm-none-eabi-as
+CC.DARWIN.GBA.GNU    := /opt/devkitpro/devkitARM/bin/arm-none-eabi-gcc
+CXX.DARWIN.GBA.GNU   := /opt/devkitpro/devkitARM/bin/arm-none-eabi-g++
+AR.DARWIN.GBA.GNU    := /opt/devkitpro/devkitARM/bin/arm-none-eabi-ar
+OCPY.DARWIN.GBA.GNU  := /opt/devkitpro/devkitARM/bin/arm-none-eabi-objcopy
+STRIP.DARWIN.GBA.GNU := /opt/devkitpro/devkitARM/bin/arm-none-eabi-strip
 
 # Dev tools
-INSTALL.LINUX  := /usr/bin/install
-ECHO.LINUX  := /bin/echo
-CP.LINUX  := /usr/bin/cp
+PL.LINUX      := /usr/bin/perl
+PY.LINUX      := /usr/bin/python3
+FMT.LINUX     := /usr/bin/clang-format
+LINT.LINUX    := /usr/bin/cppcheck
+INSTALL.LINUX := /usr/bin/install
+ECHO.LINUX    := /bin/echo # Not a bashism
+CP.LINUX      := /usr/bin/cp # Not a bashism
+
+## Suffixes.
+
+# Shared libraries.
+
+SO.LINUX  := .so
+SO.DARWIN := .dylib
+SO.WIN32  := .dll
+SO.WIN64  := .dll
+#SO.GBA   := GBA does not have shared libraries.
+#SO.IBMPC := IBMPC does not have shared libraries.
+#SO.APE   := APE does not have shared libraries.
+
+# Executables.
+
+EXE.LINUX  :=
+EXE.DARWIN :=
+EXE.WIN32  := .exe
+EXE.WIN64  := .exe
+EXE.GBA    := .elf
+EXE.IBMPC  := .com
+EXE.APE    := .com
+
+## Flags.
+
+# Assembler flags.
+# Form: ASFLAGS.<TARGET>.<TP>
+# Only GNU toolchain is supported. Darwin cannot be targeted.
+
+ASFLAGS.COMMON.LINUX := -march=x86_64
+ASFLAGS.COMMON.WIN32 := -march=i386
+ASFLAGS.COMMON.WIN64 := -march=x86_64
+ASFLAGS.COMMON.GBA   := -march=armv4t -mcpu=arm7tdmi -mthumb-interwork -EL
+ASFLAGS.COMMON.IBMPC := -march=i386
+ASFLAGS.COMMON.APE   := -march=x86_64
+
+# C compiler flags.
+# Form: CFLAGS.<TARGET>.<TP>.<TC>
+# NOTE: $TC uses a modified set to include 3rd party C compiler support.
+#       This includes CHIBI and TCC as additional values.
+
+CFLAGS.COMMON.ALL.GNU      := -pipe -Wpedantic -x c -frandom-seed=69420
+CFLAGS.COMMON.ALL.LLVM     := -pipe -Wpedantic -x c -frandom-seed=69420
+CFLAGS.COMMON.ALL.XCODE    := -pipe -Wpedantic -x c -frandom-seed=69420
+CFLAGS.COMMON.ALL.TCC      := -Wpedantic
+CFLAGS.COMMON.LINUX.GNU    := -march=x86_64 -mtune=skylake -fPIC
+CFLAGS.COMMON.LINUX.LLVM   := -march=x86_64 -mtune=skylake -fPIC
+CFLAGS.COMMON.DARWIN.GNU   := -march=ivybridge -mtune=skylake -fPIC
+CFLAGS.COMMON.DARWIN.LLVM  := -march=ivybridge -mtune=skylake -fPIC
+CFLAGS.COMMON.DARWIN.XCODE := -march=ivybridge -mtune=skylake -fPIC
+CFLAGS.COMMON.WIN32.GNU    := -march=i386 -mtune=skylake -fPIC
+CFLAGS.COMMON.WIN64.GNU    := -march=x86_64 -mtune=skylake -fPIC
+CFLAGS.COMMON.GBA.GNU      := -march=armv4t -mcpu=arm7tdmi \
+	-mthumb-interwork -Wno-builtin-declaration-mismatch
+CFLAGS.COMMON.IBMPC.GNU    := -march=x86_64 -mtune=skylake
+CFLAGS.COMMON.APE.GNU      := -march=x86_64 -mtune=skylake
+
+CFLAGS.DEBUG.ALL.GNU   := -O0 -g3 -Wall
+CFLAGS.DEBUG.ALL.LLVM  := -O0 -g3 -Wall
+CFLAGS.DEBUG.ALL.XCODE := -O0 -g3 -Wall
+CFLAGS.DEBUG.ALL.TCC   := -g -Wall
+
+CFLAGS.RELEASE.ALL.GNU   := -O3 -w
+CFLAGS.RELEASE.ALL.LLVM  := -O3 -w
+CFLAGS.RELEASE.ALL.XCODE := -O3 -w
+CFLAGS.RELEASE.ALL.TCC   := -w
+
+CFLAGS.CHECK.ALL.GNU   := -Wextra -Werror -Wno-unused-variable
+CFLAGS.CHECK.ALL.LLVM  := -Wextra -Werror -Wno-unused-variable
+CFLAGS.CHECK.ALL.XCODE := -Wextra -Werror -Wno-unused-variable
+CFLAGS.CHECK.ALL.TCC   := -Wextra -Werror -Wno-unused-variable
+
+CFLAGS.COV.ALL.GNU   := -O0 -g3 -fprofile-arcs -ftest-coverage
+CFLAGS.COV.ALL.LLVM  := -O0 -g3 -fprofile-arcs -ftest-coverage
+CFLAGS.COV.ALL.XCODE := -O0 -g3 -fprofile-arcs -ftest-coverage
+
+CFLAGS.ASAN.ALL.GNU   := -O1 -g3 -fsanitize=address -fno-omit-frame-pointer
+CFLAGS.ASAN.ALL.LLVM  := -O1 -g3 -fsanitize=address -fno-omit-frame-pointer
+CFLAGS.ASAN.ALL.XCODE := -O1 -g3 -fsanitize=address -fno-omit-frame-pointer
+
+CFLAGS.UBSAN.ALL.GNU   := -O1 -g3 -fsanitize=undefined -fno-omit-frame-pointer
+CFLAGS.UBSAN.ALL.LLVM  := -O1 -g3 -fsanitize=undefined -fno-omit-frame-pointer
+CFLAGS.UBSAN.ALL.XCODE := -O1 -g3 -fsanitize=undefined -fno-omit-frame-pointer
+
+# C++ compiler flags.
+# Form: CXXFLAGS.<TARGET>.<TP>.<TC>
+
+CXXFLAGS.COMMON.ALL.GNU      := -pipe -Wpedantic -x c++ -frandom-seed=69420
+CXXFLAGS.COMMON.ALL.LLVM     := -pipe -Wpedantic -x c++ -frandom-seed=69420
+CXXFLAGS.COMMON.ALL.XCODE    := -pipe -Wpedantic -x c++ -frandom-seed=69420
+CXXFLAGS.COMMON.LINUX.GNU    := -march=x86_64 -mtune=skylake -fPIC
+CXXFLAGS.COMMON.LINUX.LLVM   := -march=x86_64 -mtune=skylake -fPIC
+CXXFLAGS.COMMON.DARWIN.GNU   := -march=ivybridge -mtune=skylake -fPIC
+CXXFLAGS.COMMON.DARWIN.LLVM  := -march=ivybridge -mtune=skylake -fPIC
+CXXFLAGS.COMMON.DARWIN.XCODE := -march=ivybridge -mtune=skylake -fPIC
+CXXFLAGS.COMMON.WIN32.GNU    := -march=i386 -mtune=skylake -fPIC
+CXXFLAGS.COMMON.WIN64.GNU    := -march=x86_64 -mtune=skylake -fPIC
+CXXFLAGS.COMMON.GBA.GNU      := -march=armv4t -mcpu=arm7tdmi \
+	-mthumb-interwork -Wno-builtin-declaration-mismatch
+CXXFLAGS.COMMON.IBMPC.GNU    := -march=x86_64 -mtune=skylake
+CXXFLAGS.COMMON.APE.GNU      := -march=x86_64 -mtune=skylake
+
+CXXFLAGS.DEBUG.ALL.GNU   := -O0 -g3 -Wall
+CXXFLAGS.DEBUG.ALL.LLVM  := -O0 -g3 -Wall
+CXXFLAGS.DEBUG.ALL.XCODE := -O0 -g3 -Wall
+
+CXXFLAGS.RELEASE.ALL.GNU   := -O3 -w
+CXXFLAGS.RELEASE.ALL.LLVM  := -O3 -w
+CXXFLAGS.RELEASE.ALL.XCODE := -O3 -w
+
+CXXFLAGS.CHECK.ALL.GNU   := -Wextra -Werror -Wno-unused-variable
+CXXFLAGS.CHECK.ALL.LLVM  := -Wextra -Werror -Wno-unused-variable
+CXXFLAGS.CHECK.ALL.XCODE := -Wextra -Werror -Wno-unused-variable
+CXXFLAGS.CHECK.ALL.TCC   := -Wextra -Werror -Wno-unused-variable
+
+CXXFLAGS.COV.ALL.GNU   := -O0 -g3 -fprofile-arcs -ftest-coverage
+CXXFLAGS.COV.ALL.LLVM  := -O0 -g3 -fprofile-arcs -ftest-coverage
+CXXFLAGS.COV.ALL.XCODE := -O0 -g3 -fprofile-arcs -ftest-coverage
+
+CXXFLAGS.ASAN.ALL.GNU   := -O1 -g3 -fsanitize=address -fno-omit-frame-pointer
+CXXFLAGS.ASAN.ALL.LLVM  := -O1 -g3 -fsanitize=address -fno-omit-frame-pointer
+CXXFLAGS.ASAN.ALL.XCODE := -O1 -g3 -fsanitize=address -fno-omit-frame-pointer
+
+CXXFLAGS.UBSAN.ALL.GNU   := -O1 -g3 -fsanitize=undefined \
+	-fno-omit-frame-pointer
+CXXFLAGS.UBSAN.ALL.LLVM  := -O1 -g3 -fsanitize=undefined \
+	-fno-omit-frame-pointer
+CXXFLAGS.UBSAN.ALL.XCODE := -O1 -g3 -fsanitize=undefined \
+	-fno-omit-frame-pointer
+
+# Archiver flags.
+# Form: ARFLAGS.COMMON
+
+ARFLAGS.COMMON := -rcs
+
+# Linker flags.
+# Form: LDFLAGS.<TARGET>.<TP>.<TC>
+
+LDFLAGS.COMMON.LINUX.GNU    := -fPIE
+LDFLAGS.COMMON.LINUX.LLVM   := -fPIE
+LDFLAGS.COMMON.LINUX.XCODE  := -fPIE
+LDFLAGS.COMMON.DARWIN.GNU   := -fPIE
+LDFLAGS.COMMON.DARWIN.LLVM  := -fPIE
+LDFLAGS.COMMON.DARWIN.XCODE := -fPIE
+LDFLAGS.COMMON.WIN32.GNU    := -fPIE
+LDFLAGS.COMMON.WIN32.LLVM   := -fPIE
+LDFLAGS.COMMON.WIN32.XCODE  := -fPIE
+LDFLAGS.COMMON.WIN64.GNU    := -fPIE
+LDFLAGS.COMMON.WIN64.LLVM   := -fPIE
+LDFLAGS.COMMON.WIN64.XCODE  := -fPIE
+
+# Assembler.
+
+# Inspect the origin of the new variable.
+# If it is undefined or set by default, say so. Otherwise it was customised.
+# The “.O_” prefix denotes “origin” and is to prevent naming collisions.
+ifeq ($(origin AS),undefined)
+.O_AS := DEFAULT
+else ifeq ($(origin AS),default)
+.O_AS := DEFAULT
+else
+# environment [override], file, command line, override, automatic
+.O_AS := CUSTOM
+endif # $(origin AS)
+
+# Set the origin-dependent values of the new variable.
+AS.O_DEFAULT := $(AS.$(.K_UNAME).$(TP).$(TC))
+AS.O_CUSTOM := $(AS)
+
+# Finally, set the variable.
+override AS := $(AS.O_$(.O_AS))
+
+# C compiler.
+
+# Inspect the origin of the new variable.
+# If it is undefined or set by default, say so. Otherwise it was customised.
+# The “.O_” prefix denotes “origin” and is to prevent naming collisions.
+ifeq ($(origin CC),undefined)
+.O_CC := DEFAULT
+else ifeq ($(origin CC),default)
+.O_CC := DEFAULT
+else
+# environment [override], file, command line, override, automatic
+.O_CC := CUSTOM
+endif # $(origin CC)
+
+# Set the origin-dependent values of the new variable.
+CC.O_DEFAULT := $(CC.$(.K_UNAME).$(TP).$(TC))
+CC.O_CUSTOM := $(CC)
+
+# Finally, set the variable.
+override CC := $(CC.O_$(.O_CC))
+
+# C++ compiler.
+
+# Inspect the origin of the new variable.
+# If it is undefined or set by default, say so. Otherwise it was customised.
+# The “.O_” prefix denotes “origin” and is to prevent naming collisions.
+ifeq ($(origin CXX),undefined)
+.O_CXX := DEFAULT
+else ifeq ($(origin CXX),default)
+.O_CXX := DEFAULT
+else
+# environment [override], file, command line, override, automatic
+.O_CXX := CUSTOM
+endif # $(origin CXX)
+
+# Set the origin-dependent values of the new variable.
+CXX.O_DEFAULT := $(CXX.$(.K_UNAME).$(TP).$(TC))
+CXX.O_CUSTOM := $(CXX)
+
+# Finally, set the variable.
+override CXX := $(CXX.O_$(.O_CXX))
+
+# Static archiver.
+
+# Inspect the origin of the new variable.
+# If it is undefined or set by default, say so. Otherwise it was customised.
+# The “.O_” prefix denotes “origin” and is to prevent naming collisions.
+ifeq ($(origin AR),undefined)
+.O_AR := DEFAULT
+else ifeq ($(origin AR),default)
+.O_AR := DEFAULT
+else
+# environment [override], file, command line, override, automatic
+.O_AR := CUSTOM
+endif # $(origin AR)
+
+# Set the origin-dependent values of the new variable.
+AR.O_DEFAULT := $(AR.$(.K_UNAME).$(TP).$(TC))
+AR.O_CUSTOM := $(AR)
+
+# Finally, set the variable.
+override AR := $(AR.O_$(.O_AR))
+
+# Object file copier.
+
+# Inspect the origin of the new variable.
+# If it is undefined or set by default, say so. Otherwise it was customised.
+# The “.O_” prefix denotes “origin” and is to prevent naming collisions.
+ifeq ($(origin OCPY),undefined)
+.O_OCPY := DEFAULT
+else ifeq ($(origin OCPY),default)
+.O_OCPY := DEFAULT
+else
+# environment [override], file, command line, override, automatic
+.O_OCPY := CUSTOM
+endif # $(origin OCPY)
+
+# Set the origin-dependent values of the new variable.
+OCPY.O_DEFAULT := $(OCPY.$(.K_UNAME).$(TP).$(TC))
+OCPY.O_CUSTOM := $(OCPY)
+
+# Finally, set the variable.
+override OCPY := $(OCPY.O_$(.O_OCPY))
+
+# Stripper.
+
+# Inspect the origin of the new variable.
+# If it is undefined or set by default, say so. Otherwise it was customised.
+# The “.O_” prefix denotes “origin” and is to prevent naming collisions.
+ifeq ($(origin STRIP),undefined)
+.O_STRIP := DEFAULT
+else ifeq ($(origin STRIP),default)
+.O_STRIP := DEFAULT
+else
+# environment [override], file, command line, override, automatic
+.O_STRIP := CUSTOM
+endif # $(origin STRIP)
+
+# Set the origin-dependent values of the new variable.
+STRIP.O_DEFAULT := $(STRIP.$(.K_UNAME).$(TP).$(TC))
+STRIP.O_CUSTOM := $(STRIP)
+
+# Finally, set the variable.
+override STRIP := $(STRIP.O_$(.O_STRIP))
+
+# Perl 5 interpreter.
+
+# Inspect the origin of the new variable.
+# If it is undefined or set by default, say so. Otherwise it was customised.
+# The “.O_” prefix denotes “origin” and is to prevent naming collisions.
+ifeq ($(origin PL),undefined)
+.O_PL := DEFAULT
+else ifeq ($(origin PL),default)
+.O_PL := DEFAULT
+else
+# environment [override], file, command line, override, automatic
+.O_PL := CUSTOM
+endif # $(origin PL)
+
+# Set the origin-dependent values of the new variable.
+PL.O_DEFAULT := $(PL.$(.K_UNAME))
+PL.O_CUSTOM := $(PL)
+
+# Finally, set the variable.
+override PL := $(PL.O_$(.O_PL))
+
+# Python 3.4+ interpreter.
+
+# Inspect the origin of the new variable.
+# If it is undefined or set by default, say so. Otherwise it was customised.
+# The “.O_” prefix denotes “origin” and is to prevent naming collisions.
+ifeq ($(origin PY),undefined)
+.O_PY := DEFAULT
+else ifeq ($(origin PY),default)
+.O_PY := DEFAULT
+else
+# environment [override], file, command line, override, automatic
+.O_PY := CUSTOM
+endif # $(origin PY)
+
+# Set the origin-dependent values of the new variable.
+PY.O_DEFAULT := $(PY.$(.K_UNAME))
+PY.O_CUSTOM := $(PY)
+
+# Finally, set the variable.
+override PY := $(PY.O_$(.O_PY))
+
+# Auto-formatter.
+
+# Inspect the origin of the new variable.
+# If it is undefined or set by default, say so. Otherwise it was customised.
+# The “.O_” prefix denotes “origin” and is to prevent naming collisions.
+ifeq ($(origin FMT),undefined)
+.O_FMT := DEFAULT
+else ifeq ($(origin FMT),default)
+.O_FMT := DEFAULT
+else
+# environment [override], file, command line, override, automatic
+.O_FMT := CUSTOM
+endif # $(origin FMT)
+
+# Set the origin-dependent values of the new variable.
+FMT.O_DEFAULT := $(FMT.$(.K_UNAME))
+FMT.O_CUSTOM := $(FMT)
+
+# Finally, set the variable.
+override FMT := $(FMT.O_$(.O_FMT))
+
+# Linter.
+
+# Inspect the origin of the new variable.
+# If it is undefined or set by default, say so. Otherwise it was customised.
+# The “.O_” prefix denotes “origin” and is to prevent naming collisions.
+ifeq ($(origin LINT),undefined)
+.O_LINT := DEFAULT
+else ifeq ($(origin LINT),default)
+.O_LINT := DEFAULT
+else
+# environment [override], file, command line, override, automatic
+.O_LINT := CUSTOM
+endif # $(origin LINT)
+
+# Set the origin-dependent values of the new variable.
+LINT.O_DEFAULT := $(LINT.$(.K_UNAME))
+LINT.O_CUSTOM := $(LINT)
+
+# Finally, set the variable.
+override LINT := $(LINT.O_$(.O_LINT))
