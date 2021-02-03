@@ -38,7 +38,6 @@ else
 .L_TAG.DEFAULT := [default]
 .L_TAG.CUSTOM  := [custom!]
 .L_Item = $(info $(.L_TAG.$($(1)_ORIGIN)) $(2) :: $($(1)))
-.L_Soitem = $(call _Item,$(1),Shared library ext.)
 
 .L_PRINTOUT = \
 	$(info =====) \
@@ -643,7 +642,7 @@ ubsan: $(.L_EXETARGET)
 
 $(.L_ATARGET): $(.L_OFILES)
 ifneq ($(strip $(.L_OFILES)),)
-	$(call _File,AR,$@)
+	$(call .L_File,AR,$@)
 	@$(AR) $(ARFLAGS) $@ $^
 	$(call TPRINTOUT,ASFLAGS,CFLAGS,CXXFLAGS,LDFLAGS,DEFINES,UNDEFINES)
 endif
@@ -652,9 +651,9 @@ endif
 
 $(.L_SOTARGET): $(.L_OFILES)
 ifneq ($(strip $(.L_OFILES)),)
-	$(call _File,LD,$@)
+	$(call .L_File,LD,$@)
 	@$(LD) $(LDFLAGS) -shared -o $@ $^ $(LIB)
-	$(call _File,STRIP,$@)
+	$(call .L_File,STRIP,$@)
 	@$(REALSTRIP) -s $@
 	$(call TPRINTOUT,ASFLAGS,CFLAGS,CXXFLAGS,LDFLAGS,DEFINES,UNDEFINES)
 endif
@@ -663,9 +662,9 @@ endif
 
 $(.L_EXETARGET): $(.L_OFILES)
 ifneq ($(strip $(.L_OFILES)),)
-	$(call _File,LD,$@)
+	$(call .L_File,LD,$@)
 	@$(LD) $(LDFLAGS) -o $@ $^ $(LIB)
-	$(call _File,STRIP,$@)
+	$(call .L_File,STRIP,$@)
 	@$(REALSTRIP) -s $@
 	$(call TPRINTOUT,ASFLAGS,CFLAGS,CXXFLAGS,LDFLAGS,DEFINES,UNDEFINES)
 endif
@@ -674,9 +673,9 @@ endif
 
 $(GBATARGET): $(EXETARGET)
 ifeq ($(strip $(TP)),GBA)
-	$(call _File,OCPY,$@)
+	$(call .L_File,OCPY,$@)
 	@$(OCPY) -O binary $< $@
-	$(call _File,FIX,$@)
+	$(call .L_File,FIX,$@)
 	@$(FIX) $@ $(FIXFLAGS) 1>/dev/null
 endif
 
@@ -723,7 +722,7 @@ $(CFILES.GBA) $(CPPFILES.GBA) \
 $(CFILES.IBMPC) $(CPPFILES.IBMPC) \
 $(CFILES.APE) $(CPPFILES.APE)
 	@for _file in $^; do \
-		$(call _FileNoAt,FMT,$$_file) ; \
+		$(call .L_FileNoAt,FMT,$$_file) ; \
 		$(FMT) -i -style=file $$_file ; \
 	done
 	@unset _file
