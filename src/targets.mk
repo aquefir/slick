@@ -1,5 +1,7 @@
 #!/usr/bin/make
 # -*- coding: utf-8 -*-
+## Copyright © 2020-2021 Aquefir.
+## Released under BSD-2-Clause.
 ## This Makefile provides the bodies of a variety of build targets (or
 ## ‘recipes’) normally used in building native executables and libraries.
 ## These include: debug, release, sanity check, code coverage, and address

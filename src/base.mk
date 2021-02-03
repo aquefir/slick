@@ -1,5 +1,7 @@
 #!/usr/bin/make
 # -*- coding: utf-8 -*-
+## Copyright © 2020-2021 Aquefir.
+## Released under BSD-2-Clause.
 ## This Makefile provides multi-platform build normalisation for the C and C++
 ## compilation toolchains. It is included at the top of the main Makefile.
 ## Read <https://aquefir.co/slick/makefiles> for details.
