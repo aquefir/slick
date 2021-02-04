@@ -729,6 +729,9 @@ $(CFILES.APE) $(CPPFILES.APE)
 
 # Install the software into the system.
 
+# temporary fix
+PREFIX ?= /usr
+
 install: $(TARGETS)
 	-[ -n "$(EXEFILE)" ] && $(INSTALL) -Dm755 $(EXETARGET) $(PREFIX)/bin/$(EXETARGET)
 	-[ -n "$(SOFILE)" ] && $(INSTALL) -Dm755 $(SOTARGET) $(PREFIX)/lib/$(SOTARGET)
