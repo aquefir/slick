@@ -276,6 +276,22 @@ AR.DARWIN.GBA.GNU    := /opt/devkitpro/devkitARM/bin/arm-none-eabi-ar
 OCPY.DARWIN.GBA.GNU  := /opt/devkitpro/devkitARM/bin/arm-none-eabi-objcopy
 STRIP.DARWIN.GBA.GNU := /opt/devkitpro/devkitARM/bin/arm-none-eabi-strip
 
+# MS-DOS with DJGPP
+AS.LINUX.IBMPC.GNU    := /usr/bin/i586-pc-msdosdjgpp-as
+CC.LINUX.IBMPC.GNU    := /usr/bin/gcc
+CXX.LINUX.IBMPC.GNU   := /usr/bin/g++
+AR.LINUX.IBMPC.GNU    := /usr/bin/i586-pc-msdosdjgpp-ar
+OCPY.LINUX.IBMPC.GNU  := /usr/bin/i586-pc-msdosdjgpp-objcopy
+STRIP.LINUX.IBMPC.GNU := /usr/bin/i586-pc-msdosdjgpp-strip
+
+# Actually Portable Executables
+AS.LINUX.APE.GNU    := /usr/bin/as
+CC.LINUX.APE.GNU    := /usr/bin/gcc
+CXX.LINUX.APE.GNU   := /usr/bin/g++
+AR.LINUX.APE.GNU    := /usr/bin/ar
+OCPY.LINUX.APE.GNU  := /usr/bin/objcopy
+STRIP.LINUX.APE.GNU := /usr/bin/strip
+
 # Dev tools
 PL.LINUX      := /usr/bin/perl
 PY.LINUX      := /usr/bin/python3
@@ -283,7 +299,7 @@ FMT.LINUX     := /usr/bin/clang-format
 LINT.LINUX    := /usr/bin/cppcheck
 INSTALL.LINUX := /usr/bin/install
 ECHO.LINUX    := /bin/echo # Not a bashism
-CP.LINUX      := /usr/bin/cp # Not a bashism
+CP.LINUX      := /bin/cp # Not a bashism
 
 ## Suffixes.
 
@@ -305,7 +321,7 @@ EXE.WIN32  := .exe
 EXE.WIN64  := .exe
 EXE.GBA    := .elf
 EXE.IBMPC  := .com
-EXE.APE    := .com
+EXE.APE    := .com.dbg
 
 ## Flags.
 
@@ -325,21 +341,23 @@ ASFLAGS.COMMON.APE   := -march=x86-64
 # NOTE: $TC uses a modified set to include 3rd party C compiler support.
 #       This includes CHIBI and TCC as additional values.
 
-CFLAGS.COMMON.ALL.GNU      := -pipe -Wpedantic -x c -frandom-seed=69420
+CFLAGS.COMMON.ALL.GNU      := -pipe -x c -frandom-seed=69420
 CFLAGS.COMMON.ALL.LLVM     := -pipe -Wpedantic -x c -frandom-seed=69420
 CFLAGS.COMMON.ALL.XCODE    := -pipe -Wpedantic -x c -frandom-seed=69420
 CFLAGS.COMMON.ALL.TCC      := -Wpedantic
-CFLAGS.COMMON.LINUX.GNU    := -march=x86-64 -mtune=skylake -fPIC
+CFLAGS.COMMON.LINUX.GNU    := -Wpedantic -march=x86-64 -mtune=skylake -fPIC
 CFLAGS.COMMON.LINUX.LLVM   := -march=x86-64 -mtune=skylake -fPIC
-CFLAGS.COMMON.DARWIN.GNU   := -march=ivybridge -mtune=skylake -fPIC
+CFLAGS.COMMON.DARWIN.GNU   := -Wpedantic -march=ivybridge -mtune=skylake -fPIC
 CFLAGS.COMMON.DARWIN.LLVM  := -march=ivybridge -mtune=skylake -fPIC
 CFLAGS.COMMON.DARWIN.XCODE := -march=ivybridge -mtune=skylake -fPIC
-CFLAGS.COMMON.WIN32.GNU    := -march=i386 -mtune=skylake -fPIC
-CFLAGS.COMMON.WIN64.GNU    := -march=x86-64 -mtune=skylake -fPIC
-CFLAGS.COMMON.GBA.GNU      := -march=armv4t -mcpu=arm7tdmi \
+CFLAGS.COMMON.WIN32.GNU    := -Wpedantic -march=i386 -mtune=skylake -fPIC
+CFLAGS.COMMON.WIN64.GNU    := -Wpedantic -march=x86-64 -mtune=skylake -fPIC
+CFLAGS.COMMON.GBA.GNU      := -Wpedantic -march=armv4t -mcpu=arm7tdmi \
 	-mthumb-interwork -Wno-builtin-declaration-mismatch
-CFLAGS.COMMON.IBMPC.GNU    := -march=x86-64 -mtune=skylake
-CFLAGS.COMMON.APE.GNU      := -march=x86-64 -mtune=skylake
+CFLAGS.COMMON.IBMPC.GNU    := -Wpedantic -march=x86-64 -mtune=skylake
+CFLAGS.COMMON.APE.GNU      := -march=x86-64 -mtune=skylake -static -fno-pie \
+	-no-pie -mno-red-zone -nostdlib -nostdinc -Wl,--gc-sections \
+	-Wl,-z,max-page-size=0x1000 -fuse-ld=bfd
 
 CFLAGS.DEBUG.ALL.GNU   := -O0 -g3 -Wall
 CFLAGS.DEBUG.ALL.LLVM  := -O0 -g3 -Wall
@@ -384,7 +402,9 @@ CXXFLAGS.COMMON.WIN64.GNU    := -march=x86-64 -mtune=skylake -fPIC
 CXXFLAGS.COMMON.GBA.GNU      := -march=armv4t -mcpu=arm7tdmi \
 	-mthumb-interwork -Wno-builtin-declaration-mismatch
 CXXFLAGS.COMMON.IBMPC.GNU    := -march=x86-64 -mtune=skylake
-CXXFLAGS.COMMON.APE.GNU      := -march=x86-64 -mtune=skylake
+CXXFLAGS.COMMON.APE.GNU      := -march=x86-64 -mtune=skylake -static \
+	-fno-pie -no-pie -mno-red-zone -nostdlib -nostdinc -Wl,--gc-sections \
+	-Wl,-z,max-page-size=0x1000 -fuse-ld=bfd
 
 CXXFLAGS.DEBUG.ALL.GNU   := -O0 -g3 -Wall
 CXXFLAGS.DEBUG.ALL.LLVM  := -O0 -g3 -Wall

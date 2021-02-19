@@ -249,6 +249,27 @@ ARFLAGS  := $(.L_ARFLAGS)
 LDFLAGS  := $(.L_LDFLAGS)
 SYNDEFS  := $(.L_SYNDEFS)
 
+# Add the appropriate APE files as present.
+ifeq ($(TP),APE)
+ifneq ($(origin APE_LDSCR),undefined)
+LDFLAGS += -T $(APE_LDSCR)
+endif
+ifneq ($(origin APE_AFILE),undefined)
+LDFLAGS += $(APE_AFILE)
+endif
+ifneq ($(origin APE_HFILE),undefined)
+ASFLAGS += -include $(APE_HFILE)
+CFLAGS += -include $(APE_HFILE)
+CXXFLAGS += -include $(APE_HFILE)
+endif
+ifneq ($(origin APE_APEO),undefined)
+LDFLAGS += $(APE_APEO)
+endif
+ifneq ($(origin APE_CRTO),undefined)
+LDFLAGS += $(APE_CRTO)
+endif
+endif
+
 ## Set the LD program.
 
 ifeq ($(origin LD),undefined)
