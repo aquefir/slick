@@ -355,9 +355,8 @@ CFLAGS.COMMON.WIN64.GNU    := -Wpedantic -march=x86-64 -mtune=skylake -fPIC
 CFLAGS.COMMON.GBA.GNU      := -Wpedantic -march=armv4t -mcpu=arm7tdmi \
 	-mthumb-interwork -Wno-builtin-declaration-mismatch
 CFLAGS.COMMON.IBMPC.GNU    := -Wpedantic -march=x86-64 -mtune=skylake
-CFLAGS.COMMON.APE.GNU      := -march=x86-64 -mtune=skylake -static -fno-pie \
-	-no-pie -mno-red-zone -nostdlib -nostdinc -Wl,--gc-sections \
-	-Wl,-z,max-page-size=0x1000 -fuse-ld=bfd
+CFLAGS.COMMON.APE.GNU      := -g -march=x86-64 -mtune=skylake -static \
+	-fno-pie -no-pie -mno-red-zone -nostdlib -nostdinc
 
 CFLAGS.DEBUG.ALL.GNU   := -O0 -g3 -Wall
 CFLAGS.DEBUG.ALL.LLVM  := -O0 -g3 -Wall
@@ -389,22 +388,22 @@ CFLAGS.UBSAN.ALL.XCODE := -O1 -g3 -fsanitize=undefined -fno-omit-frame-pointer
 # C++ compiler flags.
 # Form: CXXFLAGS.<TARGET>.<TP>.<TC>
 
-CXXFLAGS.COMMON.ALL.GNU      := -pipe -Wpedantic -x c++ -frandom-seed=69420
+CXXFLAGS.COMMON.ALL.GNU      := -pipe -x c++ -frandom-seed=69420
 CXXFLAGS.COMMON.ALL.LLVM     := -pipe -Wpedantic -x c++ -frandom-seed=69420
 CXXFLAGS.COMMON.ALL.XCODE    := -pipe -Wpedantic -x c++ -frandom-seed=69420
-CXXFLAGS.COMMON.LINUX.GNU    := -march=x86-64 -mtune=skylake -fPIC
+CXXFLAGS.COMMON.LINUX.GNU    := -Wpedantic -march=x86-64 -mtune=skylake -fPIC
 CXXFLAGS.COMMON.LINUX.LLVM   := -march=x86-64 -mtune=skylake -fPIC
-CXXFLAGS.COMMON.DARWIN.GNU   := -march=ivybridge -mtune=skylake -fPIC
+CXXFLAGS.COMMON.DARWIN.GNU   := -Wpedantic -march=ivybridge -mtune=skylake \
+	-fPIC
 CXXFLAGS.COMMON.DARWIN.LLVM  := -march=ivybridge -mtune=skylake -fPIC
 CXXFLAGS.COMMON.DARWIN.XCODE := -march=ivybridge -mtune=skylake -fPIC
-CXXFLAGS.COMMON.WIN32.GNU    := -march=i386 -mtune=skylake -fPIC
-CXXFLAGS.COMMON.WIN64.GNU    := -march=x86-64 -mtune=skylake -fPIC
-CXXFLAGS.COMMON.GBA.GNU      := -march=armv4t -mcpu=arm7tdmi \
+CXXFLAGS.COMMON.WIN32.GNU    := -Wpedantic -march=i386 -mtune=skylake -fPIC
+CXXFLAGS.COMMON.WIN64.GNU    := -Wpedantic -march=x86-64 -mtune=skylake -fPIC
+CXXFLAGS.COMMON.GBA.GNU      := -Wpedantic -march=armv4t -mcpu=arm7tdmi \
 	-mthumb-interwork -Wno-builtin-declaration-mismatch
-CXXFLAGS.COMMON.IBMPC.GNU    := -march=x86-64 -mtune=skylake
-CXXFLAGS.COMMON.APE.GNU      := -march=x86-64 -mtune=skylake -static \
-	-fno-pie -no-pie -mno-red-zone -nostdlib -nostdinc -Wl,--gc-sections \
-	-Wl,-z,max-page-size=0x1000 -fuse-ld=bfd
+CXXFLAGS.COMMON.IBMPC.GNU    := -Wpedantic -march=x86-64 -mtune=skylake
+CXXFLAGS.COMMON.APE.GNU      := -g -march=x86-64 -mtune=skylake -static \
+	-fno-pie -no-pie -mno-red-zone -nostdlib -nostdinc
 
 CXXFLAGS.DEBUG.ALL.GNU   := -O0 -g3 -Wall
 CXXFLAGS.DEBUG.ALL.LLVM  := -O0 -g3 -Wall
@@ -451,7 +450,9 @@ LDFLAGS.COMMON.WIN32.GNU    := -fPIE
 LDFLAGS.COMMON.WIN64.GNU    := -fPIE
 LDFLAGS.COMMON.GBA.GNU      :=
 LDFLAGS.COMMON.IBMPC.GNU    :=
-LDFLAGS.COMMON.APE.GNU      :=
+LDFLAGS.COMMON.APE.GNU      := -march=x86-64 -mtune=skylake -static -fno-pie \
+	-no-pie -mno-red-zone -nostdlib -nostdlib -Wl,--gc-sections \
+	-Wl,-z,max-page-size=0x1000 -fuse-ld=bfd
 
 # Synthetic definitions.
 # Form: SYNDEFS.<TARGET>
@@ -470,6 +471,48 @@ SYNDEFS.GBA    := GBA ARMV4T LILENDIAN WORDSZ_32 HAVE_I32 HAVE_FP FP_SOFT \
 SYNDEFS.IBMPC  := IBMPC I86 LILENDIAN WORDSZ_16
 SYNDEFS.APE    := APE AMD64 LILENDIAN WORDSZ_64 HAVE_I32 HAVE_I64 HAVE_FP \
 	FP_HARD FP_SOFT LONGSZ_64
+
+# Shared object file extension.
+
+# Inspect the origin of the new variable.
+# If it is undefined or set by default, say so. Otherwise it was customised.
+# The “.O_” prefix denotes “origin” and is to prevent naming collisions.
+ifeq ($(origin SO),undefined)
+.O_SO := DEFAULT
+else ifeq ($(origin SO),default)
+.O_SO := DEFAULT
+else
+# environment [override], file, command line, override, automatic
+.O_SO := CUSTOM
+endif # $(origin SO)
+
+# Set the origin-dependent values of the new variable.
+SO.O_DEFAULT := $(SO.$(TP))
+SO.O_CUSTOM := $(SO)
+
+# Finally, set the variable.
+override SO := $(SO.O_$(.O_SO))
+
+# Executable file extension.
+
+# Inspect the origin of the new variable.
+# If it is undefined or set by default, say so. Otherwise it was customised.
+# The “.O_” prefix denotes “origin” and is to prevent naming collisions.
+ifeq ($(origin EXE),undefined)
+.O_EXE := DEFAULT
+else ifeq ($(origin EXE),default)
+.O_EXE := DEFAULT
+else
+# environment [override], file, command line, override, automatic
+.O_EXE := CUSTOM
+endif # $(origin EXE)
+
+# Set the origin-dependent values of the new variable.
+EXE.O_DEFAULT := $(EXE.$(TP))
+EXE.O_CUSTOM := $(EXE)
+
+# Finally, set the variable.
+override EXE := $(EXE.O_$(.O_EXE))
 
 # Assembler.
 
