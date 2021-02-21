@@ -37,7 +37,7 @@ ifeq ($(SLICK_PRINT),0)
 else
 .L_TAG.DEFAULT := [default]
 .L_TAG.CUSTOM  := [custom!]
-.L_Item = $(info $(.L_TAG.$($(1)_ORIGIN)) $(2) :: $($(1)))
+.L_Item = $(info $(.L_TAG.$(.O_$(1))) $(2) :: $($(1)))
 
 .L_PRINTOUT = \
 	$(info =====) \
@@ -45,32 +45,40 @@ else
 	$(info =====) \
 	$(info ) \
 	$(info ----- ENVIRONMENT) \
-	$(call .L_Item,$(1),Host machine) \
-	$(call .L_Item,$(2),Target machine) \
-	$(call .L_Item,$(3),Toolchain in use) \
-	$(call .L_Item,$(4),Target sysroot) \
-	$(call .L_Item,$(5),Executable ext.) \
-	$(call .L_Item,$(6),Shared library ext.) \
+	$(call .L_Item,$(1),UNAME) \
+	$(call .L_Item,$(2),TP) \
+	$(call .L_Item,$(3),TC) \
+	$(call .L_Item,$(4),TROOT) \
+	$(call .L_Item,$(5),EXE) \
+	$(call .L_Item,$(6),SO) \
 	$(info ----- TOOLS) \
-	$(call .L_Item,$(7),Autoformatter) \
-	$(call .L_Item,$(8),Assembler) \
-	$(call .L_Item,$(9),C compiler) \
-	$(call .L_Item,$(10),C++ compiler) \
-	$(call .L_Item,$(11),Static archiver) \
-	$(call .L_Item,$(12),Object copier) \
-	$(call .L_Item,$(13),Object stripper) \
+	$(call .L_Item,$(7),FMT) \
+	$(call .L_Item,$(8),AS) \
+	$(call .L_Item,$(9),CC) \
+	$(call .L_Item,$(10),CXX) \
+	$(call .L_Item,$(11),AR) \
+	$(call .L_Item,$(12),OCPY) \
+	$(call .L_Item,$(13),STRIP) \
 	$(info ----- FLAGS AND OPTIONS) \
-	$(call .L_Item,$(14),Assembler flags) \
-	$(call .L_Item,$(15),C compiler flags) \
-	$(call .L_Item,$(16),C++ compiler flags) \
-	$(call .L_Item,$(17),Static archiver flags) \
-	$(call .L_Item,$(18),Linker flags) \
-	$(call .L_Item,$(19),Defines) \
-	$(call .L_Item,$(20),Undefines) \
-	$(call .L_Item,$(21),Synthetics)
+	$(call .L_Item,$(14),ASFLAGS) \
+	$(call .L_Item,$(15),CFLAGS) \
+	$(call .L_Item,$(16),CXXFLAGS) \
+	$(call .L_Item,$(17),ARFLAGS) \
+	$(call .L_Item,$(18),LDFLAGS) \
+	$(call .L_Item,$(19),DEFINES) \
+	$(call .L_Item,$(20),UNDEFINES) \
+	$(call .L_Item,$(21),SYNDEFS) \
+	$(call .L_Item,$(22),LIBS) \
+	$(call .L_Item,$(23),LIBDIRS) \
+	$(call .L_Item,$(24),COSMO.H) \
+	$(call .L_Item,$(25),COSMO.A) \
+	$(call .L_Item,$(26),CRT.O) \
+	$(call .L_Item,$(27),APE.O) \
+	$(call .L_Item,$(28),APE.LDS)
 endif
 .L_TPRINTOUT = $(call .L_PRINTOUT,.K_UNAME,TP,TC,TROOT,EXE,SO,FMT,AS,CC,CXX,\
-	AR,OCPY,STRIP,$(1),$(2),$(3),ARFLAGS,$(4),$(5),$(6),SYNDEFS)
+	AR,OCPY,STRIP,$(1),$(2),$(3),ARFLAGS,$(4),$(5),$(6),SYNDEFS,$(7),$(8),\
+	APE_HFILE,APE_AFILE,APE_CRTO,APE_APEO,APE_LDSCR)
 
 .L_File.C     := ---> \033[34mCompiling
 .L_File.CXX   := ---> \033[33mCompiling
@@ -382,14 +390,14 @@ endif
 .L_TARGETS :=
 
 # specify all target filenames
-.L_GBATARGET  := $(PROJECT).gba
+.L_BINTARGET  := $(PROJECT).gba
 .L_EXETARGET  := $(PROJECT)$(EXE)
 .L_SOTARGET   := lib$(PROJECT)$(SO)
 .L_ATARGET    := lib$(PROJECT).a
 
 ifeq ($(TP),GBA)
 ifeq ($(.L_EXEFILE),1)
-.L_TARGETS += $(.L_GBATARGET)
+.L_TARGETS += $(.L_BINTARGET)
 endif
 ifeq ($(.L_AFILE),1)
 .L_TARGETS += $(.L_ATARGET)
@@ -667,7 +675,8 @@ $(.L_ATARGET): $(.L_OFILES)
 ifneq ($(strip $(.L_OFILES)),)
 	$(call .L_File,AR,$@)
 	@$(AR) $(ARFLAGS) $@ $^
-	$(call .L_TPRINTOUT,ASFLAGS,CFLAGS,CXXFLAGS,LDFLAGS,DEFINES,UNDEFINES)
+	$(call .L_TPRINTOUT,ASFLAGS,CFLAGS,CXXFLAGS,LDFLAGS,DEFINES,UNDEFINES,\
+	LIBS,LIBDIRS)
 endif
 
 # Shared library recipe.
@@ -678,7 +687,8 @@ ifneq ($(strip $(.L_OFILES)),)
 	@$(LD) $(LDFLAGS) -shared -o $@ $^ $(LIB)
 	$(call .L_File,STRIP,$@)
 	@$(REALSTRIP) -s $@
-	$(call .L_TPRINTOUT,ASFLAGS,CFLAGS,CXXFLAGS,LDFLAGS,DEFINES,UNDEFINES)
+	$(call .L_TPRINTOUT,ASFLAGS,CFLAGS,CXXFLAGS,LDFLAGS,DEFINES,UNDEFINES,\
+	LIBS,LIBDIRS)
 endif
 
 # Executable recipe.
@@ -689,17 +699,21 @@ ifneq ($(strip $(.L_OFILES)),)
 	@$(LD) $(LDFLAGS) -o $@ $^ $(LIB)
 	$(call .L_File,STRIP,$@)
 	@$(REALSTRIP) -s $@
-	$(call .L_TPRINTOUT,ASFLAGS,CFLAGS,CXXFLAGS,LDFLAGS,DEFINES,UNDEFINES)
+	$(call .L_TPRINTOUT,ASFLAGS,CFLAGS,CXXFLAGS,LDFLAGS,DEFINES,UNDEFINES,\
+	LIBS,LIBDIRS)
 endif
 
-# GBA ROM recipe.
+# GBA ROM or APE polyglot recipe.
 
-$(GBATARGET): $(EXETARGET)
-ifeq ($(strip $(TP)),GBA)
+$(.L_BINTARGET): $(.L_EXETARGET)
+ifeq ($(TP),GBA)
 	$(call .L_File,OCPY,$@)
 	@$(OCPY) -O binary $< $@
 	$(call .L_File,FIX,$@)
 	@$(FIX) $@ $(FIXFLAGS) 1>/dev/null
+else ifeq ($(TP),APE)
+	$(call .L_File,OCPY,$@)
+	@$(OCPY) -SO binary $< $@
 endif
 
 ## Additional .PHONY targets.
