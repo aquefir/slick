@@ -252,21 +252,18 @@ SYNDEFS  := $(.L_SYNDEFS)
 # Add the appropriate APE files as present.
 ifeq ($(TP),APE)
 ifneq ($(origin APE_LDSCR),undefined)
-LDFLAGS += -T $(APE_LDSCR)
-endif
-ifneq ($(origin APE_AFILE),undefined)
-LDFLAGS += $(APE_AFILE)
+LDFLAGS += -Wl,-T,$(APE_LDSCR)
 endif
 ifneq ($(origin APE_HFILE),undefined)
 ASFLAGS += -include $(APE_HFILE)
 CFLAGS += -include $(APE_HFILE)
 CXXFLAGS += -include $(APE_HFILE)
 endif
-ifneq ($(origin APE_APEO),undefined)
-LDFLAGS += $(APE_APEO)
-endif
 ifneq ($(origin APE_CRTO),undefined)
 LDFLAGS += $(APE_CRTO)
+endif
+ifneq ($(origin APE_APEO),undefined)
+LDFLAGS += $(APE_APEO)
 endif
 endif
 
@@ -299,6 +296,11 @@ override LD := $(LD.O_$(.O_LD))
 	$(patsubst %,-L%,$(patsubst %,$(3PLIBDIR)/%lib,$(3PLIBS))) \
 	$(patsubst %,-l%,$(LIBS)) \
 	$(patsubst %,-l%,$(3PLIBS))
+ifeq ($(TP),APE)
+ifneq ($(origin APE_AFILE),undefined)
+.K_LIB += $(APE_AFILE)
+endif
+endif
 
 # TODO: check for TCC by command output instead of name
 ifeq ($(notdir $(CC)),tcc)
@@ -665,7 +667,7 @@ $(.L_ATARGET): $(.L_OFILES)
 ifneq ($(strip $(.L_OFILES)),)
 	$(call .L_File,AR,$@)
 	@$(AR) $(ARFLAGS) $@ $^
-	$(call TPRINTOUT,ASFLAGS,CFLAGS,CXXFLAGS,LDFLAGS,DEFINES,UNDEFINES)
+	$(call .L_TPRINTOUT,ASFLAGS,CFLAGS,CXXFLAGS,LDFLAGS,DEFINES,UNDEFINES)
 endif
 
 # Shared library recipe.
@@ -676,7 +678,7 @@ ifneq ($(strip $(.L_OFILES)),)
 	@$(LD) $(LDFLAGS) -shared -o $@ $^ $(LIB)
 	$(call .L_File,STRIP,$@)
 	@$(REALSTRIP) -s $@
-	$(call TPRINTOUT,ASFLAGS,CFLAGS,CXXFLAGS,LDFLAGS,DEFINES,UNDEFINES)
+	$(call .L_TPRINTOUT,ASFLAGS,CFLAGS,CXXFLAGS,LDFLAGS,DEFINES,UNDEFINES)
 endif
 
 # Executable recipe.
@@ -687,7 +689,7 @@ ifneq ($(strip $(.L_OFILES)),)
 	@$(LD) $(LDFLAGS) -o $@ $^ $(LIB)
 	$(call .L_File,STRIP,$@)
 	@$(REALSTRIP) -s $@
-	$(call TPRINTOUT,ASFLAGS,CFLAGS,CXXFLAGS,LDFLAGS,DEFINES,UNDEFINES)
+	$(call .L_TPRINTOUT,ASFLAGS,CFLAGS,CXXFLAGS,LDFLAGS,DEFINES,UNDEFINES)
 endif
 
 # GBA ROM recipe.
