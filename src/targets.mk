@@ -267,12 +267,6 @@ ASFLAGS += -include $(APE_HFILE)
 CFLAGS += -include $(APE_HFILE)
 CXXFLAGS += -include $(APE_HFILE)
 endif
-ifneq ($(origin APE_CRTO),undefined)
-LDFLAGS += $(APE_CRTO)
-endif
-ifneq ($(origin APE_APEO),undefined)
-LDFLAGS += $(APE_APEO)
-endif
 endif
 
 ## Set the LD program.
@@ -305,6 +299,12 @@ override LD := $(LD.O_$(.O_LD))
 	$(patsubst %,-l%,$(LIBS)) \
 	$(patsubst %,-l%,$(3PLIBS))
 ifeq ($(TP),APE)
+ifneq ($(origin APE_CRTO),undefined)
+.K_LIB += $(APE_CRTO)
+endif
+ifneq ($(origin APE_APEO),undefined)
+.K_LIB += $(APE_APEO)
+endif
 ifneq ($(origin APE_AFILE),undefined)
 .K_LIB += $(APE_AFILE)
 endif
@@ -684,7 +684,7 @@ endif
 $(.L_SOTARGET): $(.L_OFILES)
 ifneq ($(strip $(.L_OFILES)),)
 	$(call .L_File,LD,$@)
-	@$(LD) $(LDFLAGS) -shared -o $@ $^ $(LIB)
+	@$(LD) $(LDFLAGS) -shared -o $@ $^ $(.K_LIB)
 	$(call .L_File,STRIP,$@)
 	@$(REALSTRIP) -s $@
 	$(call .L_TPRINTOUT,ASFLAGS,CFLAGS,CXXFLAGS,LDFLAGS,DEFINES,UNDEFINES,\
@@ -696,7 +696,7 @@ endif
 $(.L_EXETARGET): $(.L_OFILES)
 ifneq ($(strip $(.L_OFILES)),)
 	$(call .L_File,LD,$@)
-	@$(LD) $(LDFLAGS) -o $@ $^ $(LIB)
+	@$(LD) $(LDFLAGS) -o $@ $^ $(.K_LIB)
 	$(call .L_File,STRIP,$@)
 	@$(REALSTRIP) -s $@
 	$(call .L_TPRINTOUT,ASFLAGS,CFLAGS,CXXFLAGS,LDFLAGS,DEFINES,UNDEFINES,\
