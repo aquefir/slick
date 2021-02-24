@@ -1,13 +1,20 @@
 # -*- coding: utf-8 -*-
 
 /data
+/3rdparty/*
+!/3rdparty/README
 
 *.o
 *.obj
+*.gcno
+*.gcda
 *.a
-*.so
+*.lib
+*.so*
 *.dylib
 *.exe
+*.com*
+*.out
 *.dll
 *.gba
 *.agb
