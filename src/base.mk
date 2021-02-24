@@ -355,8 +355,8 @@ CFLAGS.COMMON.WIN64.GNU    := -Wpedantic -march=x86-64 -mtune=skylake -fPIC
 CFLAGS.COMMON.GBA.GNU      := -Wpedantic -march=armv4t -mcpu=arm7tdmi \
 	-mthumb-interwork -Wno-builtin-declaration-mismatch
 CFLAGS.COMMON.IBMPC.GNU    := -Wpedantic -march=x86-64 -mtune=skylake
-CFLAGS.COMMON.APE.GNU      := -g -march=x86-64 -mtune=skylake -static \
-	-fno-pie -no-pie -mno-red-zone -nostdlib -nostdinc
+CFLAGS.COMMON.APE.GNU      := -g -march=x86-64 -mtune=skylake -fno-pie \
+	-mno-red-zone -nostdinc
 
 CFLAGS.DEBUG.ALL.GNU   := -O0 -g3 -Wall
 CFLAGS.DEBUG.ALL.LLVM  := -O0 -g3 -Wall
@@ -402,8 +402,8 @@ CXXFLAGS.COMMON.WIN64.GNU    := -Wpedantic -march=x86-64 -mtune=skylake -fPIC
 CXXFLAGS.COMMON.GBA.GNU      := -Wpedantic -march=armv4t -mcpu=arm7tdmi \
 	-mthumb-interwork -Wno-builtin-declaration-mismatch
 CXXFLAGS.COMMON.IBMPC.GNU    := -Wpedantic -march=x86-64 -mtune=skylake
-CXXFLAGS.COMMON.APE.GNU      := -g -march=x86-64 -mtune=skylake -static \
-	-fno-pie -no-pie -mno-red-zone -nostdlib -nostdinc
+CXXFLAGS.COMMON.APE.GNU      := -g -march=x86-64 -mtune=skylake  -fno-pie \
+	-mno-red-zone -nostdinc
 
 CXXFLAGS.DEBUG.ALL.GNU   := -O0 -g3 -Wall
 CXXFLAGS.DEBUG.ALL.LLVM  := -O0 -g3 -Wall
@@ -450,9 +450,8 @@ LDFLAGS.COMMON.WIN32.GNU    := -fPIE
 LDFLAGS.COMMON.WIN64.GNU    := -fPIE
 LDFLAGS.COMMON.GBA.GNU      :=
 LDFLAGS.COMMON.IBMPC.GNU    :=
-LDFLAGS.COMMON.APE.GNU      := -march=x86-64 -mtune=skylake -static -fno-pie \
-	-no-pie -mno-red-zone -nostdlib -nostdlib -Wl,--gc-sections \
-	-Wl,-z,max-page-size=0x1000 -fuse-ld=bfd
+LDFLAGS.COMMON.APE.GNU      := -march=x86-64 -mtune=skylake -fuse-ld=bfd \
+	-static -nostdlib -no-pie -Wl,--as-needed -Wl,--build-id=none
 
 # Synthetic definitions.
 # Form: SYNDEFS.<TARGET>
