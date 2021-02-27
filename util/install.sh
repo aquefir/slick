@@ -10,7 +10,11 @@ else
 	_sudo='sudo ';
 fi
 
-_prefix=/opt/aq/lib/slick;
+if test "${PREFIX}" = ''; then
+	_prefix=/opt/aq/lib/slick;
+else
+	_prefix="${PREFIX}";
+fi
 
 echo -n 'Creating folder hierarchies...' >/dev/stderr;
 ${_sudo} mkdir -p "${_prefix}/cosmo";
