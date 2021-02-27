@@ -1,5 +1,9 @@
 @BOILERPLATE@
 
+ifeq ($(strip $(AQ)),)
+$(error "AQ was not found in your environment. You need to install the Slick Makefiles from github.com/aquefir/slick to continue.")
+endif
+
 include $(AQ)/lib/slick/base.mk
 
 # name of project. used in output binary naming
@@ -23,13 +27,14 @@ LIBDIRS :=
 # ‘3P’ are in-tree 3rd-party dependencies
 # 3PLIBDIR is the base directory
 # 3PLIBS is the folder names in the base directory for each library
-3PLIBDIR := 3rdparty
+3PLIBDIR :=
 3PLIBS   :=
 
 # frameworks (macOS target only)
 FWORKS :=
 
 # sources
+SFILES    :=
 CFILES    :=
 CPPFILES  :=
 PUBHFILES :=
@@ -42,7 +47,7 @@ TES_PUBHFILES :=
 TES_PRVHFILES :=
 
 # force C++ linker because of 3rd-party library
-CCLD := $(CXX)
+LD := $(CXX)
 
 # this defines all our usual targets
 include $(AQ)/lib/slick/targets.mk
