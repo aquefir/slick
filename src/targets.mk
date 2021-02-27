@@ -30,6 +30,23 @@ ifdef TES_HPPFILES
 $(warning TES_HPPFILES is deprecated. Please use PUBHFILES and PRVHFILES instead)
 endif
 
+## DEPRECATION: <https://github.com/aquefir/slick/issues/13>
+ifdef APE_LDSCR
+$(warning APE_LDSCR is deprecated. Cosmopolitan ships with Slick now.)
+endif
+ifdef APE_AFILE
+$(warning APE_AFILE is deprecated. Cosmopolitan ships with Slick now.)
+endif
+ifdef APE_HFILE
+$(warning APE_HFILE is deprecated. Cosmopolitan ships with Slick now.)
+endif
+ifdef APE_APEO
+$(warning APE_APEO is deprecated. Cosmopolitan ships with Slick now.)
+endif
+ifdef APE_CRTO
+$(warning APE_CRTO is deprecated. Cosmopolitan ships with Slick now.)
+endif
+
 ## Variable printout function code.
 
 ifeq ($(SLICK_PRINT),0)
