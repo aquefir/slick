@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+/build
 /data
 /3rdparty/*
 !/3rdparty/README
