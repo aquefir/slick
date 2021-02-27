@@ -759,10 +759,13 @@ $(CFILES.APE) $(CPPFILES.APE)
 # temporary fix
 PREFIX ?= /usr
 
-install: $(TARGETS)
-	-[ -n "$(EXEFILE)" ] && $(INSTALL) -Dm755 $(EXETARGET) $(PREFIX)/bin/$(EXETARGET)
-	-[ -n "$(SOFILE)" ] && $(INSTALL) -Dm755 $(SOTARGET) $(PREFIX)/lib/$(SOTARGET)
-	-[ -n "$(AFILE)" ] && $(INSTALL) -Dm644 $(ATARGET) $(PREFIX)/lib/$(ATARGET)
+install: $(.L_TARGETS)
+	-[ -n "$(EXEFILE)" ] && $(INSTALL) -Dm755 $(.L_EXETARGET) \
+		$(PREFIX)/bin/$(.L_EXETARGET)
+	-[ -n "$(SOFILE)" ] && $(INSTALL) -Dm755 $(.L_SOTARGET) \
+		$(PREFIX)/lib/$(.L_SOTARGET)
+	-[ -n "$(AFILE)" ] && $(INSTALL) -Dm644 $(.L_ATARGET) \
+		$(PREFIX)/lib/$(.L_ATARGET)
 	for _file in $(PUBHFILES); do \
 	$(CP) -rp --parents $$_file $(PREFIX)/; done
 	unset _file
