@@ -147,13 +147,13 @@ TROOT.DARWIN.DARWIN := /usr/local
 TROOT.DARWIN.WIN32  := /usr/local/i686-w64-mingw32
 TROOT.DARWIN.WIN64  := /usr/local/x86_64-w64-mingw32
 TROOT.DARWIN.GBA    := /usr/local/armv4t-agb-eabi
-TROOT.DARWIN.IBMPC  := /usr/local/i586-pc-msdosdjgpp
+TROOT.DARWIN.IBMPC  := /usr/local/i386-pc-dos
 TROOT.DARWIN.APE    := /usr/local/x86_64-pc-ape
 TROOT.LINUX.LINUX   := /usr
 TROOT.LINUX.WIN32   := /usr/i686-w64-mingw32
 TROOT.LINUX.WIN64   := /usr/x86_64-w64-mingw32
 TROOT.LINUX.GBA     := /usr/armv4t-agb-eabi
-TROOT.LINUX.IBMPC   := /usr/i586-pc-msdosdjgpp
+TROOT.LINUX.IBMPC   := /usr/i386-pc-dos
 TROOT.LINUX.APE     := /usr/x86_64-pc-ape
 
 # Set the origin-dependent values of the new variable.
@@ -215,12 +215,12 @@ OCPY.DARWIN.GBA.GNU  := /opt/devkitpro/devkitARM/bin/arm-none-eabi-objcopy
 STRIP.DARWIN.GBA.GNU := /opt/devkitpro/devkitARM/bin/arm-none-eabi-strip
 
 # MS-DOS with DJGPP
-AS.DARWIN.IBMPC.GNU    := /usr/local/bin/i586-pc-msdosdjgpp-as
+AS.DARWIN.IBMPC.GNU    := /usr/local/opt/binutils/bin/as
 CC.DARWIN.IBMPC.GNU    := /usr/local/bin/gcc-9 # brew GCC
 CXX.DARWIN.IBMPC.GNU   := /usr/local/bin/g++-9
-AR.DARWIN.IBMPC.GNU    := /usr/local/bin/i586-pc-msdosdjgpp-ar
-OCPY.DARWIN.IBMPC.GNU  := /usr/local/bin/i586-pc-msdosdjgpp-objcopy
-STRIP.DARWIN.IBMPC.GNU := /usr/local/bin/i586-pc-msdosdjgpp-strip
+AR.DARWIN.IBMPC.GNU    := /usr/local/opt/binutils/bin/ar
+OCPY.DARWIN.IBMPC.GNU  := /usr/local/opt/binutils/bin/objcopy
+STRIP.DARWIN.IBMPC.GNU := /usr/local/opt/binutils/bin/strip
 
 # Actually Portable Executables
 AS.DARWIN.APE.GNU    := /usr/local/opt/binutils/bin/as # brew binutils
@@ -277,12 +277,12 @@ OCPY.DARWIN.GBA.GNU  := /opt/devkitpro/devkitARM/bin/arm-none-eabi-objcopy
 STRIP.DARWIN.GBA.GNU := /opt/devkitpro/devkitARM/bin/arm-none-eabi-strip
 
 # MS-DOS with DJGPP
-AS.LINUX.IBMPC.GNU    := /usr/bin/i586-pc-msdosdjgpp-as
+AS.LINUX.IBMPC.GNU    := /usr/bin/as
 CC.LINUX.IBMPC.GNU    := /usr/bin/gcc
 CXX.LINUX.IBMPC.GNU   := /usr/bin/g++
-AR.LINUX.IBMPC.GNU    := /usr/bin/i586-pc-msdosdjgpp-ar
-OCPY.LINUX.IBMPC.GNU  := /usr/bin/i586-pc-msdosdjgpp-objcopy
-STRIP.LINUX.IBMPC.GNU := /usr/bin/i586-pc-msdosdjgpp-strip
+AR.LINUX.IBMPC.GNU    := /usr/bin/ar
+OCPY.LINUX.IBMPC.GNU  := /usr/bin/objcopy
+STRIP.LINUX.IBMPC.GNU := /usr/bin/strip
 
 # Actually Portable Executables
 AS.LINUX.APE.GNU    := /usr/bin/as
@@ -320,8 +320,14 @@ EXE.DARWIN :=
 EXE.WIN32  := .exe
 EXE.WIN64  := .exe
 EXE.GBA    := .elf
-EXE.IBMPC  := .com
+EXE.IBMPC  := .elf
 EXE.APE    := .com.dbg
+
+# Binary executables.
+
+BIN.GBA   := .gba
+BIN.IBMPC := .com
+BIN.APE   := .com
 
 ## Flags.
 
@@ -333,7 +339,7 @@ ASFLAGS.COMMON.LINUX := -march=x86-64
 ASFLAGS.COMMON.WIN32 := -march=i386
 ASFLAGS.COMMON.WIN64 := -march=x86-64
 ASFLAGS.COMMON.GBA   := -march=armv4t -mcpu=arm7tdmi -mthumb-interwork -EL
-ASFLAGS.COMMON.IBMPC := -march=i386
+ASFLAGS.COMMON.IBMPC := --32 -march=i386
 ASFLAGS.COMMON.APE   := -march=x86-64
 
 # C compiler flags.
@@ -354,7 +360,8 @@ CFLAGS.COMMON.WIN32.GNU    := -Wpedantic -march=i386 -mtune=skylake -fPIC
 CFLAGS.COMMON.WIN64.GNU    := -Wpedantic -march=x86-64 -mtune=skylake -fPIC
 CFLAGS.COMMON.GBA.GNU      := -Wpedantic -march=armv4t -mcpu=arm7tdmi \
 	-mthumb-interwork -Wno-builtin-declaration-mismatch
-CFLAGS.COMMON.IBMPC.GNU    := -Wpedantic -march=x86-64 -mtune=skylake
+CFLAGS.COMMON.IBMPC.GNU    := -Wpedantic -m32 -march=i386 -nostdinc -fno-pie \
+	-fno-leading-underscore -ffreestanding
 CFLAGS.COMMON.APE.GNU      := -g -march=x86-64 -mtune=skylake -fno-pie \
 	-mno-red-zone -nostdinc
 
@@ -401,8 +408,9 @@ CXXFLAGS.COMMON.WIN32.GNU    := -Wpedantic -march=i386 -mtune=skylake -fPIC
 CXXFLAGS.COMMON.WIN64.GNU    := -Wpedantic -march=x86-64 -mtune=skylake -fPIC
 CXXFLAGS.COMMON.GBA.GNU      := -Wpedantic -march=armv4t -mcpu=arm7tdmi \
 	-mthumb-interwork -Wno-builtin-declaration-mismatch
-CXXFLAGS.COMMON.IBMPC.GNU    := -Wpedantic -march=x86-64 -mtune=skylake
-CXXFLAGS.COMMON.APE.GNU      := -g -march=x86-64 -mtune=skylake  -fno-pie \
+CXXFLAGS.COMMON.IBMPC.GNU    := -Wpedantic -m32 -march=i386 -nostdinc \
+	-fno-pie -fno-leading-underscore -ffreestanding
+CXXFLAGS.COMMON.APE.GNU      := -g -march=x86-64 -mtune=skylake -fno-pie \
 	-mno-red-zone -nostdinc
 
 CXXFLAGS.DEBUG.ALL.GNU   := -O0 -g3 -Wall
@@ -449,7 +457,8 @@ LDFLAGS.COMMON.DARWIN.XCODE := -fPIE
 LDFLAGS.COMMON.WIN32.GNU    := -fPIE
 LDFLAGS.COMMON.WIN64.GNU    := -fPIE
 LDFLAGS.COMMON.GBA.GNU      :=
-LDFLAGS.COMMON.IBMPC.GNU    :=
+LDFLAGS.COMMON.IBMPC.GNU    := -m32 -march=i386 -static -nostdlib -no-pie \
+	-Wl,--as-needed -Wl,--build-id=none -Wl,--nmagic -ffreestanding
 LDFLAGS.COMMON.APE.GNU      := -march=x86-64 -mtune=skylake -fuse-ld=bfd \
 	-static -nostdlib -no-pie -Wl,--as-needed -Wl,--build-id=none
 
@@ -512,6 +521,27 @@ EXE.O_CUSTOM := $(EXE)
 
 # Finally, set the variable.
 override EXE := $(EXE.O_$(.O_EXE))
+
+# Binary executable file extension.
+
+# Inspect the origin of the new variable.
+# If it is undefined or set by default, say so. Otherwise it was customised.
+# The “.O_” prefix denotes “origin” and is to prevent naming collisions.
+ifeq ($(origin BIN),undefined)
+.O_BIN := DEFAULT
+else ifeq ($(origin BIN),default)
+.O_BIN := DEFAULT
+else
+# environment [override], file, command line, override, automatic
+.O_BIN := CUSTOM
+endif # $(origin BIN)
+
+# Set the origin-dependent values of the new variable.
+BIN.O_DEFAULT := $(BIN.$(TP))
+BIN.O_CUSTOM := $(BIN)
+
+# Finally, set the variable.
+override BIN := $(BIN.O_$(.O_BIN))
 
 # Assembler.
 

@@ -69,16 +69,10 @@ else
 	$(call .L_Item,$(20),UNDEFINES) \
 	$(call .L_Item,$(21),SYNDEFS) \
 	$(call .L_Item,$(22),LIBS) \
-	$(call .L_Item,$(23),LIBDIRS) \
-	$(call .L_Item,$(24),COSMO.H) \
-	$(call .L_Item,$(25),COSMO.A) \
-	$(call .L_Item,$(26),CRT.O) \
-	$(call .L_Item,$(27),APE.O) \
-	$(call .L_Item,$(28),APE.LDS)
+	$(call .L_Item,$(23),LIBDIRS)
 endif
 .L_TPRINTOUT = $(call .L_PRINTOUT,.K_UNAME,TP,TC,TROOT,EXE,SO,FMT,AS,CC,CXX,\
-	AR,OCPY,STRIP,$(1),$(2),$(3),ARFLAGS,$(4),$(5),$(6),SYNDEFS,$(7),$(8),\
-	APE_HFILE,APE_AFILE,APE_CRTO,APE_APEO,APE_LDSCR)
+	AR,OCPY,STRIP,$(1),$(2),$(3),ARFLAGS,$(4),$(5),$(6),SYNDEFS,$(7),$(8),)
 
 .L_File.C     := ---> \033[34mCompiling
 .L_File.CXX   := ---> \033[33mCompiling
@@ -259,14 +253,12 @@ SYNDEFS  := $(.L_SYNDEFS)
 
 # Add the appropriate APE files as present.
 ifeq ($(TP),APE)
-ifneq ($(origin APE_LDSCR),undefined)
-LDFLAGS += -Wl,-T,$(APE_LDSCR)
-endif
-ifneq ($(origin APE_HFILE),undefined)
-ASFLAGS += -include $(APE_HFILE)
-CFLAGS += -include $(APE_HFILE)
-CXXFLAGS += -include $(APE_HFILE)
-endif
+LDFLAGS += -Wl,-T,$(AQ)/lib/slick/cosmo/ape.lds
+ASFLAGS += -include $(AQ)/lib/slick/cosmo/cosmopolitan.h
+CFLAGS += -include $(AQ)/lib/slick/cosmo/cosmopolitan.h
+CXXFLAGS += -include $(AQ)/lib/slick/cosmo/cosmopolitan.h
+else ifeq ($(TP),IBMPC)
+LDFLAGS += -Wl,-T,$(AQ)/lib/slick/ibmpc/ibmpc.ld
 endif
 
 ## Set the LD program.
@@ -299,15 +291,11 @@ override LD := $(LD.O_$(.O_LD))
 	$(patsubst %,-l%,$(LIBS)) \
 	$(patsubst %,-l%,$(3PLIBS))
 ifeq ($(TP),APE)
-ifneq ($(origin APE_CRTO),undefined)
-.K_LIB += $(APE_CRTO)
-endif
-ifneq ($(origin APE_APEO),undefined)
-.K_LIB += $(APE_APEO)
-endif
-ifneq ($(origin APE_AFILE),undefined)
-.K_LIB += $(APE_AFILE)
-endif
+.K_LIB += $(AQ)/lib/slick/cosmo/crt.o
+.K_LIB += $(AQ)/lib/slick/cosmo/ape.o
+.K_LIB += $(AQ)/lib/slick/cosmo/cosmopolitan.a
+else ifeq ($(TP),IBMPC)
+.K_LIB += $(AQ)/lib/slick/ibmpc/crt0.o
 endif
 
 # TODO: check for TCC by command output instead of name
@@ -390,7 +378,7 @@ endif
 .L_TARGETS :=
 
 # specify all target filenames
-.L_BINTARGET  := $(PROJECT).gba
+.L_BINTARGET  := $(PROJECT)$(BIN)
 .L_EXETARGET  := $(PROJECT)$(EXE)
 .L_SOTARGET   := lib$(PROJECT)$(SO)
 .L_ATARGET    := lib$(PROJECT).a
@@ -404,14 +392,14 @@ ifeq ($(.L_AFILE),1)
 endif
 else ifeq ($(TP),IBMPC)
 ifeq ($(.L_EXEFILE),1)
-.L_TARGETS += $(.L_EXETARGET)
+.L_TARGETS += $(.L_BINTARGET)
 endif
 ifeq ($(.L_AFILE),1)
 .L_TARGETS += $(.L_ATARGET)
 endif
 else ifeq ($(TP),APE)
 ifeq ($(.L_EXEFILE),1)
-.L_TARGETS += $(.L_EXETARGET)
+.L_TARGETS += $(.L_BINTARGET)
 endif
 ifeq ($(.L_AFILE),1)
 .L_TARGETS += $(.L_ATARGET)
@@ -435,11 +423,13 @@ endif
 	lib$(PROJECT)$(SO.DARWIN) \
 	lib$(PROJECT)$(SO.WIN32) \
 	lib$(PROJECT).a \
-	$(PROJECT).gba \
+	$(PROJECT)$(BIN.LINUX) \
+	$(PROJECT)$(BIN.GBA) \
+	$(PROJECT)$(BIN.IBMPC) \
 	$(PROJECT)$(EXE.LINUX) \
 	$(PROJECT)$(EXE.WIN32) \
 	$(PROJECT)$(EXE.GBA) \
-	$(PROJECT)$(EXE.IBMPC)
+	$(PROJECT)$(EXE.APE)
 
 ## Define the OFILES.
 
@@ -703,7 +693,7 @@ ifneq ($(strip $(.L_OFILES)),)
 	LIBS,LIBDIRS)
 endif
 
-# GBA ROM or APE polyglot recipe.
+# GBA ROM, APE polyglot, or DOS COMfile recipe.
 
 $(.L_BINTARGET): $(.L_EXETARGET)
 ifeq ($(TP),GBA)
@@ -711,7 +701,7 @@ ifeq ($(TP),GBA)
 	@$(OCPY) -O binary $< $@
 	$(call .L_File,FIX,$@)
 	@$(FIX) $@ $(FIXFLAGS) 1>/dev/null
-else ifeq ($(TP),APE)
+else
 	$(call .L_File,OCPY,$@)
 	@$(OCPY) -SO binary $< $@
 endif
