@@ -84,7 +84,10 @@ def mkbplate(title, copy_years, org, licnum, sh):
 		copy += '.'
 	spaces = ' ' * ((74 - len(copy)) // 2)
 	ret += lhs + spaces + copy + spaces + rhs + '\n'
-	lic = 'Released under ' + LICENCE_NAMES[licnum - 1]
+	if licnum <= 0:
+		lic = 'All rights reserved.'
+	else:
+		lic = 'Released under ' + LICENCE_NAMES[licnum - 1]
 	if len(lic) % 2:
 		lic += '.'
 	spaces = ' ' * ((74 - len(lic)) // 2)
@@ -162,6 +165,7 @@ def main(args):
 	makefile = 'Makefile.library' if n == 1 else 'Makefile.program'
 	gitinit = False
 	licnum = None
+	lic = None
 	cwd = getcwd()
 	if not path.exists(path.join(cwd, '.git')):
 		if yesno('Initialise a git repository?'):
@@ -178,8 +182,8 @@ def main(args):
 	tmp = f.read()
 	f.close()
 	tmp = tmp.replace('@BOILERPLATE@',
-		mkbplate(title, str(2020), org, licnum, True))
-	tmp = tmp.replace('@TITLE@', title)
+		mkbplate(title, str(2021), org, licnum if lic else 0, True))
+	tmp = tmp.replace('@TITLE@', title.lower())
 	print('=====')
 	print(tmp)
 	print('=====')
@@ -201,7 +205,7 @@ def main(args):
 	mkdir(path.join(cwd, 'src'))
 	mkdir(path.join(cwd, 'include'))
 	f = open(path.join(cwd, 'etc', 'BOILERPLATE'), 'w')
-	f.write(printbplate(title, str(2020), org, licnum))
+	f.write(printbplate(title, str(2021), org, licnum if lic else 0))
 	f.flush()
 	f.close()
 	if gitinit:
