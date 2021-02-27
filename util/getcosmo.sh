@@ -4,7 +4,7 @@
 # sha256sum of cosmo.zip from the 0.2.0 release
 _sum='27fc6e23898b8e0b5a7ca42b932c88ddfa0f2f7f306f72abe931128b72149c27';
 # root folder to put outputs into
-_root='build/cosmo';
+_root='build';
 
 command -v curl >/dev/null 2>&1 || { \
 	echo 'curl was not found on your system. Exiting...' >/dev/stderr; \
@@ -16,8 +16,8 @@ command -v sha256sum >/dev/null 2>&1 || {\
 	echo 'sha256sum was not found on your system. Exiting...' >/dev/stderr; \
 	exit 127; }
 
-if [ ! -d "${_root}" ]; then
-	if [ ! -h "${_root}" ]; then
+if [ ! -d "${_root}" ] && [ ! -h "${_root}" ]; then
+	if [ -f "${_root}" ]; then
 		echo "output folder \"${_root}\" is not a directory or a symbolic" \
 			' link. Exiting...' >/dev/stderr;
 		exit 127;
@@ -89,5 +89,5 @@ echo -n 'Cleaning up... ' >/dev/stderr;
 rm -f "${_root}/headers.tmp";
 echo 'done.' >/dev/stderr;
 
-unset _x _sum;
-exit 0;
+unset _x _sum _root;
+return 0;
