@@ -302,7 +302,7 @@ override LD := $(LD.O_$(.O_LD))
 
 ## Finalise flags and quasi-flags into their invocation-ready form.
 
-.K_LIB := \
+.K_LIB := -L$(TROOT)/lib \
 	$(patsubst %,-L%,$(LIBDIRS)) \
 	$(patsubst %,-L%,$(patsubst %,$(3PLIBDIR)/%lib,$(3PLIBS))) \
 	$(patsubst %,-l%,$(LIBS)) \
@@ -317,18 +317,18 @@ endif
 
 # TODO: check for TCC by command output instead of name
 ifeq ($(notdir $(CC)),tcc)
-.K_INCLUDE := \
+.K_INCLUDE := -I$(TROOT)/include \
 	$(patsubst %,-I%,$(INCLUDES)) \
 	$(patsubst %,-I%,$(INCLUDEL)) \
 	$(patsubst %,-I%,$(patsubst %,$(3PLIBDIR)/%lib/include,$(3PLIBS)))
 else
-.K_INCLUDE := \
+.K_INCLUDE := -isystem $(TROOT)/include \
 	$(patsubst %,-isystem %,$(INCLUDES)) \
 	$(patsubst %,-iquote %,$(INCLUDEL)) \
 	$(patsubst %,-isystem %,$(patsubst %,$(3PLIBDIR)/%lib/include,$(3PLIBS)))
 endif
 
-.K_ASINCLUDE := \
+.K_ASINCLUDE := -I$(TROOT)/include \
 	$(patsubst %,-I%,$(INCLUDES)) \
 	$(patsubst %,-I%,$(INCLUDEL)) \
 	$(patsubst %,-I%,$(patsubst %,$(3PLIBDIR)/%lib/include,$(3PLIBS)))
@@ -712,15 +712,14 @@ endif
 
 # GBA ROM, APE polyglot, or DOS COMfile recipe.
 
+ifneq ($(.L_EXETARGET),$(.L_BINTARGET))
 $(.L_BINTARGET): $(.L_EXETARGET)
-ifeq ($(TP),GBA)
 	$(call .L_File,OCPY,$@)
 	@$(OCPY) -O binary $< $@
+ifeq ($(TP),GBA)
 	$(call .L_File,FIX,$@)
 	@$(FIX) $@ $(FIXFLAGS) 1>/dev/null
-else
-	$(call .L_File,OCPY,$@)
-	@$(OCPY) -SO binary $< $@
+endif
 endif
 
 ## Additional .PHONY targets.
