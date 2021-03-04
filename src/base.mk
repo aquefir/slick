@@ -215,20 +215,28 @@ OCPY.DARWIN.GBA.GNU  := /opt/devkitpro/devkitARM/bin/arm-none-eabi-objcopy
 STRIP.DARWIN.GBA.GNU := /opt/devkitpro/devkitARM/bin/arm-none-eabi-strip
 
 # MS-DOS with DJGPP
-AS.DARWIN.IBMPC.GNU    := /usr/local/opt/binutils/bin/as
-CC.DARWIN.IBMPC.GNU    := /usr/local/bin/gcc-9 # brew GCC
-CXX.DARWIN.IBMPC.GNU   := /usr/local/bin/g++-9
-AR.DARWIN.IBMPC.GNU    := /usr/local/opt/binutils/bin/ar
-OCPY.DARWIN.IBMPC.GNU  := /usr/local/opt/binutils/bin/objcopy
-STRIP.DARWIN.IBMPC.GNU := /usr/local/opt/binutils/bin/strip
+# brew x86_64-elf-binutils
+AS.DARWIN.IBMPC.GNU    := /usr/local/opt/x86_64-elf-binutils/bin/x86_64-elf-as
+# brew GCC
+CC.DARWIN.IBMPC.GNU    := /usr/local/opt/x86_64-elf-gcc/bin/x86_64-elf-gcc
+CXX.DARWIN.IBMPC.GNU   := /usr/local/opt/x86_64-elf-gcc/bin/x86_64-elf-g++
+AR.DARWIN.IBMPC.GNU    := /usr/local/opt/x86_64-elf-binutils/bin/x86_64-elf-ar
+OCPY.DARWIN.IBMPC.GNU  := \
+	/usr/local/opt/x86_64-elf-binutils/bin/x86_64-elf-objcopy
+STRIP.DARWIN.IBMPC.GNU := \
+	/usr/local/opt/x86_64-elf-binutils/bin/x86_64-elf-strip
 
 # Actually Portable Executables
-AS.DARWIN.APE.GNU    := /usr/local/opt/binutils/bin/as # brew binutils
-CC.DARWIN.APE.GNU    := /usr/local/bin/gcc-9 # brew GCC
-CXX.DARWIN.APE.GNU   := /usr/local/bin/g++-9
-AR.DARWIN.APE.GNU    := /usr/local/opt/binutils/bin/ar
-OCPY.DARWIN.APE.GNU  := /usr/local/opt/binutils/bin/objcopy
-STRIP.DARWIN.APE.GNU := /usr/local/opt/binutils/bin/strip
+# brew x86_64-elf-binutils
+AS.DARWIN.APE.GNU    := /usr/local/opt/x86_64-elf-binutils/bin/x86_64-elf-as
+# brew GCC
+CC.DARWIN.APE.GNU    := /usr/local/opt/x86_64-elf-gcc/bin/x86_64-elf-gcc
+CXX.DARWIN.APE.GNU   := /usr/local/opt/x86_64-elf-gcc/bin/x86_64-elf-g++
+AR.DARWIN.APE.GNU    := /usr/local/opt/x86_64-elf-binutils/bin/x86_64-elf-ar
+OCPY.DARWIN.APE.GNU  := \
+	/usr/local/opt/x86_64-elf-binutils/bin/x86_64-elf-objcopy
+STRIP.DARWIN.APE.GNU := \
+	/usr/local/opt/x86_64-elf-binutils/bin/x86_64-elf-strip
 
 # Dev tools
 PL.DARWIN      := /usr/local/bin/perl # brew perl
