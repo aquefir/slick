@@ -173,6 +173,8 @@ CXX.DARWIN.DARWIN.LLVM   := /usr/local/opt/llvm/bin/clang++
 AR.DARWIN.DARWIN.LLVM    := /usr/local/opt/llvm/bin/llvm-ar
 OCPY.DARWIN.DARWIN.LLVM  := /usr/local/opt/llvm/bin/llvm-objcopy
 STRIP.DARWIN.DARWIN.LLVM := /usr/local/opt/llvm/bin/llvm-strip
+PROF.DARWIN.DARWIN.LLVM  := /usr/local/opt/llvm/bin/llvm-profdata
+COV.DARWIN.DARWIN.LLVM   := /usr/local/opt/llvm/bin/llvm-cov
 
 # Native, GNU
 AS.DARWIN.DARWIN.GNU    := /usr/local/opt/binutils/bin/as
@@ -243,22 +245,28 @@ PL.DARWIN      := /usr/local/bin/perl # brew perl
 PY.DARWIN      := /usr/local/bin/python3
 FMT.DARWIN     := /usr/local/bin/clang-format
 LINT.DARWIN    := /usr/local/bin/cppcheck
-INSTALL.DARWIN := /usr/local/bin/ginstall # GNU coreutils
-ECHO.DARWIN    := /usr/local/bin/gecho
-CP.DARWIN      := /usr/local/bin/gcp
+INSTALL.DARWIN := /usr/local/opt/coreutils/bin/ginstall # GNU coreutils
+ECHO.DARWIN    := /usr/local/opt/coreutils/bin/gecho
+CP.DARWIN      := /usr/local/opt/coreutils/bin/gcp
 
 # Linux host
 
 # Native, GNU
-AS.LINUX.LINUX.GNU  := /usr/bin/as
-CC.LINUX.LINUX.GNU  := /usr/bin/gcc
-CXX.LINUX.LINUX.GNU := /usr/bin/g++
-AR.LINUX.LINUX.GNU  := /usr/bin/ar
+AS.LINUX.LINUX.GNU    := /usr/bin/as
+CC.LINUX.LINUX.GNU    := /usr/bin/gcc
+CXX.LINUX.LINUX.GNU   := /usr/bin/g++
+AR.LINUX.LINUX.GNU    := /usr/bin/ar
+OCPY.LINUX.LINUX.GNU  := /usr/bin/objcopy
+STRIP.LINUX.LINUX.GNU := /usr/bin/strip
 
 # Native, LLVM
-CC.LINUX.LINUX.LLVM  := /usr/bin/clang
-CXX.LINUX.LINUX.LLVM := /usr/bin/clang++
-AR.LINUX.LINUX.LLVM  := /usr/bin/ar
+CC.LINUX.LINUX.LLVM    := /usr/bin/clang
+CXX.LINUX.LINUX.LLVM   := /usr/bin/clang++
+AR.LINUX.LINUX.LLVM    := /usr/bin/ar
+OCPY.LINUX.LINUX.LLVM  := /usr/bin/llvm-objcopy
+STRIP.LINUX.LINUX.LLVM := /usr/bin/llvm-strip
+PROF.LINUX.LINUX.LLVM  := /usr/bin/llvm-profdata
+COV.LINUX.LINUX.LLVM   := /usr/bin/llvm-cov
 
 # 32-bit Windows
 AS.LINUX.WIN32.GNU    := /usr/bin/i686-w64-mingw32-as
@@ -388,17 +396,29 @@ CFLAGS.CHECK.ALL.LLVM  := -Wextra -Werror -Wno-unused-variable
 CFLAGS.CHECK.ALL.XCODE := -Wextra -Werror -Wno-unused-variable
 CFLAGS.CHECK.ALL.TCC   := -Wextra -Werror -Wno-unused-variable
 
-CFLAGS.COV.ALL.GNU   := -O0 -g3 -fprofile-arcs -ftest-coverage
-CFLAGS.COV.ALL.LLVM  := -O0 -g3 -fprofile-arcs -ftest-coverage
-CFLAGS.COV.ALL.XCODE := -O0 -g3 -fprofile-arcs -ftest-coverage
+CFLAGS.COV.ALL.GNU   := -O0 -g3 -fprofile-arcs -ftest-coverage \
+	-fprofile-instr-generate -fcoverage-mapping
+CFLAGS.COV.ALL.LLVM  := -O0 -g3 -fprofile-arcs -ftest-coverage \
+	-fprofile-instr-generate -fcoverage-mapping
+CFLAGS.COV.ALL.XCODE := -O0 -g3 -fprofile-arcs -ftest-coverage \
+	-fprofile-instr-generate -fcoverage-mapping
 
-CFLAGS.ASAN.ALL.GNU   := -O1 -g3 -fsanitize=address -fno-omit-frame-pointer
-CFLAGS.ASAN.ALL.LLVM  := -O1 -g3 -fsanitize=address -fno-omit-frame-pointer
-CFLAGS.ASAN.ALL.XCODE := -O1 -g3 -fsanitize=address -fno-omit-frame-pointer
+CFLAGS.ASAN.ALL.GNU   := -O1 -g3 -fsanitize=address -fno-omit-frame-pointer \
+	-fprofile-arcs -ftest-coverage -fprofile-instr-generate -fcoverage-mapping
+CFLAGS.ASAN.ALL.LLVM  := -O1 -g3 -fsanitize=address -fno-omit-frame-pointer \
+	-fprofile-arcs -ftest-coverage -fprofile-instr-generate -fcoverage-mapping
+CFLAGS.ASAN.ALL.XCODE := -O1 -g3 -fsanitize=address -fno-omit-frame-pointer \
+	-fprofile-arcs -ftest-coverage -fprofile-instr-generate -fcoverage-mapping
 
-CFLAGS.UBSAN.ALL.GNU   := -O1 -g3 -fsanitize=undefined -fno-omit-frame-pointer
-CFLAGS.UBSAN.ALL.LLVM  := -O1 -g3 -fsanitize=undefined -fno-omit-frame-pointer
-CFLAGS.UBSAN.ALL.XCODE := -O1 -g3 -fsanitize=undefined -fno-omit-frame-pointer
+CFLAGS.UBSAN.ALL.GNU   := -O1 -g3 -fsanitize=undefined \
+	-fno-omit-frame-pointer -fprofile-arcs -ftest-coverage \
+	-fprofile-instr-generate -fcoverage-mapping
+CFLAGS.UBSAN.ALL.LLVM  := -O1 -g3 -fsanitize=undefined \
+	-fno-omit-frame-pointer -fprofile-arcs -ftest-coverage \
+	-fprofile-instr-generate -fcoverage-mapping
+CFLAGS.UBSAN.ALL.XCODE := -O1 -g3 -fsanitize=undefined \
+	-fno-omit-frame-pointer -fprofile-arcs -ftest-coverage \
+	-fprofile-instr-generate -fcoverage-mapping
 
 # C++ compiler flags.
 # Form: CXXFLAGS.<TARGET>.<TP>.<TC>
@@ -434,20 +454,32 @@ CXXFLAGS.CHECK.ALL.LLVM  := -Wextra -Werror -Wno-unused-variable
 CXXFLAGS.CHECK.ALL.XCODE := -Wextra -Werror -Wno-unused-variable
 CXXFLAGS.CHECK.ALL.TCC   := -Wextra -Werror -Wno-unused-variable
 
-CXXFLAGS.COV.ALL.GNU   := -O0 -g3 -fprofile-arcs -ftest-coverage
-CXXFLAGS.COV.ALL.LLVM  := -O0 -g3 -fprofile-arcs -ftest-coverage
-CXXFLAGS.COV.ALL.XCODE := -O0 -g3 -fprofile-arcs -ftest-coverage
+CXXFLAGS.COV.ALL.GNU   := -O0 -g3 -fprofile-arcs -ftest-coverage \
+	-fprofile-instr-generate -fcoverage-mapping
+CXXFLAGS.COV.ALL.LLVM  := -O0 -g3 -fprofile-arcs -ftest-coverage \
+	-fprofile-instr-generate -fcoverage-mapping
+CXXFLAGS.COV.ALL.XCODE := -O0 -g3 -fprofile-arcs -ftest-coverage \
+	-fprofile-instr-generate -fcoverage-mapping
 
-CXXFLAGS.ASAN.ALL.GNU   := -O1 -g3 -fsanitize=address -fno-omit-frame-pointer
-CXXFLAGS.ASAN.ALL.LLVM  := -O1 -g3 -fsanitize=address -fno-omit-frame-pointer
-CXXFLAGS.ASAN.ALL.XCODE := -O1 -g3 -fsanitize=address -fno-omit-frame-pointer
+CXXFLAGS.ASAN.ALL.GNU   := -O1 -g3 -fsanitize=address \
+	-fno-omit-frame-pointer -fprofile-arcs -ftest-coverage \
+	-fprofile-instr-generate -fcoverage-mapping
+CXXFLAGS.ASAN.ALL.LLVM  := -O1 -g3 -fsanitize=address \
+	-fno-omit-frame-pointer -fprofile-arcs -ftest-coverage \
+	-fprofile-instr-generate -fcoverage-mapping
+CXXFLAGS.ASAN.ALL.XCODE := -O1 -g3 -fsanitize=address \
+	-fno-omit-frame-pointer -fprofile-arcs -ftest-coverage \
+	-fprofile-instr-generate -fcoverage-mapping
 
 CXXFLAGS.UBSAN.ALL.GNU   := -O1 -g3 -fsanitize=undefined \
-	-fno-omit-frame-pointer
+	-fno-omit-frame-pointer -fprofile-arcs -ftest-coverage \
+	-fprofile-instr-generate -fcoverage-mapping
 CXXFLAGS.UBSAN.ALL.LLVM  := -O1 -g3 -fsanitize=undefined \
-	-fno-omit-frame-pointer
+	-fno-omit-frame-pointer -fprofile-arcs -ftest-coverage \
+	-fprofile-instr-generate -fcoverage-mapping
 CXXFLAGS.UBSAN.ALL.XCODE := -O1 -g3 -fsanitize=undefined \
-	-fno-omit-frame-pointer
+	-fno-omit-frame-pointer -fprofile-arcs -ftest-coverage \
+	-fprofile-instr-generate -fcoverage-mapping
 
 # Archiver flags.
 # Form: ARFLAGS.COMMON
@@ -460,7 +492,7 @@ ARFLAGS.COMMON := -rcs
 LDFLAGS.COMMON.LINUX.GNU    := -fPIE
 LDFLAGS.COMMON.LINUX.LLVM   := -fPIE
 LDFLAGS.COMMON.DARWIN.GNU   := -fPIE
-LDFLAGS.COMMON.DARWIN.LLVM  := -fPIE
+LDFLAGS.COMMON.DARWIN.LLVM  := -fPIE -mlinker-version=305
 LDFLAGS.COMMON.DARWIN.XCODE := -fPIE
 LDFLAGS.COMMON.WIN32.GNU    := -fPIE
 LDFLAGS.COMMON.WIN64.GNU    := -fPIE
@@ -469,6 +501,24 @@ LDFLAGS.COMMON.IBMPC.GNU    := -m32 -march=i386 -static -nostdlib -no-pie \
 	-Wl,--as-needed -Wl,--build-id=none -Wl,--nmagic -ffreestanding
 LDFLAGS.COMMON.APE.GNU      := -march=x86-64 -mtune=skylake -fuse-ld=bfd \
 	-static -nostdlib -no-pie -Wl,--as-needed -Wl,--build-id=none
+
+LDFLAGS.COV.ALL.GNU      := -fprofile-arcs -ftest-coverage \
+	-fprofile-instr-generate -fcoverage-mapping
+LDFLAGS.COV.ALL.LLVM     := -fprofile-arcs -ftest-coverage \
+	-fprofile-instr-generate -fcoverage-mapping
+LDFLAGS.COV.DARWIN.XCODE := -fprofile-arcs -ftest-coverage \
+	-fprofile-instr-generate -fcoverage-mapping
+
+LDFLAGS.ASAN.ALL.GNU      := -fsanitize=address
+LDFLAGS.ASAN.ALL.LLVM     := -fsanitize=address
+LDFLAGS.ASAN.DARWIN.XCODE := -fsanitize=address
+
+LDFLAGS.UBSAN.ALL.GNU      := -fsanitize=undefined
+LDFLAGS.UBSAN.ALL.LLVM     := -fsanitize=undefined
+LDFLAGS.UBSAN.DARWIN.XCODE := -fsanitize=undefined
+
+PROFFLAGS.COMMON.ALL.LLVM := merge -sparse
+COVFLAGS.COMMON.ALL.LLVM := report
 
 # Synthetic definitions.
 # Form: SYNDEFS.<TARGET>
@@ -676,6 +726,48 @@ STRIP.O_CUSTOM := $(STRIP)
 
 # Finally, set the variable.
 override STRIP := $(STRIP.O_$(.O_STRIP))
+
+# Profile data tool.
+
+# Inspect the origin of the new variable.
+# If it is undefined or set by default, say so. Otherwise it was customised.
+# The “.O_” prefix denotes “origin” and is to prevent naming collisions.
+ifeq ($(origin PROF),undefined)
+.O_PROF := DEFAULT
+else ifeq ($(origin PROF),default)
+.O_PROF := DEFAULT
+else
+# environment [override], file, command line, override, automatic
+.O_PROF := CUSTOM
+endif # $(origin PROF)
+
+# Set the origin-dependent values of the new variable.
+PROF.O_DEFAULT := $(PROF.$(.K_UNAME).$(TP).$(TC))
+PROF.O_CUSTOM := $(PROF)
+
+# Finally, set the variable.
+override PROF := $(PROF.O_$(.O_PROF))
+
+# Code coverage tool.
+
+# Inspect the origin of the new variable.
+# If it is undefined or set by default, say so. Otherwise it was customised.
+# The “.O_” prefix denotes “origin” and is to prevent naming collisions.
+ifeq ($(origin COV),undefined)
+.O_COV := DEFAULT
+else ifeq ($(origin COV),default)
+.O_COV := DEFAULT
+else
+# environment [override], file, command line, override, automatic
+.O_COV := CUSTOM
+endif # $(origin COV)
+
+# Set the origin-dependent values of the new variable.
+COV.O_DEFAULT := $(COV.$(.K_UNAME).$(TP).$(TC))
+COV.O_CUSTOM := $(COV)
+
+# Finally, set the variable.
+override COV := $(COV.O_$(.O_COV))
 
 # Perl 5 interpreter.
 

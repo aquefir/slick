@@ -171,6 +171,32 @@ else
 .L_LDFLAGS += $(LDFLAGS)
 endif
 
+# PROFFLAGS
+.L_PROFFLAGS := \
+	$(PROFFLAGS.COMMON.ALL.$(TC)) \
+	$(PROFFLAGS.COMMON.$(TP).$(TC))
+ifeq ($(origin PROFFLAGS),undefined)
+# nop
+else ifeq ($(origin PROFFLAGS),default)
+# nop
+else
+# environment [override], file, command line, override, automatic
+.L_PROFFLAGS += $(PROFFLAGS)
+endif
+
+# COVFLAGS
+.L_COVFLAGS := \
+	$(COVFLAGS.COMMON.ALL.$(TC)) \
+	$(COVFLAGS.COMMON.$(TP).$(TC))
+ifeq ($(origin COVFLAGS),undefined)
+# nop
+else ifeq ($(origin COVFLAGS),default)
+# nop
+else
+# environment [override], file, command line, override, automatic
+.L_COVFLAGS += $(COVFLAGS)
+endif
+
 # SYNDEFS
 .L_SYNDEFS := \
 	$(SYNDEFS.ALL) \
@@ -258,15 +284,45 @@ else
 .L_LDFLAGS := $(LDFLAGS)
 endif
 
+ifeq ($(origin PROFFLAGS),undefined)
+# nop
+else ifeq ($(origin PROFFLAGS),default)
+# nop
+else ifeq ($(origin PROFFLAGS),command line)
+# nop
+else ifeq ($(strip $(PROFFLAGS)),)
+# nop
+else
+# environment [override], file, override, automatic
+# not empty
+.L_PROFFLAGS := $(PROFFLAGS)
+endif
+
+ifeq ($(origin COVFLAGS),undefined)
+# nop
+else ifeq ($(origin COVFLAGS),default)
+# nop
+else ifeq ($(origin COVFLAGS),command line)
+# nop
+else ifeq ($(strip $(COVFLAGS)),)
+# nop
+else
+# environment [override], file, override, automatic
+# not empty
+.L_COVFLAGS := $(COVFLAGS)
+endif
+
 endif
 
 # Finally, set the variables.
-ASFLAGS  := $(.L_ASFLAGS)
-CFLAGS   := $(.L_CFLAGS)
-CXXFLAGS := $(.L_CXXFLAGS)
-ARFLAGS  := $(.L_ARFLAGS)
-LDFLAGS  := $(.L_LDFLAGS)
-SYNDEFS  := $(.L_SYNDEFS)
+ASFLAGS   := $(.L_ASFLAGS)
+CFLAGS    := $(.L_CFLAGS)
+CXXFLAGS  := $(.L_CXXFLAGS)
+ARFLAGS   := $(.L_ARFLAGS)
+LDFLAGS   := $(.L_LDFLAGS)
+PROFFLAGS := $(.L_PROFFLAGS)
+COVFLAGS  := $(.L_COVFLAGS)
+SYNDEFS   := $(.L_SYNDEFS)
 
 # Add the appropriate APE files as present.
 ifeq ($(TP),APE)
@@ -456,9 +512,9 @@ endif
 	$(CPPFILES:.cpp=.cpp.o)
 
 .L_OFILES.LINUX := \
-	$(SFILES.:.s=.s.o) \
-	$(CFILES.:.c=.c.o) \
-	$(CPPFILES.:.cpp=.cpp.o)
+	$(SFILES.LINUX:.s=.s.o) \
+	$(CFILES.LINUX:.c=.c.o) \
+	$(CPPFILES.LINUX:.cpp=.cpp.o)
 
 .L_OFILES.DARWIN := \
 	$(SFILES.DARWIN:.s=.s.o) \
@@ -496,71 +552,203 @@ endif
 
 .L_GCNOFILES.COMMON := \
 	$(CFILES:.c=.c.gcno) \
-	$(CPPFILES:.cpp=.cpp.gcno)
+	$(CPPFILES:.cpp=.cpp.gcno) \
+	$(TES_CFILES:.tes.c=.tes.c.gcno) \
+	$(TES_CPPFILES:.tes.cpp=.tes.cpp.gcno)
 
 .L_GCNOFILES.LINUX := \
-	$(CFILES.:.c=.c.gcno) \
-	$(CPPFILES.:.cpp=.cpp.gcno)
+	$(CFILES.LINUX:.c=.c.gcno) \
+	$(CPPFILES.LINUX:.cpp=.cpp.gcno) \
+	$(TES_CFILES.LINUX:.tes.c=.tes.c.gcno) \
+	$(TES_CPPFILES.LINUX:.tes.cpp=.tes.cpp.gcno)
 
 .L_GCNOFILES.DARWIN := \
 	$(CFILES.DARWIN:.c=.c.gcno) \
-	$(CPPFILES.DARWIN:.cpp=.cpp.gcno)
+	$(CPPFILES.DARWIN:.cpp=.cpp.gcno) \
+	$(TES_CFILES.DARWIN:.tes.c=.tes.c.gcno) \
+	$(TES_CPPFILES.DARWIN:.tes.cpp=.tes.cpp.gcno)
 
 .L_GCNOFILES.WIN32 := \
 	$(CFILES.WIN32:.c=.c.gcno) \
-	$(CPPFILES.WIN32:.cpp=.cpp.gcno)
+	$(CPPFILES.WIN32:.cpp=.cpp.gcno) \
+	$(TES_CFILES.WIN32:.tes.c=.tes.c.gcno) \
+	$(TES_CPPFILES.WIN32:.tes.cpp=.tes.cpp.gcno)
 
 .L_GCNOFILES.WIN64 := \
 	$(CFILES.WIN64:.c=.c.gcno) \
-	$(CPPFILES.WIN64:.cpp=.cpp.gcno)
+	$(CPPFILES.WIN64:.cpp=.cpp.gcno) \
+	$(TES_CFILES.WIN64:.tes.c=.tes.c.gcno) \
+	$(TES_CPPFILES.WIN64:.tes.cpp=.tes.cpp.gcno)
 
 .L_GCNOFILES.GBA := \
 	$(CFILES.GBA:.c=.c.gcno) \
-	$(CPPFILES.GBA:.cpp=.cpp.gcno)
+	$(CPPFILES.GBA:.cpp=.cpp.gcno) \
+	$(TES_CFILES.GBA:.tes.c=.tes.c.gcno) \
+	$(TES_CPPFILES.GBA:.tes.cpp=.tes.cpp.gcno)
 
 .L_GCNOFILES.IBMPC := \
 	$(CFILES.IBMPC:.c=.c.gcno) \
-	$(CPPFILES.IBMPC:.cpp=.cpp.gcno)
+	$(CPPFILES.IBMPC:.cpp=.cpp.gcno) \
+	$(TES_CFILES.IBMPC:.tes.c=.tes.c.gcno) \
+	$(TES_CPPFILES.IBMPC:.tes.cpp=.tes.cpp.gcno)
 
 .L_GCNOFILES.APE := \
 	$(CFILES.APE:.c=.c.gcno) \
-	$(CPPFILES.APE:.cpp=.cpp.gcno)
+	$(CPPFILES.APE:.cpp=.cpp.gcno) \
+	$(TES_CFILES.APE:.tes.c=.tes.c.gcno) \
+	$(TES_CPPFILES.APE:.tes.cpp=.tes.cpp.gcno)
 
 .L_GCDAFILES.COMMON := \
 	$(CFILES:.c=.c.gcda) \
-	$(CPPFILES:.cpp=.cpp.gcda)
+	$(CPPFILES:.cpp=.cpp.gcda) \
+	$(TES_CFILES:.tes.c=.tes.c.gcda) \
+	$(TES_CPPFILES:.tes.cpp=.tes.cpp.gcda)
 
 .L_GCDAFILES.LINUX := \
-	$(CFILES.:.c=.c.gcda) \
-	$(CPPFILES.:.cpp=.cpp.gcda)
+	$(CFILES.LINUX:.c=.c.gcda) \
+	$(CPPFILES.LINUX:.cpp=.cpp.gcda) \
+	$(TES_CFILES.LINUX:.tes.c=.tes.c.gcda) \
+	$(TES_CPPFILES.LINUX:.tes.cpp=.tes.cpp.gcda)
 
 .L_GCDAFILES.DARWIN := \
 	$(CFILES.DARWIN:.c=.c.gcda) \
-	$(CPPFILES.DARWIN:.cpp=.cpp.gcda)
+	$(CPPFILES.DARWIN:.cpp=.cpp.gcda) \
+	$(TES_CFILES.DARWIN:.tes.c=.tes.c.gcda) \
+	$(TES_CPPFILES.DARWIN:.tes.cpp=.tes.cpp.gcda)
 
 .L_GCDAFILES.WIN32 := \
 	$(CFILES.WIN32:.c=.c.gcda) \
-	$(CPPFILES.WIN32:.cpp=.cpp.gcda)
+	$(CPPFILES.WIN32:.cpp=.cpp.gcda) \
+	$(TES_CFILES.WIN32:.tes.c=.tes.c.gcda) \
+	$(TES_CPPFILES.WIN32:.tes.cpp=.tes.cpp.gcda)
 
 .L_GCDAFILES.WIN64 := \
 	$(CFILES.WIN64:.c=.c.gcda) \
-	$(CPPFILES.WIN64:.cpp=.cpp.gcda)
+	$(CPPFILES.WIN64:.cpp=.cpp.gcda) \
+	$(TES_CFILES.WIN64:.tes.c=.tes.c.gcda) \
+	$(TES_CPPFILES.WIN64:.tes.cpp=.tes.cpp.gcda)
 
 .L_GCDAFILES.GBA := \
 	$(CFILES.GBA:.c=.c.gcda) \
-	$(CPPFILES.GBA:.cpp=.cpp.gcda)
+	$(CPPFILES.GBA:.cpp=.cpp.gcda) \
+	$(TES_CFILES.GBA:.tes.c=.tes.c.gcda) \
+	$(TES_CPPFILES.GBA:.tes.cpp=.tes.cpp.gcda)
 
 .L_GCDAFILES.IBMPC := \
 	$(CFILES.IBMPC:.c=.c.gcda) \
-	$(CPPFILES.IBMPC:.cpp=.cpp.gcda)
+	$(CPPFILES.IBMPC:.cpp=.cpp.gcda) \
+	$(TES_CFILES.IBMPC:.tes.c=.tes.c.gcda) \
+	$(TES_CPPFILES.IBMPC:.tes.cpp=.tes.cpp.gcda)
 
 .L_GCDAFILES.APE := \
 	$(CFILES.APE:.c=.c.gcda) \
-	$(CPPFILES.APE:.cpp=.cpp.gcda)
+	$(CPPFILES.APE:.cpp=.cpp.gcda) \
+	$(TES_CFILES.APE:.tes.c=.tes.c.gcda) \
+	$(TES_CPPFILES.APE:.tes.cpp=.tes.cpp.gcda)
+
+## Define the TES battery target files.
+
+.L_TESFILES.COMMON := \
+	$(TES_SFILES:.tes.s=.s.tes) \
+	$(TES_CFILES:.tes.c=.c.tes) \
+	$(TES_CPPFILES:.tes.cpp=.cpp.tes) \
+	$(TES_CSTFILES:.tes.cst=.cst.tes)
+
+.L_TESFILES.LINUX := \
+	$(TES_SFILES.LINUX:.tes.s=.s.tes) \
+	$(TES_CFILES.LINUX:.tes.c=.c.tes) \
+	$(TES_CPPFILES.LINUX:.tes.cpp=.cpp.tes) \
+	$(TES_CSTFILES.LINUX:.tes.cst=.cst.tes)
+
+.L_TESFILES.DARWIN := \
+	$(TES_SFILES.DARWIN:.tes.s=.s.tes) \
+	$(TES_CFILES.DARWIN:.tes.c=.c.tes) \
+	$(TES_CPPFILES.DARWIN:.tes.cpp=.cpp.tes) \
+	$(TES_CSTFILES.DARWIN:.tes.cst=.cst.tes)
+
+.L_TESFILES.WIN32 := \
+	$(TES_SFILES.WIN32:.tes.s=.s.tes) \
+	$(TES_CFILES.WIN32:.tes.c=.c.tes) \
+	$(TES_CPPFILES.WIN32:.tes.cpp=.cpp.tes) \
+	$(TES_CSTFILES.WIN32:.tes.cst=.cst.tes)
+
+.L_TESFILES.WIN64 := \
+	$(TES_SFILES.WIN64:.tes.s=.s.tes) \
+	$(TES_CFILES.WIN64:.tes.c=.c.tes) \
+	$(TES_CPPFILES.WIN64:.tes.cpp=.cpp.tes) \
+	$(TES_CSTFILES.WIN64:.tes.cst=.cst.tes)
+
+.L_TESFILES.GBA := \
+	$(TES_SFILES.GBA:.tes.s=.s.tes) \
+	$(TES_CFILES.GBA:.tes.c=.c.tes) \
+	$(TES_CPPFILES.GBA:.tes.cpp=.cpp.tes) \
+	$(TES_CSTFILES.GBA:.tes.cst=.cst.tes)
+
+.L_TESFILES.IBMPC := \
+	$(TES_SFILES.IBMPC:.tes.s=.s.tes) \
+	$(TES_CFILES.IBMPC:.tes.c=.c.tes) \
+	$(TES_CPPFILES.IBMPC:.tes.cpp=.cpp.tes) \
+	$(TES_CSTFILES.IBMPC:.tes.cst=.cst.tes)
+
+.L_TESFILES.APE := \
+	$(TES_SFILES.APE:.tes.s=.s.tes) \
+	$(TES_CFILES.APE:.tes.c=.c.tes) \
+	$(TES_CPPFILES.APE:.tes.cpp=.cpp.tes) \
+	$(TES_CSTFILES.APE:.tes.cst=.cst.tes)
+
+.L_TES_OFILES.COMMON := \
+	$(TES_SFILES:.tes.s=.tes.s.o) \
+	$(TES_CFILES:.tes.c=.tes.c.o) \
+	$(TES_CPPFILES:.tes.cpp=.tes.cpp.o) \
+	$(TES_CSTFILES:.tes.cst=.tes.cst.o)
+
+.L_TES_OFILES.LINUX := \
+	$(TES_SFILES.LINUX:.tes.s=.tes.s.o) \
+	$(TES_CFILES.LINUX:.tes.c=.tes.c.o) \
+	$(TES_CPPFILES.LINUX:.tes.cpp=.tes.cpp.o) \
+	$(TES_CSTFILES.LINUX:.tes.cst=.tes.cst.o)
+
+.L_TES_OFILES.DARWIN := \
+	$(TES_SFILES.DARWIN:.tes.s=.tes.s.o) \
+	$(TES_CFILES.DARWIN:.tes.c=.tes.c.o) \
+	$(TES_CPPFILES.DARWIN:.tes.cpp=.tes.cpp.o) \
+	$(TES_CSTFILES.DARWIN:.tes.cst=.tes.cst.o)
+
+.L_TES_OFILES.WIN32 := \
+	$(TES_SFILES.WIN32:.tes.s=.tes.s.o) \
+	$(TES_CFILES.WIN32:.tes.c=.tes.c.o) \
+	$(TES_CPPFILES.WIN32:.tes.cpp=.tes.cpp.o) \
+	$(TES_CSTFILES.WIN32:.tes.cst=.tes.cst.o)
+
+.L_TES_OFILES.WIN64 := \
+	$(TES_SFILES.WIN64:.tes.s=.tes.s.o) \
+	$(TES_CFILES.WIN64:.tes.c=.tes.c.o) \
+	$(TES_CPPFILES.WIN64:.tes.cpp=.tes.cpp.o) \
+	$(TES_CSTFILES.WIN64:.tes.cst=.tes.cst.o)
+
+.L_TES_OFILES.GBA := \
+	$(TES_SFILES.GBA:.tes.s=.tes.s.o) \
+	$(TES_CFILES.GBA:.tes.c=.tes.c.o) \
+	$(TES_CPPFILES.GBA:.tes.cpp=.tes.cpp.o) \
+	$(TES_CSTFILES.GBA:.tes.cst=.tes.cst.o)
+
+.L_TES_OFILES.IBMPC := \
+	$(TES_SFILES.IBMPC:.tes.s=.tes.s.o) \
+	$(TES_CFILES.IBMPC:.tes.c=.tes.c.o) \
+	$(TES_CPPFILES.IBMPC:.tes.cpp=.tes.cpp.o) \
+	$(TES_CSTFILES.IBMPC:.tes.cst=.tes.cst.o)
+
+.L_TES_OFILES.APE := \
+	$(TES_SFILES.APE:.tes.s=.tes.s.o) \
+	$(TES_CFILES.APE:.tes.c=.tes.c.o) \
+	$(TES_CPPFILES.APE:.tes.cpp=.tes.cpp.o) \
+	$(TES_CSTFILES.APE:.tes.cst=.tes.cst.o)
+
+.L_TESFILES := $(.L_TESFILES.COMMON) $(.L_TESFILES.$(TP))
 
 ## Define the target recipes.
 
-.PHONY: debug release check cov asan ubsan format clean
+.PHONY: debug release check cov asan ubsan report clean format install
 
 ## Debug build
 ## useful for: normal testing, valgrind, LLDB
@@ -622,7 +810,11 @@ cov: CXXFLAGS += $(CXXFLAGS.COV.ALL.$(TC)) $(CXXFLAGS.COV.$(TP).$(TC))
 cov: LDFLAGS += $(LDFLAGS.COV.ALL.$(TC)) $(LDFLAGS.COV.$(TP).$(TC))
 # nop out strip when not used, as $(REALSTRIP) is called unconditionally
 cov: REALSTRIP := ':' ; # : is a no-op
+ifneq ($(strip $(NO_TES)),)
 cov: $(.L_EXETARGET)
+else
+cov: $(.L_TESFILES)
+endif # $(NO_TES)
 
 ## Address sanitised build
 ## useful for: squashing memory issues
@@ -638,7 +830,11 @@ asan: CXXFLAGS += $(CXXFLAGS.ASAN.ALL.$(TC)) $(CXXFLAGS.ASAN.$(TP).$(TC))
 asan: LDFLAGS += $(LDFLAGS.ASAN.ALL.$(TC)) $(LDFLAGS.ASAN.$(TP).$(TC))
 # nop out strip when not used, as $(REALSTRIP) is called unconditionally
 asan: REALSTRIP := ':' ; # : is a no-op
+ifneq ($(strip $(NO_TES)),)
 asan: $(.L_EXETARGET)
+else
+asan: $(.L_TESFILES)
+endif # $(NO_TES)
 
 ## Undefined Behaviour sanitised build
 ## useful for: squashing UB :-)
@@ -654,27 +850,71 @@ ubsan: CXXFLAGS += $(CXXFLAGS.UBSAN.ALL.$(TC)) $(CXXFLAGS.UBSAN.$(TP).$(TC))
 ubsan: LDFLAGS += $(LDFLAGS.UBSAN.ALL.$(TC)) $(LDFLAGS.UBSAN.$(TP).$(TC))
 # nop out strip when not used, as $(REALSTRIP) is called unconditionally
 ubsan: REALSTRIP := ':' ; # : is a no-op
+ifneq ($(strip $(NO_TES)),)
 ubsan: $(.L_EXETARGET)
+else
+ubsan: $(.L_TESFILES)
+endif # $(NO_TES)
 
 ## Define recipes.
 
 # Ofile recipes.
 
+# C*
 %.cst.o: %.cst
 	$(call .L_File,CST,$@)
 	@$(CST) -c -o $@ $(CSTFLAGS) $(.K_DEFINE) $(.K_INCLUDE) $<
 
+# C++
 %.cpp.o: %.cpp
 	$(call .L_File,CXX,$@)
 	@$(CXX) -c -o $@ $(CXXFLAGS) $(.K_DEFINE) $(.K_INCLUDE) $<
 
+# C
 %.c.o: %.c
 	$(call .L_File,C,$@)
 	@$(CC) -c -o $@ $(CFLAGS) $(.K_DEFINE) $(.K_INCLUDE) $<
 
+# Assembly
 %.s.o: %.s
 	$(call .L_File,S,$@)
 	@$(AS) -o $@ $(ASFLAGS) $(.K_ASDEFINE) $(.K_ASINCLUDE) $<
+
+# TESfile recipes.
+
+.L_LDFLAGS.TES := -L$(AQ)/lib -ltes
+
+%.cst.tes: %.tes.cst.o $(.L_OFILES)
+	$(call .L_File,LD,$@)
+	@$(LD) $(LDFLAGS) -o $@ $< $(.K_LIB) $(.L_LDFLAGS.TES) $(.L_OFILES)
+
+%.cpp.tes: %.tes.cpp.o $(.L_OFILES)
+	$(call .L_File,LD,$@)
+	@$(LD) $(LDFLAGS) -o $@ $< $(.K_LIB) $(.L_LDFLAGS.TES) $(.L_OFILES)
+
+%.c.tes: %.tes.c.o $(.L_OFILES)
+	$(call .L_File,LD,$@)
+	@$(LD) $(LDFLAGS) -o $@ $< $(.K_LIB) $(.L_LDFLAGS.TES) $(.L_OFILES)
+
+# TES ofile recipes.
+
+%.tes.cst.o: %.tes.cst
+	$(call .L_File,CST,$@)
+	@$(CST) -c -o $@ $(CSTFLAGS) $(.K_DEFINE) $(.K_INCLUDE) $<
+
+%.tes.cpp.o: %.tes.cpp
+	$(call .L_File,CXX,$@)
+	@$(CXX) -c -o $@ $(CXXFLAGS) $(.K_DEFINE) $(.K_INCLUDE) $<
+
+%.tes.c.o: %.tes.c
+	$(call .L_File,C,$@)
+	@$(CC) -c -o $@ $(CFLAGS) $(.K_DEFINE) $(.K_INCLUDE) $<
+
+# Profile data recipes.
+
+%.profdata: %.profraw
+	$(call .L_File,PROF,$@)
+	@$(PROF) $(PROFFLAGS) -o $@ $<
 
 # Static library recipe.
 
@@ -724,6 +964,12 @@ endif
 
 ## Additional .PHONY targets.
 
+# Generate code coverage reports.
+
+report: default.profdata
+	@$(ECHO) -e " -> \033[37mGenerating\033[0m code coverage reports..."
+	@$(COV) $(COVFLAGS) -instr-profile="$<" $(FILE)
+
 # Clean the repository.
 
 clean:
@@ -753,6 +999,15 @@ clean:
 	@$(RM) $(.L_GCDAFILES.GBA)
 	@$(RM) $(.L_GCDAFILES.IBMPC)
 	@$(RM) $(.L_GCDAFILES.APE)
+	@$(RM) $(.L_TESFILES.COMMON)
+	@$(RM) $(.L_TESFILES.LINUX)
+	@$(RM) $(.L_TESFILES.DARWIN)
+	@$(RM) $(.L_TESFILES.WIN32)
+	@$(RM) $(.L_TESFILES.WIN64)
+	@$(RM) $(.L_TESFILES.GBA)
+	@$(RM) $(.L_TESFILES.IBMPC)
+	@$(RM) $(.L_TESFILES.APE)
+	@$(RM) default.profraw default.profdata
 
 # Auto-format the sources.
 
