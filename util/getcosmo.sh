@@ -13,9 +13,17 @@ command -v curl >/dev/null 2>&1 || { \
 command -v unzip >/dev/null 2>&1 || { \
 	${_echo} 'unzip was not found on your system. Exiting...' >/dev/stderr; \
 	exit 127; }
-command -v sha256sum >/dev/null 2>&1 || {\
-	${_echo} 'sha256sum was not found on your system. Exiting...' \
-		>/dev/stderr; exit 127; }
+if test "$(uname -s)" = 'Darwin'; then
+	command -v shasum >/dev/null 2>&1 || {\
+		${_echo} 'shasum was not found on your system. Exiting...' \
+			>/dev/stderr; exit 127; }
+	_sha256='shasum -a 256'
+else
+	command -v sha256sum >/dev/null 2>&1 || {\
+		${_echo} 'sha256sum was not found on your system. Exiting...' \
+			>/dev/stderr; exit 127; }
+	_sha256=sha256sum
+fi
 
 if [ ! -d "${_root}" ] && [ ! -h "${_root}" ]; then
 	if [ -f "${_root}" ]; then
@@ -54,7 +62,7 @@ fi
 
 ${_echo} -n 'Verifying the integrity of the archive... ' >/dev/stderr;
 if [ "$_sum" != \
-"$(sha256sum "${_root}/cosmo.zip" | awk '{print $1}')" ]; then
+"$(${_sha256} "${_root}/cosmo.zip" | awk '{print $1}')" ]; then
 	${_echo} -e 'failed!\nSHA2-256 checksums did not match. Exiting...' \
 	>/dev/stderr;
 	exit 127;
