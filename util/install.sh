@@ -13,36 +13,39 @@ else
 fi
 
 if test "${PREFIX}" = ''; then
-	_prefix=/opt/aq/lib/slick;
+	_prefix='';
 else
 	_prefix="${PREFIX}";
 fi
 
 ${_echo} -n 'Creating folder hierarchies...' >/dev/stderr;
-${_sudo} mkdir -p "${_prefix}/cosmo";
-${_sudo} mkdir -p "${_prefix}/ibmpc";
+${_sudo} mkdir -p "${_prefix}/opt/aq/lib/slick/cosmo";
+${_sudo} mkdir -p "${_prefix}/opt/aq/lib/slick/ibmpc";
 ${_echo} ' done.' >/dev/stderr;
 
 ${_echo} -n 'Copying Cosmopolitan files...' >/dev/stderr;
-${_sudo} cp build/cosmo/ape.lds "${_prefix}/cosmo/ape.lds";
-${_sudo} cp build/cosmo/ape.o "${_prefix}/cosmo/ape.o";
-${_sudo} cp build/cosmo/cosmopolitan.a "${_prefix}/cosmo/cosmopolitan.a";
-${_sudo} cp build/cosmo/cosmopolitan.h "${_prefix}/cosmo/cosmopolitan.h";
-${_sudo} cp build/cosmo/crt.o "${_prefix}/cosmo/crt.o";
+${_sudo} cp build/cosmo/ape.lds "${_prefix}/opt/aq/lib/slick/cosmo/ape.lds";
+${_sudo} cp build/cosmo/ape.o "${_prefix}/opt/aq/lib/slick/cosmo/ape.o";
+${_sudo} cp build/cosmo/cosmopolitan.a \
+	"${_prefix}/opt/aq/lib/slick/cosmo/cosmopolitan.a";
+${_sudo} cp build/cosmo/cosmopolitan.h \
+	"${_prefix}/opt/aq/lib/slick/cosmo/cosmopolitan.h";
+${_sudo} cp build/cosmo/crt.o "${_prefix}/opt/aq/lib/slick/cosmo/crt.o";
 ${_echo} ' done.' >/dev/stderr;
 
 ${_echo} -n 'Copying IBM-PC files...' >/dev/stderr;
-${_sudo} cp build/ibmpc/crt0.o "${_prefix}/ibmpc/crt0.o";
-${_sudo} cp src/ibmpc/ibmpc.ld "${_prefix}/ibmpc/ibmpc.ld";
+${_sudo} cp build/ibmpc/crt0.o "${_prefix}/opt/aq/lib/slick/ibmpc/crt0.o";
+${_sudo} cp src/ibmpc/ibmpc.ld "${_prefix}/opt/aq/lib/slick/ibmpc/ibmpc.ld";
 ${_echo} ' done.' >/dev/stderr;
 
 ${_echo} -n 'Copying the Makefiles...' >/dev/stderr;
-${_sudo} cp src/base.mk "${_prefix}/base.mk";
-${_sudo} cp src/targets.mk "${_prefix}/targets.mk";
+${_sudo} cp src/base.mk "${_prefix}/opt/aq/lib/slick/base.mk";
+${_sudo} cp src/targets.mk "${_prefix}/opt/aq/lib/slick/targets.mk";
 ${_echo} ' done.' >/dev/stderr;
 
-[ ! -d /etc/profile.d ] || { ${_echo} -n 'Copying profile script addenda...' \
-	>/dev/stderr; ${_sudo} cp src/aquefir.sh /etc/profile.d/aquefir.sh && \
+[ ! -d "${_prefix}/etc/profile.d" ] || { ${_echo} -n \
+	'Copying profile script addenda...' >/dev/stderr; \
+	${_sudo} cp src/aquefir.sh "${_prefix}/etc/profile.d/aquefir.sh" && \
 	${_echo} ' done.' >/dev/stderr; }
 
 ${_echo} 'All done. Exiting...' >/dev/stderr;
