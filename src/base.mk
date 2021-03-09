@@ -518,7 +518,7 @@ LDFLAGS.UBSAN.ALL.LLVM     := -fsanitize=undefined
 LDFLAGS.UBSAN.DARWIN.XCODE := -fsanitize=undefined
 
 PROFFLAGS.COMMON.ALL.LLVM := merge -sparse
-COVFLAGS.COMMON.ALL.LLVM := report
+COVFLAGS.COMMON.ALL.LLVM  := report
 
 # Synthetic definitions.
 # Form: SYNDEFS.<TARGET>
