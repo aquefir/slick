@@ -363,10 +363,10 @@ ASFLAGS.COMMON.APE   := -march=x86-64
 # NOTE: $TC uses a modified set to include 3rd party C compiler support.
 #       This includes CHIBI and TCC as additional values.
 
-CFLAGS.COMMON.ALL.GNU      := -pipe -x c -frandom-seed=69420
-CFLAGS.COMMON.ALL.LLVM     := -pipe -Wpedantic -x c -frandom-seed=69420
-CFLAGS.COMMON.ALL.XCODE    := -pipe -Wpedantic -x c -frandom-seed=69420
-CFLAGS.COMMON.ALL.TCC      := -Wpedantic
+CFLAGS.COMMON.ALL.GNU      := -ansi -pipe -x c -frandom-seed=69420
+CFLAGS.COMMON.ALL.LLVM     := -ansi -pipe -Wpedantic -x c -frandom-seed=69420
+CFLAGS.COMMON.ALL.XCODE    := -ansi -pipe -Wpedantic -x c -frandom-seed=69420
+CFLAGS.COMMON.ALL.TCC      := -std=c89 -Wpedantic
 CFLAGS.COMMON.LINUX.GNU    := -Wpedantic -march=x86-64 -mtune=skylake -fPIC
 CFLAGS.COMMON.LINUX.LLVM   := -march=x86-64 -mtune=skylake -fPIC
 CFLAGS.COMMON.DARWIN.GNU   := -Wpedantic -march=ivybridge -mtune=skylake -fPIC
@@ -509,13 +509,19 @@ LDFLAGS.COV.ALL.LLVM     := -fprofile-arcs -ftest-coverage \
 LDFLAGS.COV.DARWIN.XCODE := -fprofile-arcs -ftest-coverage \
 	-fprofile-instr-generate -fcoverage-mapping
 
-LDFLAGS.ASAN.ALL.GNU      := -fsanitize=address
-LDFLAGS.ASAN.ALL.LLVM     := -fsanitize=address
-LDFLAGS.ASAN.DARWIN.XCODE := -fsanitize=address
+LDFLAGS.ASAN.ALL.GNU      := -fsanitize=address -fprofile-arcs \
+	-ftest-coverage -fprofile-instr-generate -fcoverage-mapping
+LDFLAGS.ASAN.ALL.LLVM     := -fsanitize=address -fprofile-arcs \
+	-ftest-coverage -fprofile-instr-generate -fcoverage-mapping
+LDFLAGS.ASAN.DARWIN.XCODE := -fsanitize=address -fprofile-arcs \
+	-ftest-coverage -fprofile-instr-generate -fcoverage-mapping
 
-LDFLAGS.UBSAN.ALL.GNU      := -fsanitize=undefined
-LDFLAGS.UBSAN.ALL.LLVM     := -fsanitize=undefined
-LDFLAGS.UBSAN.DARWIN.XCODE := -fsanitize=undefined
+LDFLAGS.UBSAN.ALL.GNU      := -fsanitize=undefined -fprofile-arcs \
+	-ftest-coverage -fprofile-instr-generate -fcoverage-mapping
+LDFLAGS.UBSAN.ALL.LLVM     := -fsanitize=undefined -fprofile-arcs \
+	-ftest-coverage -fprofile-instr-generate -fcoverage-mapping
+LDFLAGS.UBSAN.DARWIN.XCODE := -fsanitize=undefined -fprofile-arcs \
+	-ftest-coverage -fprofile-instr-generate -fcoverage-mapping
 
 PROFFLAGS.COMMON.ALL.LLVM := merge -sparse
 COVFLAGS.COMMON.ALL.LLVM  := report
