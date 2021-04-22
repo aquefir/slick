@@ -813,7 +813,11 @@ cov: REALSTRIP := ':' ; # : is a no-op
 ifneq ($(strip $(NO_TES)),)
 cov: $(.L_EXETARGET)
 else
+ifeq ($(.L_EXEFILE),1)
+cov: $(.L_EXETARGET)
+else
 cov: $(.L_TESFILES)
+endif # $(.L_TESFILES)
 endif # $(NO_TES)
 
 ## Address sanitised build
@@ -833,7 +837,11 @@ asan: REALSTRIP := ':' ; # : is a no-op
 ifneq ($(strip $(NO_TES)),)
 asan: $(.L_EXETARGET)
 else
+ifeq ($(.L_EXEFILE),1)
+asan: $(.L_EXETARGET)
+else
 asan: $(.L_TESFILES)
+endif # $(.L_TESFILES)
 endif # $(NO_TES)
 
 ## Undefined Behaviour sanitised build
@@ -853,7 +861,11 @@ ubsan: REALSTRIP := ':' ; # : is a no-op
 ifneq ($(strip $(NO_TES)),)
 ubsan: $(.L_EXETARGET)
 else
+ifeq ($(.L_EXEFILE),1)
+ubsan: $(.L_EXETARGET)
+else
 ubsan: $(.L_TESFILES)
+endif # $(.L_TESFILES)
 endif # $(NO_TES)
 
 ## Define recipes.
