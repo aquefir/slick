@@ -1,8 +1,8 @@
 #!/bin/sh
 # -*- coding: utf-8 -*-
 
-# sha256sum of cosmo.zip from the 0.2.0 release
-_sum='27fc6e23898b8e0b5a7ca42b932c88ddfa0f2f7f306f72abe931128b72149c27';
+# sha256sum of cosmo.zip from the 1.0 release
+_sum='d6a11ec4cf85d79d172aacb84e2894c8d09e115ab1acec36e322708559a711cb';
 # root folder to put outputs into
 _root='build';
 _echo='/bin/echo';
@@ -41,7 +41,7 @@ else
 	${_echo} -n 'Downloading the Cosmopolitan amalgamated binaries... ' \
 	>/dev/stderr;
 	curl -sD ${_root}/headers.tmp -o "${_root}/cosmo.zip" \
-		https://justine.lol/cosmopolitan/cosmopolitan-amalgamation-0.2.zip;
+		https://justine.lol/cosmopolitan/cosmopolitan-amalgamation-1.0.zip;
 	_x=$?;
 	if [ ! -f "${_root}/headers.tmp" ]; then
 		${_echo} -e "failed!\n${_root}/headers.tmp was not found on disk." \
