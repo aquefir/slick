@@ -27,7 +27,9 @@ LICENCES = [
 	'FDL',
 	'GPL2',
 	'LGPL21',
-	'MPL2'
+	'MPL2',
+	'ASL',
+	'CIRNO',
 ]
 
 LICENCE_NAMES = [
@@ -54,7 +56,9 @@ LICENCE_NAMES = [
 	'GNU Free Documentation License.',
 	'GNU General Public License v2',
 	'GNU Lesser GPL v2.1',
-	'Mozilla Public License 2.0'
+	'Mozilla Public License 2.0',
+	'Artisan Software Licence',
+	'THE STRONGEST PUBLIC LICENSE'
 ]
 
 from sys import stdin, stdout
