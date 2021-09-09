@@ -1,6 +1,6 @@
 #!/usr/bin/make
 # -*- coding: utf-8 -*-
-## Copyright © 2020-2021 Aquefir.
+## Copyright (C) 2020-2021 Aquefir.
 ## Released under BSD-2-Clause.
 ## This Makefile provides multi-platform build normalisation for the C and C++
 ## compilation toolchains. It is included at the top of the main Makefile.
@@ -8,7 +8,7 @@
 ##
 
 # Check Make version; we need at least GNU Make 3.82. Fortunately,
-# ‘undefine’ directive has been introduced exactly in GNU Make 3.82.
+# 'undefine' directive has been introduced exactly in GNU Make 3.82.
 ifeq ($(filter undefine,$(value .FEATURES)),)
 $(error Unsupported Make version. \
 The build system does not work properly with GNU Make $(MAKE_VERSION). \
@@ -24,7 +24,7 @@ endif
 
 # Inspect the origin of the new variable.
 # If it is undefined or set by default, say so. Otherwise it was customised.
-# The “.O_” prefix denotes “origin” and is to prevent naming collisions.
+# The ".O_" prefix denotes "origin" and is to prevent naming collisions.
 ifeq ($(origin SLICK_PRINT),undefined)
 .O_SLICK_PRINT := DEFAULT
 else ifeq ($(origin SLICK_PRINT),default)
@@ -54,7 +54,7 @@ override SLICK_PRINT := $(SLICK_PRINT.O_$(.O_SLICK_PRINT))
 
 # Inspect the origin of the new variable.
 # If it is undefined or set by default, say so. Otherwise it was customised.
-# The “.O_” prefix denotes “origin” and is to prevent naming collisions.
+# The ".O_" prefix denotes "origin" and is to prevent naming collisions.
 ifeq ($(origin SLICK_OVERRIDE),undefined)
 .O_SLICK_OVERRIDE := DEFAULT
 else ifeq ($(origin SLICK_OVERRIDE),default)
@@ -73,7 +73,7 @@ override SLICK_OVERRIDE := $(SLICK_OVERRIDE.O_$(.O_SLICK_OVERRIDE))
 
 ## Host platform.
 
-# The “.K_” prefix denotes “[k]onstant” and is to prevent naming collisions.
+# The ".K_" prefix denotes "[k]onstant" and is to prevent naming collisions.
 # Capitalise the result text for use in variable interpolation later.
 .K_UNAME := $(shell uname -s | tr 'a-z' 'A-Z')
 
@@ -81,7 +81,7 @@ override SLICK_OVERRIDE := $(SLICK_OVERRIDE.O_$(.O_SLICK_OVERRIDE))
 
 # Inspect the origin of the new variable.
 # If it is undefined or set by default, say so. Otherwise it was customised.
-# The “.O_” prefix denotes “origin” and is to prevent naming collisions.
+# The ".O_" prefix denotes "origin" and is to prevent naming collisions.
 ifeq ($(origin TP),undefined)
 .O_TP := DEFAULT
 else ifeq ($(origin TP),default)
@@ -102,7 +102,7 @@ override TP := $(TP.O_$(.O_TP))
 
 # Inspect the origin of the new variable.
 # If it is undefined or set by default, say so. Otherwise it was customised.
-# The “.O_” prefix denotes “origin” and is to prevent naming collisions.
+# The ".O_" prefix denotes "origin" and is to prevent naming collisions.
 ifeq ($(origin TC),undefined)
 .O_TC := DEFAULT
 else ifeq ($(origin TC),default)
@@ -118,6 +118,7 @@ TC.LINUX  := GNU
 TC.WIN32  := GNU
 TC.WIN64  := GNU
 TC.GBA    := GNU
+TC.GBASP  := GNU
 TC.IBMPC  := GNU
 TC.APE    := GNU
 
@@ -132,7 +133,7 @@ override TC := $(TC.O_$(.O_TC))
 
 # Inspect the origin of the new variable.
 # If it is undefined or set by default, say so. Otherwise it was customised.
-# The “.O_” prefix denotes “origin” and is to prevent naming collisions.
+# The ".O_" prefix denotes "origin" and is to prevent naming collisions.
 ifeq ($(origin TROOT),undefined)
 .O_TROOT := DEFAULT
 else ifeq ($(origin TROOT),default)
@@ -147,12 +148,14 @@ TROOT.DARWIN.DARWIN := /usr/local
 TROOT.DARWIN.WIN32  := /usr/local/i686-w64-mingw32
 TROOT.DARWIN.WIN64  := /usr/local/x86_64-w64-mingw32
 TROOT.DARWIN.GBA    := /usr/local/armv4t-agb-eabi
+TROOT.DARWIN.GBASP  := /usr/local/armv4t-agb-nicho
 TROOT.DARWIN.IBMPC  := /usr/local/i386-pc-dos
 TROOT.DARWIN.APE    := /usr/local/x86_64-pc-ape
 TROOT.LINUX.LINUX   := /usr
 TROOT.LINUX.WIN32   := /usr/i686-w64-mingw32
 TROOT.LINUX.WIN64   := /usr/x86_64-w64-mingw32
 TROOT.LINUX.GBA     := /usr/armv4t-agb-eabi
+TROOT.LINUX.GBASP   := /usr/armv4t-agb-nicho
 TROOT.LINUX.IBMPC   := /usr/i386-pc-dos
 TROOT.LINUX.APE     := /usr/x86_64-pc-ape
 
@@ -216,6 +219,14 @@ AR.DARWIN.GBA.GNU    := /opt/devkitpro/devkitARM/bin/arm-none-eabi-ar
 OCPY.DARWIN.GBA.GNU  := /opt/devkitpro/devkitARM/bin/arm-none-eabi-objcopy
 STRIP.DARWIN.GBA.GNU := /opt/devkitpro/devkitARM/bin/arm-none-eabi-strip
 
+# Game Boy Advance Sourcepatching
+AS.DARWIN.GBASP.GNU    := /opt/devkitpro/devkitARM/bin/arm-none-eabi-as
+CC.DARWIN.GBASP.GNU    := /opt/devkitpro/devkitARM/bin/arm-none-eabi-gcc
+CXX.DARWIN.GBASP.GNU   := /opt/devkitpro/devkitARM/bin/arm-none-eabi-g++
+AR.DARWIN.GBASP.GNU    := /opt/devkitpro/devkitARM/bin/arm-none-eabi-ar
+OCPY.DARWIN.GBASP.GNU  := /opt/devkitpro/devkitARM/bin/arm-none-eabi-objcopy
+STRIP.DARWIN.GBASP.GNU := /opt/devkitpro/devkitARM/bin/arm-none-eabi-strip
+
 # MS-DOS with DJGPP
 # brew x86_64-elf-binutils
 AS.DARWIN.IBMPC.GNU    := /usr/local/opt/x86_64-elf-binutils/bin/x86_64-elf-as
@@ -248,6 +259,8 @@ LINT.DARWIN    := /usr/local/bin/cppcheck
 INSTALL.DARWIN := /usr/local/opt/coreutils/bin/ginstall # GNU coreutils
 ECHO.DARWIN    := /usr/local/opt/coreutils/bin/gecho
 CP.DARWIN      := /usr/local/opt/coreutils/bin/gcp
+BIN2ASM.DARWIN := /usr/local/bin/bin2asm
+EGMAN.DARWIN   := /usr/local/bin/mangledeggs
 
 # Linux host
 
@@ -285,12 +298,20 @@ OCPY.LINUX.WIN64.GNU  := /usr/bin/x86_64-w64-mingw32-objcopy
 STRIP.LINUX.WIN64.GNU := /usr/bin/x86_64-w64-mingw32-strip
 
 # Game Boy Advance
-AS.DARWIN.GBA.GNU    := /opt/devkitpro/devkitARM/bin/arm-none-eabi-as
-CC.DARWIN.GBA.GNU    := /opt/devkitpro/devkitARM/bin/arm-none-eabi-gcc
-CXX.DARWIN.GBA.GNU   := /opt/devkitpro/devkitARM/bin/arm-none-eabi-g++
-AR.DARWIN.GBA.GNU    := /opt/devkitpro/devkitARM/bin/arm-none-eabi-ar
-OCPY.DARWIN.GBA.GNU  := /opt/devkitpro/devkitARM/bin/arm-none-eabi-objcopy
-STRIP.DARWIN.GBA.GNU := /opt/devkitpro/devkitARM/bin/arm-none-eabi-strip
+AS.LINUX.GBA.GNU    := /opt/devkitpro/devkitARM/bin/arm-none-eabi-as
+CC.LINUX.GBA.GNU    := /opt/devkitpro/devkitARM/bin/arm-none-eabi-gcc
+CXX.LINUX.GBA.GNU   := /opt/devkitpro/devkitARM/bin/arm-none-eabi-g++
+AR.LINUX.GBA.GNU    := /opt/devkitpro/devkitARM/bin/arm-none-eabi-ar
+OCPY.LINUX.GBA.GNU  := /opt/devkitpro/devkitARM/bin/arm-none-eabi-objcopy
+STRIP.LINUX.GBA.GNU := /opt/devkitpro/devkitARM/bin/arm-none-eabi-strip
+
+# Game Boy Advance Sourcepatching
+AS.LINUX.GBASP.GNU    := /opt/devkitpro/devkitARM/bin/arm-none-eabi-as
+CC.LINUX.GBASP.GNU    := /opt/devkitpro/devkitARM/bin/arm-none-eabi-gcc
+CXX.LINUX.GBASP.GNU   := /opt/devkitpro/devkitARM/bin/arm-none-eabi-g++
+AR.LINUX.GBASP.GNU    := /opt/devkitpro/devkitARM/bin/arm-none-eabi-ar
+OCPY.LINUX.GBASP.GNU  := /opt/devkitpro/devkitARM/bin/arm-none-eabi-objcopy
+STRIP.LINUX.GBASP.GNU := /opt/devkitpro/devkitARM/bin/arm-none-eabi-strip
 
 # MS-DOS with DJGPP
 AS.LINUX.IBMPC.GNU    := /usr/bin/as
@@ -316,6 +337,8 @@ LINT.LINUX    := /usr/bin/cppcheck
 INSTALL.LINUX := /usr/bin/install
 ECHO.LINUX    := /bin/echo # Not a bashism
 CP.LINUX      := /bin/cp # Not a bashism
+BIN2ASM.LINUX := /usr/bin/bin2asm
+EGMAN.LINUX   := /usr/bin/mangledeggs
 
 ## Suffixes.
 
@@ -326,6 +349,7 @@ SO.DARWIN := .dylib
 SO.WIN32  := .dll
 SO.WIN64  := .dll
 #SO.GBA   := GBA does not have shared libraries.
+#SO.GBASP := GBASP does not have shared libraries.
 #SO.IBMPC := IBMPC does not have shared libraries.
 #SO.APE   := APE does not have shared libraries.
 
@@ -336,12 +360,14 @@ EXE.DARWIN :=
 EXE.WIN32  := .exe
 EXE.WIN64  := .exe
 EXE.GBA    := .elf
+EXE.GBASP  := .elf
 EXE.IBMPC  := .elf
 EXE.APE    := .com.dbg
 
 # Binary executables.
 
 BIN.GBA   := .gba
+BIN.GBASP := .bin
 BIN.IBMPC := .com
 BIN.APE   := .com
 
@@ -355,6 +381,7 @@ ASFLAGS.COMMON.LINUX := -march=x86-64
 ASFLAGS.COMMON.WIN32 := -march=i386
 ASFLAGS.COMMON.WIN64 := -march=x86-64
 ASFLAGS.COMMON.GBA   := -march=armv4t -mcpu=arm7tdmi -mthumb-interwork -EL
+ASFLAGS.COMMON.GBASP := -march=armv4t -mcpu=arm7tdmi -EL
 ASFLAGS.COMMON.IBMPC := --32 -march=i386
 ASFLAGS.COMMON.APE   := -march=x86-64
 
@@ -376,6 +403,7 @@ CFLAGS.COMMON.WIN32.GNU    := -Wpedantic -march=i386 -mtune=skylake -fPIC
 CFLAGS.COMMON.WIN64.GNU    := -Wpedantic -march=x86-64 -mtune=skylake -fPIC
 CFLAGS.COMMON.GBA.GNU      := -Wpedantic -march=armv4t -mcpu=arm7tdmi \
 	-mthumb-interwork -Wno-builtin-declaration-mismatch
+CFLAGS.COMMON.GBASP.GNU    := -march=armv4t -mcpu=arm7tdmi
 CFLAGS.COMMON.IBMPC.GNU    := -Wpedantic -m32 -march=i386 -nostdinc -fno-pie \
 	-fno-leading-underscore -ffreestanding
 CFLAGS.COMMON.APE.GNU      := -g -march=x86-64 -mtune=skylake -fno-pie \
@@ -436,6 +464,7 @@ CXXFLAGS.COMMON.WIN32.GNU    := -Wpedantic -march=i386 -mtune=skylake -fPIC
 CXXFLAGS.COMMON.WIN64.GNU    := -Wpedantic -march=x86-64 -mtune=skylake -fPIC
 CXXFLAGS.COMMON.GBA.GNU      := -Wpedantic -march=armv4t -mcpu=arm7tdmi \
 	-mthumb-interwork -Wno-builtin-declaration-mismatch
+CXXFLAGS.COMMON.GBASP.GNU    := -march=armv4t -mcpu=arm7tdmi
 CXXFLAGS.COMMON.IBMPC.GNU    := -Wpedantic -m32 -march=i386 -nostdinc \
 	-fno-pie -fno-leading-underscore -ffreestanding
 CXXFLAGS.COMMON.APE.GNU      := -g -march=x86-64 -mtune=skylake -fno-pie \
@@ -497,6 +526,7 @@ LDFLAGS.COMMON.DARWIN.XCODE := -fPIE
 LDFLAGS.COMMON.WIN32.GNU    := -fPIE
 LDFLAGS.COMMON.WIN64.GNU    := -fPIE
 LDFLAGS.COMMON.GBA.GNU      :=
+LDFLAGS.COMMON.GBASP.GNU    := -nostdlib -T etc/gba.ld -T etc/emer.ld
 LDFLAGS.COMMON.IBMPC.GNU    := -m32 -march=i386 -static -nostdlib -no-pie \
 	-Wl,--as-needed -Wl,--build-id=none -Wl,--nmagic -ffreestanding
 LDFLAGS.COMMON.APE.GNU      := -march=x86-64 -mtune=skylake -fuse-ld=bfd \
@@ -540,6 +570,8 @@ SYNDEFS.WIN64  := WINDOWS IA32 LILENDIAN WORDSZ_64 HAVE_I32 HAVE_I64 HAVE_FP \
 	FP_HARD FP_SOFT LONGSZ_32 WIN64
 SYNDEFS.GBA    := GBA ARMV4T LILENDIAN WORDSZ_32 HAVE_I32 HAVE_FP FP_SOFT \
 	LONGSZ_32
+SYNDEFS.GBASP  := GBA SOURCEPATCH ARMV4T LILENDIAN WORDSZ_32 HAVE_I32 \
+	LONGSZ_32
 SYNDEFS.IBMPC  := IBMPC I86 LILENDIAN WORDSZ_16
 SYNDEFS.APE    := APE AMD64 LILENDIAN WORDSZ_64 HAVE_I32 HAVE_I64 HAVE_FP \
 	FP_HARD FP_SOFT LONGSZ_64
@@ -548,7 +580,7 @@ SYNDEFS.APE    := APE AMD64 LILENDIAN WORDSZ_64 HAVE_I32 HAVE_I64 HAVE_FP \
 
 # Inspect the origin of the new variable.
 # If it is undefined or set by default, say so. Otherwise it was customised.
-# The “.O_” prefix denotes “origin” and is to prevent naming collisions.
+# The ".O_" prefix denotes "origin" and is to prevent naming collisions.
 ifeq ($(origin SO),undefined)
 .O_SO := DEFAULT
 else ifeq ($(origin SO),default)
@@ -569,7 +601,7 @@ override SO := $(SO.O_$(.O_SO))
 
 # Inspect the origin of the new variable.
 # If it is undefined or set by default, say so. Otherwise it was customised.
-# The “.O_” prefix denotes “origin” and is to prevent naming collisions.
+# The ".O_" prefix denotes "origin" and is to prevent naming collisions.
 ifeq ($(origin EXE),undefined)
 .O_EXE := DEFAULT
 else ifeq ($(origin EXE),default)
@@ -590,7 +622,7 @@ override EXE := $(EXE.O_$(.O_EXE))
 
 # Inspect the origin of the new variable.
 # If it is undefined or set by default, say so. Otherwise it was customised.
-# The “.O_” prefix denotes “origin” and is to prevent naming collisions.
+# The ".O_" prefix denotes "origin" and is to prevent naming collisions.
 ifeq ($(origin BIN),undefined)
 .O_BIN := DEFAULT
 else ifeq ($(origin BIN),default)
@@ -611,7 +643,7 @@ override BIN := $(BIN.O_$(.O_BIN))
 
 # Inspect the origin of the new variable.
 # If it is undefined or set by default, say so. Otherwise it was customised.
-# The “.O_” prefix denotes “origin” and is to prevent naming collisions.
+# The ".O_" prefix denotes "origin" and is to prevent naming collisions.
 ifeq ($(origin AS),undefined)
 .O_AS := DEFAULT
 else ifeq ($(origin AS),default)
@@ -632,7 +664,7 @@ override AS := $(AS.O_$(.O_AS))
 
 # Inspect the origin of the new variable.
 # If it is undefined or set by default, say so. Otherwise it was customised.
-# The “.O_” prefix denotes “origin” and is to prevent naming collisions.
+# The ".O_" prefix denotes "origin" and is to prevent naming collisions.
 ifeq ($(origin CC),undefined)
 .O_CC := DEFAULT
 else ifeq ($(origin CC),default)
@@ -653,7 +685,7 @@ override CC := $(CC.O_$(.O_CC))
 
 # Inspect the origin of the new variable.
 # If it is undefined or set by default, say so. Otherwise it was customised.
-# The “.O_” prefix denotes “origin” and is to prevent naming collisions.
+# The ".O_" prefix denotes "origin" and is to prevent naming collisions.
 ifeq ($(origin CXX),undefined)
 .O_CXX := DEFAULT
 else ifeq ($(origin CXX),default)
@@ -674,7 +706,7 @@ override CXX := $(CXX.O_$(.O_CXX))
 
 # Inspect the origin of the new variable.
 # If it is undefined or set by default, say so. Otherwise it was customised.
-# The “.O_” prefix denotes “origin” and is to prevent naming collisions.
+# The ".O_" prefix denotes "origin" and is to prevent naming collisions.
 ifeq ($(origin AR),undefined)
 .O_AR := DEFAULT
 else ifeq ($(origin AR),default)
@@ -695,7 +727,7 @@ override AR := $(AR.O_$(.O_AR))
 
 # Inspect the origin of the new variable.
 # If it is undefined or set by default, say so. Otherwise it was customised.
-# The “.O_” prefix denotes “origin” and is to prevent naming collisions.
+# The ".O_" prefix denotes "origin" and is to prevent naming collisions.
 ifeq ($(origin OCPY),undefined)
 .O_OCPY := DEFAULT
 else ifeq ($(origin OCPY),default)
@@ -716,7 +748,7 @@ override OCPY := $(OCPY.O_$(.O_OCPY))
 
 # Inspect the origin of the new variable.
 # If it is undefined or set by default, say so. Otherwise it was customised.
-# The “.O_” prefix denotes “origin” and is to prevent naming collisions.
+# The ".O_" prefix denotes "origin" and is to prevent naming collisions.
 ifeq ($(origin STRIP),undefined)
 .O_STRIP := DEFAULT
 else ifeq ($(origin STRIP),default)
@@ -737,7 +769,7 @@ override STRIP := $(STRIP.O_$(.O_STRIP))
 
 # Inspect the origin of the new variable.
 # If it is undefined or set by default, say so. Otherwise it was customised.
-# The “.O_” prefix denotes “origin” and is to prevent naming collisions.
+# The ".O_" prefix denotes "origin" and is to prevent naming collisions.
 ifeq ($(origin PROF),undefined)
 .O_PROF := DEFAULT
 else ifeq ($(origin PROF),default)
@@ -758,7 +790,7 @@ override PROF := $(PROF.O_$(.O_PROF))
 
 # Inspect the origin of the new variable.
 # If it is undefined or set by default, say so. Otherwise it was customised.
-# The “.O_” prefix denotes “origin” and is to prevent naming collisions.
+# The ".O_" prefix denotes "origin" and is to prevent naming collisions.
 ifeq ($(origin COV),undefined)
 .O_COV := DEFAULT
 else ifeq ($(origin COV),default)
@@ -779,7 +811,7 @@ override COV := $(COV.O_$(.O_COV))
 
 # Inspect the origin of the new variable.
 # If it is undefined or set by default, say so. Otherwise it was customised.
-# The “.O_” prefix denotes “origin” and is to prevent naming collisions.
+# The ".O_" prefix denotes "origin" and is to prevent naming collisions.
 ifeq ($(origin PL),undefined)
 .O_PL := DEFAULT
 else ifeq ($(origin PL),default)
@@ -800,7 +832,7 @@ override PL := $(PL.O_$(.O_PL))
 
 # Inspect the origin of the new variable.
 # If it is undefined or set by default, say so. Otherwise it was customised.
-# The “.O_” prefix denotes “origin” and is to prevent naming collisions.
+# The ".O_" prefix denotes "origin" and is to prevent naming collisions.
 ifeq ($(origin PY),undefined)
 .O_PY := DEFAULT
 else ifeq ($(origin PY),default)
@@ -821,7 +853,7 @@ override PY := $(PY.O_$(.O_PY))
 
 # Inspect the origin of the new variable.
 # If it is undefined or set by default, say so. Otherwise it was customised.
-# The “.O_” prefix denotes “origin” and is to prevent naming collisions.
+# The ".O_" prefix denotes "origin" and is to prevent naming collisions.
 ifeq ($(origin FMT),undefined)
 .O_FMT := DEFAULT
 else ifeq ($(origin FMT),default)
@@ -842,7 +874,7 @@ override FMT := $(FMT.O_$(.O_FMT))
 
 # Inspect the origin of the new variable.
 # If it is undefined or set by default, say so. Otherwise it was customised.
-# The “.O_” prefix denotes “origin” and is to prevent naming collisions.
+# The ".O_" prefix denotes "origin" and is to prevent naming collisions.
 ifeq ($(origin LINT),undefined)
 .O_LINT := DEFAULT
 else ifeq ($(origin LINT),default)
@@ -863,7 +895,7 @@ override LINT := $(LINT.O_$(.O_LINT))
 
 # Inspect the origin of the new variable.
 # If it is undefined or set by default, say so. Otherwise it was customised.
-# The “.O_” prefix denotes “origin” and is to prevent naming collisions.
+# The ".O_" prefix denotes "origin" and is to prevent naming collisions.
 ifeq ($(origin INSTALL),undefined)
 .O_INSTALL := DEFAULT
 else ifeq ($(origin INSTALL),default)
@@ -884,7 +916,7 @@ override INSTALL := $(INSTALL.O_$(.O_INSTALL))
 
 # Inspect the origin of the new variable.
 # If it is undefined or set by default, say so. Otherwise it was customised.
-# The “.O_” prefix denotes “origin” and is to prevent naming collisions.
+# The ".O_" prefix denotes "origin" and is to prevent naming collisions.
 ifeq ($(origin ECHO),undefined)
 .O_ECHO := DEFAULT
 else ifeq ($(origin ECHO),default)
@@ -901,11 +933,11 @@ ECHO.O_CUSTOM := $(ECHO)
 # Finally, set the variable.
 override ECHO := $(ECHO.O_$(.O_ECHO))
 
-# Copy command (‘cp’).
+# Copy command ('cp').
 
 # Inspect the origin of the new variable.
 # If it is undefined or set by default, say so. Otherwise it was customised.
-# The “.O_” prefix denotes “origin” and is to prevent naming collisions.
+# The ".O_" prefix denotes "origin" and is to prevent naming collisions.
 ifeq ($(origin CP),undefined)
 .O_CP := DEFAULT
 else ifeq ($(origin CP),default)
@@ -921,6 +953,48 @@ CP.O_CUSTOM := $(CP)
 
 # Finally, set the variable.
 override CP := $(CP.O_$(.O_CP))
+
+# Binary to assembly converter ('bin2asm').
+
+# Inspect the origin of the new variable.
+# If it is undefined or set by default, say so. Otherwise it was customised.
+# The ".O_" prefix denotes "origin" and is to prevent naming collisions.
+ifeq ($(origin BIN2ASM),undefined)
+.O_BIN2ASM := DEFAULT
+else ifeq ($(origin BIN2ASM),default)
+.O_BIN2ASM := DEFAULT
+else
+# environment [override], file, command line, override, automatic
+.O_BIN2ASM := CUSTOM
+endif # $(origin BIN2ASM)
+
+# Set the origin-dependent values of the new variable.
+BIN2ASM.O_DEFAULT := $(BIN2ASM.$(.K_UNAME))
+BIN2ASM.O_CUSTOM := $(BIN2ASM)
+
+# Finally, set the variable.
+override BIN2ASM := $(BIN2ASM.O_$(.O_BIN2ASM))
+
+# Mangler ('egman').
+
+# Inspect the origin of the new variable.
+# If it is undefined or set by default, say so. Otherwise it was customised.
+# The ".O_" prefix denotes "origin" and is to prevent naming collisions.
+ifeq ($(origin EGMAN),undefined)
+.O_EGMAN := DEFAULT
+else ifeq ($(origin EGMAN),default)
+.O_EGMAN := DEFAULT
+else
+# environment [override], file, command line, override, automatic
+.O_EGMAN := CUSTOM
+endif # $(origin EGMAN)
+
+# Set the origin-dependent values of the new variable.
+EGMAN.O_DEFAULT := $(EGMAN.$(.K_UNAME))
+EGMAN.O_CUSTOM := $(EGMAN)
+
+# Finally, set the variable.
+override EGMAN := $(EGMAN.O_$(.O_EGMAN))
 
 # Make builds deterministic when using LLVM or GNU C/C++ compilers.
 # These are the environment variables necessary; see CFLAGS and CXXFLAGS for

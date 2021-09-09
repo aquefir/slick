@@ -1,12 +1,12 @@
 #!/usr/bin/make
 # -*- coding: utf-8 -*-
-## Copyright © 2020-2021 Aquefir.
+## Copyright (C) 2020-2021 Aquefir.
 ## Released under BSD-2-Clause.
 ## This Makefile provides the bodies of a variety of build targets (or
-## ‘recipes’) normally used in building native executables and libraries.
+## 'recipes') normally used in building native executables and libraries.
 ## These include: debug, release, sanity check, code coverage, and address
 ## sanitisation tunings. Using the conventional *FILES and *FLAGS Makefile
-## variables, the toolchain program variables (like ‘$(CC)’), the $(PROJECT)
+## variables, the toolchain program variables (like '$(CC)'), the $(PROJECT)
 ## variable, and some miscellaneous helpers, it will fill out all of the
 ## typical details for these targets automatically, just by including it in
 ## the main Makefile.
@@ -102,6 +102,7 @@ endif
 .L_File.MID   := ---> \033[35mProcessing
 .L_File.PCM   := ---> \033[35mAssembling
 .L_File.IMG   := ---> \033[33mTransmogrifying
+.L_File.BIN   := ---> \033[32mProcessing
 
 .L_File = @$(ECHO) -e " $(.L_File.$(1))\033[0m \033[1m$(2)\033[0m ..."
 .L_FileNoAt = $(ECHO) -e " $(.L_File.$(1))\033[0m \033[1m$(2)\033[0m ..."
@@ -463,6 +464,8 @@ endif
 ifeq ($(.L_AFILE),1)
 .L_TARGETS += $(.L_ATARGET)
 endif
+else ifeq ($(TP),GBASP)
+.L_TARGETS += $(.L_BINTARGET)
 else ifeq ($(TP),IBMPC)
 ifeq ($(.L_EXEFILE),1)
 .L_TARGETS += $(.L_BINTARGET)
@@ -502,6 +505,7 @@ endif
 	$(PROJECT)$(EXE.LINUX) \
 	$(PROJECT)$(EXE.WIN32) \
 	$(PROJECT)$(EXE.GBA) \
+	$(PROJECT)$(EXE.GBASP) \
 	$(PROJECT)$(EXE.APE)
 
 ## Define the OFILES.
@@ -509,7 +513,14 @@ endif
 .L_OFILES.COMMON := \
 	$(SFILES:.s=.s.o) \
 	$(CFILES:.c=.c.o) \
-	$(CPPFILES:.cpp=.cpp.o)
+	$(CPPFILES:.cpp=.cpp.o) \
+	$(SNIPFILES:.snip=.snip.o) \
+	$(MAPFILES:.map=.map.o) \
+	$(MAPBFILES:.mapb=.mapb.o) \
+	$(BSAFILES:.bsa=.bsa.o) \
+	$(BSETFILES:.bset=.bset.o) \
+	$(JASCFILES:.jasc=.jasc.o) \
+	$(IMGFILES:.png=.png.o)
 
 .L_OFILES.LINUX := \
 	$(SFILES.LINUX:.s=.s.o) \
@@ -534,7 +545,20 @@ endif
 .L_OFILES.GBA := \
 	$(SFILES.GBA:.s=.s.o) \
 	$(CFILES.GBA:.c=.c.o) \
-	$(CPPFILES.GBA:.cpp=.cpp.o)
+	$(CPPFILES.GBA:.cpp=.cpp.o) \
+	$(SNIPFILES.GBASP:.snip=.snip.o)
+
+.L_OFILES.GBASP := \
+	$(SFILES.GBASP:.s=.s.o) \
+	$(CFILES.GBASP:.c=.c.o) \
+	$(CPPFILES.GBASP:.cpp=.cpp.o) \
+	$(SNIPFILES.GBASP:.snip=.snip.o) \
+	$(MAPFILES.GBASP:.map=.map.o) \
+	$(MAPBFILES.GBASP:.mapb=.mapb.o) \
+	$(BSAFILES.GBASP:.bsa=.bsa.o) \
+	$(BSETFILES.GBASP:.bset=.bset.o) \
+	$(JASCFILES.GBASP:.jasc=.jasc.o) \
+	$(IMGFILES.GBASP:.png=.png.o)
 
 .L_OFILES.IBMPC := \
 	$(SFILES.IBMPC:.s=.s.o) \
@@ -586,6 +610,12 @@ endif
 	$(TES_CFILES.GBA:.tes.c=.tes.c.gcno) \
 	$(TES_CPPFILES.GBA:.tes.cpp=.tes.cpp.gcno)
 
+.L_GCNOFILES.GBASP := \
+	$(CFILES.GBASP:.c=.c.gcno) \
+	$(CPPFILES.GBASP:.cpp=.cpp.gcno) \
+	$(TES_CFILES.GBASP:.tes.c=.tes.c.gcno) \
+	$(TES_CPPFILES.GBASP:.tes.cpp=.tes.cpp.gcno)
+
 .L_GCNOFILES.IBMPC := \
 	$(CFILES.IBMPC:.c=.c.gcno) \
 	$(CPPFILES.IBMPC:.cpp=.cpp.gcno) \
@@ -633,6 +663,12 @@ endif
 	$(CPPFILES.GBA:.cpp=.cpp.gcda) \
 	$(TES_CFILES.GBA:.tes.c=.tes.c.gcda) \
 	$(TES_CPPFILES.GBA:.tes.cpp=.tes.cpp.gcda)
+
+.L_GCDAFILES.GBASP := \
+	$(CFILES.GBASP:.c=.c.gcda) \
+	$(CPPFILES.GBASP:.cpp=.cpp.gcda) \
+	$(TES_CFILES.GBASP:.tes.c=.tes.c.gcda) \
+	$(TES_CPPFILES.GBASP:.tes.cpp=.tes.cpp.gcda)
 
 .L_GCDAFILES.IBMPC := \
 	$(CFILES.IBMPC:.c=.c.gcda) \
@@ -749,6 +785,10 @@ endif
 ## Define the target recipes.
 
 .PHONY: debug release check cov asan ubsan report clean format install
+# Remove all default implicit rules by emptying the suffixes builtin
+# This causes false circular dependencies with multi-dotted file extensions
+#   if we don't do this
+.SUFFIXES:
 
 ## Debug build
 ## useful for: normal testing, valgrind, LLDB
@@ -892,19 +932,61 @@ endif # $(NO_TES)
 	$(call .L_File,S,$@)
 	@$(AS) -o $@ $(ASFLAGS) $(.K_ASDEFINE) $(.K_ASINCLUDE) $<
 
+# Blockset data
+%.bset.o: %.bset
+	$(call .L_File,BIN,$@)
+	@$(BIN2ASM) -s `$(EGMAN) -i $<` $< | $(AS) $(ASFLAGS) -o $@ -
+
+# Blockset attributes
+%.bsa.o: %.bsa
+	$(call .L_File,BIN,$@)
+	@$(BIN2ASM) -s `$(EGMAN) -i $<` $< | $(AS) $(ASFLAGS) -o $@ -
+
+# Map files
+%.map.o: %.map
+	$(call .L_File,BIN,$@)
+	@$(BIN2ASM) -s `$(EGMAN) -i $<` $< | $(AS) $(ASFLAGS) -o $@ -
+
+# Map border files
+%.mapb.o: %.mapb
+	$(call .L_File,BIN,$@)
+	@$(BIN2ASM) -s `$(EGMAN) -i $<` $< | $(AS) $(ASFLAGS) -o $@ -
+
+# Palettes
+%.jasc.o: %.jasc
+	$(call .L_File,IMG,$@)
+	@$(JASC2BIN) $< | $(BIN2ASM) -s `$(EGMAN) -i $<` - | \
+		$(AS) $(ASFLAGS) -o $@ -
+
+# Text snips
+%.snip.o: %.snip
+	$(call .L_File,BIN,$@)
+	@$(SNIP2BIN) $< | $(BIN2ASM) -s `$(EGMAN) -i $<` - | \
+		$(AS) $(ASFLAGS) -o $@ -
+
+# Scrips
+%.scrip.o: %.scrip
+	$(call .L_File,BIN,$@)
+	@$(SCRIP2O) $< $@
+
+# Image data
+%.png.o: %.png
+	$(call .L_File,IMG,$@)
+	@$(GFX2O) $< $@
+
 # TESfile recipes.
 
 .L_LDFLAGS.TES := -L$(AQ)/lib -ltes
 
-%.cst.tes: %.tes.cst.o $(.L_OFILES)
+%.cst.tes: %.tes.cst.o #$(.L_OFILES)
 	$(call .L_File,LD,$@)
 	@$(LD) $(LDFLAGS) -o $@ $< $(.K_LIB) $(.L_LDFLAGS.TES) $(.L_OFILES)
 
-%.cpp.tes: %.tes.cpp.o $(.L_OFILES)
+%.cpp.tes: %.tes.cpp.o #$(.L_OFILES)
 	$(call .L_File,LD,$@)
 	@$(LD) $(LDFLAGS) -o $@ $< $(.K_LIB) $(.L_LDFLAGS.TES) $(.L_OFILES)
 
-%.c.tes: %.tes.c.o $(.L_OFILES)
+%.c.tes: %.tes.c.o #$(.L_OFILES)
 	$(call .L_File,LD,$@)
 	@$(LD) $(LDFLAGS) -o $@ $< $(.K_LIB) $(.L_LDFLAGS.TES) $(.L_OFILES)
 
@@ -955,6 +1037,7 @@ endif
 $(.L_EXETARGET): $(.L_OFILES)
 ifneq ($(strip $(.L_OFILES)),)
 	$(call .L_File,LD,$@)
+#	@$(ECHO) $^
 	@$(LD) $(LDFLAGS) -o $@ $^ $(.K_LIB)
 	$(call .L_File,STRIP,$@)
 	@$(REALSTRIP) -s $@
@@ -967,10 +1050,15 @@ endif
 ifneq ($(.L_EXETARGET),$(.L_BINTARGET))
 $(.L_BINTARGET): $(.L_EXETARGET)
 	$(call .L_File,OCPY,$@)
-	@$(OCPY) -O binary $< $@
+	@$(OCPY) -O binary $(PROJECT).elf $(PROJECT).bin
 ifeq ($(TP),GBA)
 	$(call .L_File,FIX,$@)
 	@$(FIX) $@ $(FIXFLAGS) 1>/dev/null
+endif
+ifeq ($(TP),GBASP)
+	$(call .L_File,FIX,$@)
+	@$(INSERT) $(HOOKSFILE) $(ROMFILE) \
+		$(PROJECT).bin $(PROJECT).elf $(PROJECT).gba
 endif
 endif
 
@@ -1029,6 +1117,7 @@ $(CFILES.DARWIN) $(CPPFILES.DARWIN) \
 $(CFILES.WIN32) $(CPPFILES.WIN32) \
 $(CFILES.WIN64) $(CPPFILES.WIN64) \
 $(CFILES.GBA) $(CPPFILES.GBA) \
+$(CFILES.GBASP) $(CPPFILES.GBASP) \
 $(CFILES.IBMPC) $(CPPFILES.IBMPC) \
 $(CFILES.APE) $(CPPFILES.APE)
 	@for _file in $^; do \
