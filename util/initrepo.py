@@ -3,220 +3,147 @@
 ## Copyright © 2020-2021 Aquefir.
 ## Released under BSD-2-Clause.
 
-LICENCES = [
-	'AGPL',
-	'Apache2',
-	'BSD-0C',
-	'BSD-1C',
-	'BSD-2C',
-	'BSD-3C',
-	'BSD-4C',
-	'BSD-OG',
-	'CC-BY-30',
-	'CC-BY-40',
-	'CC-BY-NC-30',
-	'CC-BY-NC-40',
-	'CC-BY-NC-ND-30',
-	'CC-BY-NC-ND-40',
-	'CC-BY-NC-SA-30',
-	'CC-BY-NC-SA-40',
-	'CC-BY-ND-30',
-	'CC-BY-ND-40',
-	'CC-BY-SA-30',
-	'CC-BY-SA-40',
-	'FDL',
-	'GPL2',
-	'LGPL21',
-	'MPL2',
-	'ASL',
-	'CIRNO',
+LICENCES = [ [
+		'AGPL',
+		'FDL',
+		'GPL2',
+		'LGPL21'
+	], [
+		'BSD-0C',
+		'BSD-1C',
+		'BSD-2C',
+		'BSD-3C',
+		'BSD-4C',
+		'BSD-OG'
+	], [
+		'CC-BY-30',
+		'CC-BY-40',
+		'CC-BY-NC-30',
+		'CC-BY-NC-40',
+		'CC-BY-NC-ND-30',
+		'CC-BY-NC-ND-40',
+		'CC-BY-NC-SA-30',
+		'CC-BY-NC-SA-40',
+		'CC-BY-ND-30',
+		'CC-BY-ND-40',
+		'CC-BY-SA-30',
+		'CC-BY-SA-40'
+	], [
+		'Apache2',
+		'MPL2',
+		'ASL',
+		'CIRNO'
+	]
 ]
 
-LICENCE_NAMES = [
-	'GNU Affero GPLv3',
-	'Apache 2.0',
-	'BSD-0-Clause',
-	'BSD-1-Clause',
-	'BSD-2-Clause',
-	'BSD-3-Clause',
-	'BSD-4-Clause',
-	'Old BSD License',
-	'Creative Commons BY 3.0',
-	'Creative Commons BY 4.0',
-	'Creative Commons BY-NC 3.0',
-	'Creative Commons BY-NC 4.0',
-	'Creative Commons BY-NC-ND 3.0',
-	'Creative Commons BY-NC-ND 4.0',
-	'Creative Commons BY-NC-SA 3.0',
-	'Creative Commons BY-NC-SA 4.0',
-	'Creative Commons BY-ND 3.0',
-	'Creative Commons BY-ND 4.0',
-	'Creative Commons BY-SA 3.0',
-	'Creative Commons BY-SA 4.0',
-	'GNU Free Documentation License.',
-	'GNU General Public License v2',
-	'GNU Lesser GPL v2.1',
-	'Mozilla Public License 2.0',
-	'Artisan Software Licence',
-	'THE STRONGEST PUBLIC LICENSE'
+LICENCE_NAMES = [ [
+		'GNU Affero GPLv3',
+		'GNU Free Documentation License',
+		'GNU General Public License 2.0',
+		'GNU Lesser General Public License 2.1'
+	], [
+		'BSD-0-Clause',
+		'BSD-1-Clause',
+		'BSD-2-Clause',
+		'BSD-3-Clause',
+		'BSD-4-Clause',
+		'Old BSD License'
+	], [
+		'Creative Commons BY 3.0',
+		'Creative Commons BY 4.0',
+		'Creative Commons BY-NC 3.0',
+		'Creative Commons BY-NC 4.0',
+		'Creative Commons BY-NC-ND 3.0',
+		'Creative Commons BY-NC-ND 4.0',
+		'Creative Commons BY-NC-SA 3.0',
+		'Creative Commons BY-NC-SA 4.0',
+		'Creative Commons BY-ND 3.0',
+		'Creative Commons BY-ND 4.0',
+		'Creative Commons BY-SA 3.0',
+		'Creative Commons BY-SA 4.0'
+	], [
+		'Apache 2.0',
+		'Mozilla Public License 2.0',
+		'Artisan Software Licence',
+		'THE STRONGEST PUBLIC LICENSE'
+	]
 ]
 
-from sys import stdin, stdout
-from os import getcwd, path
-from subprocess import call
+def print2(s: str):
+	from sys import stderr
+	s2 = s.rstrip('\r\n') + '\n'
+	stderr.buffer.write(s2.encode('utf-8'))
+	stderr.buffer.flush()
 
-def mkbplate(title, copy_years, org, licnum, sh):
-	lhs = ' *'
-	rhs = '*'
-	if sh:
-		lhs = '##'
-		rhs = '##'
-	ret = ''
-	if sh:
-		ret += ('#' * 78) + '\n'
+def ia_multi(question: str, num_choices: int):
+	from sys import stdout, stdin
+	s = question.rstrip('\r\n') + ' '
+	stdout.buffer.write(s.encode('utf-8'))
+	stdout.buffer.flush()
+	r = int(stdin.read((num_choices // 10) + 1), 10)
+	if r <= num_choices:
+		return r
 	else:
-		ret += '/' + ('*' * 76) + '\\\n'
-	title_len = len(title)
-	if title_len % 2:
-		title += '\u2122'
-		title_len += 1
-	spaces = ' ' * ((74 - title_len) // 2)
-	ret += lhs + spaces + title + spaces + rhs + '\n'
-	ret += lhs + (' ' * 74) + rhs + '\n'
-	copy = 'Copyright © ' + copy_years + ' ' + org
-	if len(copy_years) % 2:
-		copy += '.'
-	spaces = ' ' * ((74 - len(copy)) // 2)
-	ret += lhs + spaces + copy + spaces + rhs + '\n'
-	if licnum <= 0:
-		lic = 'All rights reserved.'
-	else:
-		lic = 'Released under ' + LICENCE_NAMES[licnum - 1]
-	if len(lic) % 2:
-		lic += '.'
-	spaces = ' ' * ((74 - len(lic)) // 2)
-	ret += lhs + spaces + lic + spaces + rhs + '\n'
-	if sh:
-		ret += '#' * 78
-	else:
-		ret += '\\' + ('*' * 76) + '/'
-	return ret
+		print2('Choice %i is out of range (1-%i)' % (r, num_choices))
+		return -1
 
-def printbplate(title, copy_years, org, licnum):
-	return 'This file contains the project’s copypastable boilerplate comment headers.\n\nBoilerplate for C-like languages:\n\n' + \
-		mkbplate(title, copy_years, org, licnum, False) + \
-		'\n\nHash-based boilerplate (Python, POSIX shell, Makefile):\n\n' + \
-		mkbplate(title, copy_years, org, licnum, True) + '\n'
+def ia_yesno(question: str, default: str):
+	from sys import stdout, stdin
+	# this is the default value for the choice string
+	# it is mutated for a default yes or no answer if none is given
+	# it is also checked later to effect that end
+	# lastly, it is interpolated into the question string to stdout
+	choice = 'y/n'
+	# for case-insensitive checking
+	default = default.lower()
+	if default == 'y':
+		choice = 'Y/n'
+	elif default == 'n':
+		choice = 'y/N'
+	# finalise the question string
+	s = question.rstrip('\r\n') + ' [' + choice + '] '
+	sb = s.encode('utf-8')
+	stdout.buffer.write(sb)
+	# say it right
+	stdout.buffer.flush()
+	# we need to loop in case invalid input is given, we ask again
+	while True:
+		r = stdin.readline()[:-1].lower()
+		if r == '':
+			if choice.startswith('Y'): return True
+			elif choice.endswith('N'): return False
+		elif r == 'y': return True
+		elif r == 'n': return False
+		s2 = 'Sorry, %s is not a valid answer.\n' % r
+		stdout.buffer.write(s2.encode('utf-8'))
+		stdout.buffer.write(sb)
+		stdout.buffer.flush()
 
-def strlicq(lics):
-	ret = 'Choose a licence:\n'
-	i = 0
-	lics_len = len(lics)
-	while i < lics_len:
-		ret += str(i + 1) if i >= 9 else ' ' + str(i + 1)
-		ret += '. ' + lics[i] + '\n'
-		i += 1
-	return ret
 
-def mkdir(p):
-	from os import mkdir as mkdir_
-	#from os import FileExistsError
-	try:
-		mkdir_(p)
-	except FileExistsError as e:
-		pass
+def ia_line(question: str):
+	from sys import stdout, stdin
+	s = question.rstrip('\r\n') + ' '
+	stdout.buffer.write(s.encode('utf-8'))
+	stdout.buffer.flush()
+	r = stdin.readline()
+	return r.rstrip('\r\n')
 
-slickdir = path.join(path.dirname(path.realpath(__file__)), '..')
-
-def pause():
-	input('\n')
-
-def yesno(msg):
-	resp = 0
-	firs = True
-	while resp != 'y' and resp != 'n':
-		if not firs:
-			stdout.write('\nInvalid value \u2018' + resp + '\u2019\n')
-		stdout.write(msg + ' ')
-		stdout.flush()
-		resp = stdin.read(1)
-		firs = False
-	stdout.write('\n')
-	return True if resp == 'y' else False
-
-def multich(msg, opt_ct):
-	num = 0
-	firs = True
-	while num > opt_ct or num == 0:
-		if not firs:
-			stdout.write('\nInvalid value \u2018' + str(num) + '\u2019\n')
-		stdout.write(msg + ' ')
-		stdout.flush()
-		num = int(input())
-		firs = False
-	return num
-
-def prompt(msg):
-	stdout.write(msg + ' ')
-	stdout.flush()
-	return stdin.readline()
-
-def main(args):
-	# get information from user
-	title = prompt('What is the name of the project?')[:-1]
-	org = prompt('Who is the author or organisation?')[:-1]
-	n = multich('Is this for a library (1) or program (2)?', 2)
-	makefile = 'Makefile.library' if n == 1 else 'Makefile.program'
-	gitinit = False
-	licnum = None
-	lic = None
-	cwd = getcwd()
-	if not path.exists(path.join(cwd, '.git')):
-		if yesno('Initialise a git repository?'):
-			gitinit = True
-	if yesno('Add a licence?'):
-		licnum = multich(strlicq(LICENCES), len(LICENCES))
-		lic = path.join('COPYING.' + LICENCES[licnum - 1])
-	stdout.write('Ready to commit. Press any key to continue. ')
-	pause()
-	stdout.write('\n')
-	from shutil import copyfile
-	copyfile(path.join(slickdir, 'src', makefile), path.join(cwd, 'Makefile'))
-	f = open(path.join(cwd, 'Makefile'), 'r')
-	tmp = f.read()
-	f.close()
-	tmp = tmp.replace('@BOILERPLATE@',
-		mkbplate(title, str(2021), org, licnum if lic else 0, True))
-	tmp = tmp.replace('@TITLE@', title.lower())
-	print('=====')
-	print(tmp)
-	print('=====')
-	f = open(path.join(cwd, 'Makefile'), 'w')
-	f.write(tmp)
-	f.flush()
-	f.close()
-	if lic:
-		copyfile(path.join(slickdir, 'src', 'COPYING.' + LICENCES[licnum - 1]),
-		path.join(cwd, 'COPYING'))
-	copyfile(path.join(slickdir, 'src', 'gitattributes'),
-		path.join(cwd, '.gitattributes'))
-	copyfile(path.join(slickdir, 'src', 'gitignore'),
-		path.join(cwd, '.gitignore'))
-	mkdir(path.join(cwd, 'doc'))
-	mkdir(path.join(cwd, 'etc'))
-	mkdir(path.join(cwd, 'data'))
-	mkdir(path.join(cwd, 'util'))
-	mkdir(path.join(cwd, 'src'))
-	mkdir(path.join(cwd, 'include'))
-	f = open(path.join(cwd, 'etc', 'BOILERPLATE'), 'w')
-	f.write(printbplate(title, str(2021), org, licnum if lic else 0))
-	f.flush()
-	f.close()
-	if gitinit:
-		call(['git', 'init'])
-	print('All done. Exiting...')
-	return 0
-
-if __name__ == '__main__':
-	from sys import argv, exit
-	exit(main(argv))
+def ia_init():
+	name_project = ia_line('Full name of the project:')
+	name_author = ia_line('Personal or organisation name:')
+	legacy = ia_yesno('Is this an existing codebase?', 'n')
+	library = True if ia_multi('Is this for a library (1) or a ' +
+		'standalone program (2)?', 2) == 1 else False
+	usevcs = ia_yesno('Should there be a git repository if none exists?',
+		'y')
+	lic_i: tuple[int, int] = (None, None)
+	if ia_yesno('Should a licence file be added?', 'y'):
+		n = ia_multi('Select the licence group from which to choose: (1) GPL' +
+			',\n (2) BSD, (3) Creative Commons, or (4) Others', 4)
+		if n == 1:
+			n2 = ia_multi('Select the licence to use: (1) AGPLv3, (2) FDL,\n' +
+				'(3) GPLv2, or (4) LGPLv2.1', 4)
+			lic_i = (n, n2)
+		elif n == 2:
+			pass
+	# WIP unfinished
