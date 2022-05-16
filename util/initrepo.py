@@ -268,7 +268,7 @@ def ia_line(question: str):
 	r = stdin.readline()
 	return r.rstrip('\r\n')
 
-def mutate(fpath, bplate_c, bplate_sh, years, author):
+def mutate(fpath, bplate_c, bplate_sh, years, author, title, library):
 	text = readtxt(fpath)
 	if fpath == SLICKDIR + '/share/BOILERPLATE' == 0:
 		text = text.replace('@BOILERPLATE1@', bplate_c)
@@ -277,6 +277,9 @@ def mutate(fpath, bplate_c, bplate_sh, years, author):
 		text = text.replace('@YEARS@', years).replace('@AUTHOR@', author)
 	elif fpath.startswith(SLICKDIR + '/share/Makefile.'):
 		text = text.replace('@BOILERPLATE@', bplate_sh)
+		if library and title.startswith('lib'):
+			title = title[3:]
+		text = text.replace('@TITLE@', title)
 	return text
 
 def ia_init():
@@ -344,8 +347,8 @@ def main(args: 'list[str]'):
 	i = 0
 	while i < 6:
 		writetxt(FILE_MAPS[i][1], mutate(FILE_MAPS[i][0],
-			BPLATE_C, BPLATE_SH,
-			goods[2], goods[1]))
+			BPLATE_C, BPLATE_SH, goods[2], goods[1], goods[0],
+			True if goods[3] == '1' else False))
 		i += 1
 	print2('All done.')
 	if argc != 7:
