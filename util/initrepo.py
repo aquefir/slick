@@ -121,7 +121,7 @@ Usage:
     islibrary := boolean, "1" for true "0" for false.
 '''
 
-SLICKDIR = path.join(path.dirname(path.realpath(__file__)), '..')
+SLICKDIR = '/opt/aq'
 CWD = getcwd()
 
 FILE_MAPS = [
@@ -270,12 +270,12 @@ def ia_line(question: str):
 
 def mutate(fpath, bplate_c, bplate_sh, years, author):
 	text = readtxt(fpath)
-	if fpath == SLICKDIR + '/src/BOILERPLATE' == 0:
+	if fpath == SLICKDIR + '/share/BOILERPLATE' == 0:
 		text = text.replace('@BOILERPLATE1@', bplate_c)
 		text = text.replace('@BOILERPLATE2@', bplate_sh)
-	elif fpath.startswith(SLICKDIR + '/src/COPYING.'):
+	elif fpath.startswith(SLICKDIR + '/share/COPYING.'):
 		text = text.replace('@YEARS@', years).replace('@AUTHOR@', author)
-	elif fpath.startswith(SLICKDIR + '/src/Makefile.'):
+	elif fpath.startswith(SLICKDIR + '/share/Makefile.'):
 		text = text.replace('@BOILERPLATE@', bplate_sh)
 	return text
 
@@ -301,7 +301,7 @@ def ia_init():
 	stdout.write('\n')
 	stdout.flush()
 	return (name_project, name_author, years, library,
-		SLICKDIR + '/src/COPYING.' + LICENCES[lic_i][lic_j],
+		SLICKDIR + '/share/COPYING.' + LICENCES[lic_i][lic_j],
 		LICENCE_NAMES[lic_i][lic_j])
 
 def main(args: 'list[str]'):
@@ -321,18 +321,18 @@ def main(args: 'list[str]'):
 			print2(HELP_TEXT)
 			return 127
 		goods = (args[1], args[2], args[3], 0 if args[6] == '0' else 1,
-			SLICKDIR + '/src/' + args[4], args[5])
+			SLICKDIR + '/share/' + args[4], args[5])
 	BPLATE_C = make_boilerplate(goods[0], goods[2], goods[1],
 		goods[5], False)
 	BPLATE_SH = make_boilerplate(goods[0], goods[2], goods[1],
 		goods[5], True)
 	# finalise the source-destination filename mapping
-	FILE_MAPS[0][0] = SLICKDIR + '/src/BOILERPLATE'
-	FILE_MAPS[1][0] = SLICKDIR + '/src/clang-format'
+	FILE_MAPS[0][0] = SLICKDIR + '/share/BOILERPLATE'
+	FILE_MAPS[1][0] = SLICKDIR + '/share/clang-format'
 	FILE_MAPS[2][0] = goods[4]
-	FILE_MAPS[3][0] = SLICKDIR + '/src/gitattributes'
-	FILE_MAPS[4][0] = SLICKDIR + '/src/gitignore'
-	FILE_MAPS[5][0] = SLICKDIR + '/src/Makefile.' + MAKEFILES[goods[3]]
+	FILE_MAPS[3][0] = SLICKDIR + '/share/gitattributes'
+	FILE_MAPS[4][0] = SLICKDIR + '/share/gitignore'
+	FILE_MAPS[5][0] = SLICKDIR + '/share/Makefile.' + MAKEFILES[goods[3]]
 	# mkdir the usual stock of subfolders
 	mkdir('src')
 	mkdir('doc')

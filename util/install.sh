@@ -50,6 +50,10 @@ ${_echo} -n 'Copying tools...' >/dev/stderr;
 ${_sudo} cp util/initrepo.py "${_prefix}/opt/aq/bin/initrepo";
 ${_echo} ' done.' >/dev/stderr;
 
+${_echo} -n 'Copying tool assets...' >/dev/stderr;
+${_sudo} cp -r share "${_prefix}/opt/aq/";
+${_echo} ' done.' >/dev/stderr;
+
 [ ! -d "${_prefix}/etc/profile.d" ] || { ${_echo} -n \
 	'Copying profile script addenda...' >/dev/stderr; \
 	${_sudo} cp src/aquefir.sh "${_prefix}/etc/profile.d/aquefir.sh" && \
