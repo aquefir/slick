@@ -277,7 +277,7 @@ def mutate(fpath, bplate_c, bplate_sh, years, author, title, library):
 		text = text.replace('@YEARS@', years).replace('@AUTHOR@', author)
 	elif fpath.startswith(SLICKDIR + '/share/Makefile.'):
 		text = text.replace('@BOILERPLATE@', bplate_sh)
-		if library and title.startswith('lib'):
+		if library == 1 and title.startswith('lib'):
 			title = title[3:]
 		text = text.replace('@TITLE@', title)
 	return text
@@ -348,7 +348,7 @@ def main(args: 'list[str]'):
 	while i < 6:
 		writetxt(FILE_MAPS[i][1], mutate(FILE_MAPS[i][0],
 			BPLATE_C, BPLATE_SH, goods[2], goods[1], goods[0],
-			True if goods[3] == '1' else False))
+			True if goods[3] == 1 else False))
 		i += 1
 	print2('All done.')
 	if argc != 7:
