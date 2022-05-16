@@ -1,8 +1,10 @@
 #!/bin/sh
 # -*- coding: utf-8 -*-
 
-. util/getcosmo.sh;
-. util/mkibmpc.sh;
+if test "$1" != '--straight'; then
+	. util/getcosmo.sh;
+	. util/mkibmpc.sh;
+fi
 
 _echo='/bin/echo'; # ensure it is not a bashism
 
@@ -21,6 +23,7 @@ fi
 ${_echo} -n 'Creating folder hierarchies...' >/dev/stderr;
 ${_sudo} mkdir -p "${_prefix}/opt/aq/lib/slick/cosmo";
 ${_sudo} mkdir -p "${_prefix}/opt/aq/lib/slick/ibmpc";
+${_sudo} mkdir -p "${_prefix}/opt/aq/bin";
 ${_echo} ' done.' >/dev/stderr;
 
 ${_echo} -n 'Copying Cosmopolitan files...' >/dev/stderr;
@@ -41,6 +44,10 @@ ${_echo} ' done.' >/dev/stderr;
 ${_echo} -n 'Copying the Makefiles...' >/dev/stderr;
 ${_sudo} cp src/base.mk "${_prefix}/opt/aq/lib/slick/base.mk";
 ${_sudo} cp src/targets.mk "${_prefix}/opt/aq/lib/slick/targets.mk";
+${_echo} ' done.' >/dev/stderr;
+
+${_echo} -n 'Copying tools...' >/dev/stderr;
+${_sudo} cp util/initrepo.py "${_prefix}/opt/aq/bin/initrepo";
 ${_echo} ' done.' >/dev/stderr;
 
 [ ! -d "${_prefix}/etc/profile.d" ] || { ${_echo} -n \

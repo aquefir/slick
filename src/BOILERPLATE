@@ -1,0 +1,9 @@
+This file contains the project's copypastable boilerplate comment headers.
+
+Boilerplate for C-like languages:
+
+@BOILERPLATE1@
+
+Hash-based boilerplate (Python, POSIX shell, Makefile):
+
+@BOILERPLATE2@
