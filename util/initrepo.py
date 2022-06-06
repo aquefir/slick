@@ -270,7 +270,7 @@ def ia_line(question: str):
 
 def mutate(fpath, bplate_c, bplate_sh, years, author, title, library):
 	text = readtxt(fpath)
-	if fpath == SLICKDIR + '/share/BOILERPLATE' == 0:
+	if fpath == SLICKDIR + '/share/BOILERPLATE':
 		text = text.replace('@BOILERPLATE1@', bplate_c)
 		text = text.replace('@BOILERPLATE2@', bplate_sh)
 	elif fpath.startswith(SLICKDIR + '/share/COPYING.'):
