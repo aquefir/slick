@@ -394,19 +394,20 @@ CFLAGS.COMMON.ALL.GNU      := -ansi -pipe -x c -frandom-seed=69420
 CFLAGS.COMMON.ALL.LLVM     := -ansi -pipe -Wpedantic -x c -frandom-seed=69420
 CFLAGS.COMMON.ALL.XCODE    := -ansi -pipe -Wpedantic -x c -frandom-seed=69420
 CFLAGS.COMMON.ALL.TCC      := -std=c89 -Wpedantic
-CFLAGS.COMMON.LINUX.GNU    := -Wpedantic -march=x86-64 -mtune=skylake -fPIC
-CFLAGS.COMMON.LINUX.LLVM   := -march=x86-64 -mtune=skylake -fPIC
-CFLAGS.COMMON.DARWIN.GNU   := -Wpedantic -march=ivybridge -mtune=skylake -fPIC
-CFLAGS.COMMON.DARWIN.LLVM  := -march=ivybridge -mtune=skylake -fPIC
-CFLAGS.COMMON.DARWIN.XCODE := -march=ivybridge -mtune=skylake -fPIC
-CFLAGS.COMMON.WIN32.GNU    := -Wpedantic -march=i386 -mtune=skylake -fPIC
-CFLAGS.COMMON.WIN64.GNU    := -Wpedantic -march=x86-64 -mtune=skylake -fPIC
+CFLAGS.COMMON.LINUX.GNU    := -Wpedantic -march=x86-64 -mtune=core-avx2 -fPIC
+CFLAGS.COMMON.LINUX.LLVM   := -march=x86-64 -mtune=core-avx2 -fPIC
+CFLAGS.COMMON.DARWIN.GNU   := -Wpedantic -march=ivybridge -mtune=core-avx2 \
+	-fPIC
+CFLAGS.COMMON.DARWIN.LLVM  := -march=ivybridge -mtune=core-avx2 -fPIC
+CFLAGS.COMMON.DARWIN.XCODE := -march=ivybridge -mtune=core-avx2 -fPIC
+CFLAGS.COMMON.WIN32.GNU    := -Wpedantic -march=i386 -mtune=core-avx2 -fPIC
+CFLAGS.COMMON.WIN64.GNU    := -Wpedantic -march=x86-64 -mtune=core-avx2 -fPIC
 CFLAGS.COMMON.GBA.GNU      := -Wpedantic -march=armv4t -mcpu=arm7tdmi \
 	-mthumb-interwork -Wno-builtin-declaration-mismatch
 CFLAGS.COMMON.GBASP.GNU    := -march=armv4t -mcpu=arm7tdmi
 CFLAGS.COMMON.IBMPC.GNU    := -Wpedantic -m32 -march=i386 -nostdinc -fno-pie \
 	-fno-leading-underscore -ffreestanding
-CFLAGS.COMMON.APE.GNU      := -g -march=x86-64 -mtune=skylake -fno-pie \
+CFLAGS.COMMON.APE.GNU      := -g -march=x86-64 -mtune=core-avx2 -fno-pie \
 	-mno-red-zone -nostdinc
 
 CFLAGS.DEBUG.ALL.GNU   := -O0 -g3 -Wall
@@ -454,20 +455,20 @@ CFLAGS.UBSAN.ALL.XCODE := -O1 -g3 -fsanitize=undefined \
 CXXFLAGS.COMMON.ALL.GNU      := -pipe -x c++ -frandom-seed=69420
 CXXFLAGS.COMMON.ALL.LLVM     := -pipe -Wpedantic -x c++ -frandom-seed=69420
 CXXFLAGS.COMMON.ALL.XCODE    := -pipe -Wpedantic -x c++ -frandom-seed=69420
-CXXFLAGS.COMMON.LINUX.GNU    := -Wpedantic -march=x86-64 -mtune=skylake -fPIC
-CXXFLAGS.COMMON.LINUX.LLVM   := -march=x86-64 -mtune=skylake -fPIC
-CXXFLAGS.COMMON.DARWIN.GNU   := -Wpedantic -march=ivybridge -mtune=skylake \
+CXXFLAGS.COMMON.LINUX.GNU    := -Wpedantic -march=x86-64 -mtune=core-avx2 -fPIC
+CXXFLAGS.COMMON.LINUX.LLVM   := -march=x86-64 -mtune=core-avx2 -fPIC
+CXXFLAGS.COMMON.DARWIN.GNU   := -Wpedantic -march=ivybridge -mtune=core-avx2 \
 	-fPIC
-CXXFLAGS.COMMON.DARWIN.LLVM  := -march=ivybridge -mtune=skylake -fPIC
-CXXFLAGS.COMMON.DARWIN.XCODE := -march=ivybridge -mtune=skylake -fPIC
-CXXFLAGS.COMMON.WIN32.GNU    := -Wpedantic -march=i386 -mtune=skylake -fPIC
-CXXFLAGS.COMMON.WIN64.GNU    := -Wpedantic -march=x86-64 -mtune=skylake -fPIC
+CXXFLAGS.COMMON.DARWIN.LLVM  := -march=ivybridge -mtune=core-avx2 -fPIC
+CXXFLAGS.COMMON.DARWIN.XCODE := -march=ivybridge -mtune=core-avx2 -fPIC
+CXXFLAGS.COMMON.WIN32.GNU    := -Wpedantic -march=i386 -mtune=core-avx2 -fPIC
+CXXFLAGS.COMMON.WIN64.GNU    := -Wpedantic -march=x86-64 -mtune=core-avx2 -fPIC
 CXXFLAGS.COMMON.GBA.GNU      := -Wpedantic -march=armv4t -mcpu=arm7tdmi \
 	-mthumb-interwork -Wno-builtin-declaration-mismatch
 CXXFLAGS.COMMON.GBASP.GNU    := -march=armv4t -mcpu=arm7tdmi
 CXXFLAGS.COMMON.IBMPC.GNU    := -Wpedantic -m32 -march=i386 -nostdinc \
 	-fno-pie -fno-leading-underscore -ffreestanding
-CXXFLAGS.COMMON.APE.GNU      := -g -march=x86-64 -mtune=skylake -fno-pie \
+CXXFLAGS.COMMON.APE.GNU      := -g -march=x86-64 -mtune=core-avx2 -fno-pie \
 	-mno-red-zone -nostdinc
 
 CXXFLAGS.DEBUG.ALL.GNU   := -O0 -g3 -Wall
@@ -529,7 +530,7 @@ LDFLAGS.COMMON.GBA.GNU      :=
 LDFLAGS.COMMON.GBASP.GNU    := -nostdlib -T etc/gba.ld -T etc/emer.ld
 LDFLAGS.COMMON.IBMPC.GNU    := -m32 -march=i386 -static -nostdlib -no-pie \
 	-Wl,--as-needed -Wl,--build-id=none -Wl,--nmagic -ffreestanding
-LDFLAGS.COMMON.APE.GNU      := -march=x86-64 -mtune=skylake -fuse-ld=bfd \
+LDFLAGS.COMMON.APE.GNU      := -march=x86-64 -mtune=core-avx2 -fuse-ld=bfd \
 	-static -nostdlib -no-pie -Wl,--as-needed -Wl,--build-id=none
 
 LDFLAGS.COV.ALL.GNU      := -fprofile-arcs -ftest-coverage \
