@@ -26,20 +26,22 @@ ${_sudo} mkdir -p "${_prefix}/opt/aq/lib/slick/ibmpc";
 ${_sudo} mkdir -p "${_prefix}/opt/aq/bin";
 ${_echo} ' done.' >/dev/stderr;
 
-${_echo} -n 'Copying Cosmopolitan files...' >/dev/stderr;
-${_sudo} cp build/cosmo/ape.lds "${_prefix}/opt/aq/lib/slick/cosmo/ape.lds";
-${_sudo} cp build/cosmo/ape.o "${_prefix}/opt/aq/lib/slick/cosmo/ape.o";
-${_sudo} cp build/cosmo/cosmopolitan.a \
-	"${_prefix}/opt/aq/lib/slick/cosmo/cosmopolitan.a";
-${_sudo} cp build/cosmo/cosmopolitan.h \
-	"${_prefix}/opt/aq/lib/slick/cosmo/cosmopolitan.h";
-${_sudo} cp build/cosmo/crt.o "${_prefix}/opt/aq/lib/slick/cosmo/crt.o";
-${_echo} ' done.' >/dev/stderr;
+if test "$1" != '--straight'; then
+	${_echo} -n 'Copying Cosmopolitan files...' >/dev/stderr;
+	${_sudo} cp build/cosmo/ape.lds "${_prefix}/opt/aq/lib/slick/cosmo/ape.lds";
+	${_sudo} cp build/cosmo/ape.o "${_prefix}/opt/aq/lib/slick/cosmo/ape.o";
+	${_sudo} cp build/cosmo/cosmopolitan.a \
+		"${_prefix}/opt/aq/lib/slick/cosmo/cosmopolitan.a";
+	${_sudo} cp build/cosmo/cosmopolitan.h \
+		"${_prefix}/opt/aq/lib/slick/cosmo/cosmopolitan.h";
+	${_sudo} cp build/cosmo/crt.o "${_prefix}/opt/aq/lib/slick/cosmo/crt.o";
+	${_echo} ' done.' >/dev/stderr;
 
-${_echo} -n 'Copying IBM-PC files...' >/dev/stderr;
-${_sudo} cp build/ibmpc/crt0.o "${_prefix}/opt/aq/lib/slick/ibmpc/crt0.o";
-${_sudo} cp src/ibmpc/ibmpc.ld "${_prefix}/opt/aq/lib/slick/ibmpc/ibmpc.ld";
-${_echo} ' done.' >/dev/stderr;
+	${_echo} -n 'Copying IBM-PC files...' >/dev/stderr;
+	${_sudo} cp build/ibmpc/crt0.o "${_prefix}/opt/aq/lib/slick/ibmpc/crt0.o";
+	${_sudo} cp src/ibmpc/ibmpc.ld "${_prefix}/opt/aq/lib/slick/ibmpc/ibmpc.ld";
+	${_echo} ' done.' >/dev/stderr;
+fi
 
 ${_echo} -n 'Copying the Makefiles...' >/dev/stderr;
 ${_sudo} cp src/base.mk "${_prefix}/opt/aq/lib/slick/base.mk";
